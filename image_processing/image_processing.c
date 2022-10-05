@@ -100,7 +100,7 @@ char* stradd(const char* a, const char* b){
     return strcat(strcat(ret, a) ,b);
 }
 
-void save_image(SDL_Surface* surface_image, char* name)
+void save_image(SDL_Surface* surface_image)
 {
     char* file_name = stradd("test", "_grayscale.bmp");
     if(SDL_SaveBMP(surface_image, file_name) != 0)
@@ -139,7 +139,7 @@ int main(int argc, char** argv)
     if(grayscale == NULL)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
 
-    save_image(surface, argv[1]);
+    save_image(surface);
     SDL_FreeSurface(surface);
 
     SDL_DestroyTexture(colored);
