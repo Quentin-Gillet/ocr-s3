@@ -5,50 +5,6 @@
 #include <string.h>
 
 
-// Updates the display.
-//
-// renderer: Renderer to draw on.
-// texture: Texture that contains the image.
-/*void draw(SDL_Renderer* renderer, SDL_Texture* texture)
-{
-    SDL_RenderCopy(renderer, texture, NULL, NULL);
-    SDL_RenderPresent(renderer);
-}*/
-
-// Event loop that calls the relevant event handler.
-//
-// renderer: Renderer to draw on.
-// colored: Texture that contains the colored image.
-// grayscale: Texture that contains the grayscale image.
-/*void event_loop(SDL_Renderer* renderer, SDL_Texture* colored, SDL_Texture* grayscale)
-{
-    SDL_Event event;
-    SDL_Texture* t = colored;
-    draw(renderer, t);
-    while (1)
-    {
-        SDL_WaitEvent(&event);
-
-        switch (event.type)
-        {
-            case SDL_QUIT:
-                return;
-
-            case SDL_WINDOWEVENT:
-                if(event.window.event == SDL_WINDOWEVENT_RESIZED)
-                    draw(renderer, t);
-                break;
-
-            case SDL_KEYDOWN:
-                if(t == grayscale)
-                    t = colored;
-                else t = grayscale;
-                draw(renderer, t);
-                break;
-        }
-    }
-}*/
-
 // Loads an image in a surface.
 // The format of the surface is SDL_PIXELFORMAT_RGB888.
 //
@@ -63,6 +19,65 @@ SDL_Surface* load_image(const char* path)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
     SDL_FreeSurface(tSurface);
     return surface;
+}
+
+float truncate(float value, int val1, int val2)
+{
+    if(value < val1)
+        return val1;
+    if(value > val2)
+        return val2;
+    return value;
+}
+
+Uint32 pixel_invert(Uint32 pixel_color, SDL_PixelFormat* format)
+{
+    Uint8 r, g, b;
+    SDL_GetRGB(pixel_color, format, &r, &g, &b);
+    return SDL_MapRGB(format, 255 - r, 255 - g, 255 - b);
+}
+
+void surface_invert(SDL_Surface* surface)
+{
+    Uint32* pixels = surface->pixels;
+    int len = surface->w * surface->h;
+    SDL_PixelFormat* format = surface->format;
+
+    if(SDL_LockSurface(surface) < 0)
+        errx(EXIT_FAILURE, "%s", SDL_GetError());
+
+    for(int i = 0; i < len; i++)
+        pixels[i] = pixel_invert(pixels[i], format);
+
+    SDL_UnlockSurface(surface);
+}
+
+Uint32 pixel_up_contrast(Uint32 pixel_color, SDL_PixelFormat* format)
+{
+    Uint8 r, g, b;
+    SDL_GetRGB(pixel_color, format, &r, &g, &b);
+    int contrast_force = 100;
+    float contrast_factor = (259 * (255 + contrast_force)) / (255 * (259 - contrast_force));
+    r = truncate(contrast_factor * (r - 128) + 128, 0, 255);
+    g = truncate(contrast_factor * (g - 128) + 128, 0, 255);
+    b = truncate(contrast_factor * (b - 128) + 128, 0, 255);
+    Uint32 color = SDL_MapRGB(format, r, g, b);
+    return color;
+}
+
+void surface_up_contrast(SDL_Surface* surface)
+{
+    Uint32* pixels = surface->pixels;
+    int len = surface->w * surface->h;
+    SDL_PixelFormat* format = surface->format;
+
+    if(SDL_LockSurface(surface) < 0)
+        errx(EXIT_FAILURE, "%s", SDL_GetError());
+
+    for(int i = 0; i < len; i++)
+        pixels[i] = pixel_up_contrast(pixels[i], format);
+
+    SDL_UnlockSurface(surface);
 }
 
 // Converts a colored pixel into grayscale.
@@ -100,9 +115,9 @@ char* stradd(const char* a, const char* b){
     return strcat(strcat(ret, a) ,b);
 }
 
-void save_image(SDL_Surface* surface_image)
+void save_image(SDL_Surface* surface_image, char* name)
 {
-    char* file_name = stradd("test", "_grayscale.bmp");
+    char* file_name = stradd(name, "_.bmp");
     if(SDL_SaveBMP(surface_image, file_name) != 0)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
     free(file_name);
@@ -135,15 +150,17 @@ int main(int argc, char** argv)
     if(colored == NULL)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
     surface_to_grayscale(surface);
-    SDL_Texture* grayscale = SDL_CreateTextureFromSurface(renderer, surface);
-    if(grayscale == NULL)
-        errx(EXIT_FAILURE, "%s", SDL_GetError());
+    save_image(surface, "greyscale");
 
-    save_image(surface);
+    surface_up_contrast(surface);
+    save_image(surface, "contrast");
+
+    surface_invert(surface);
+    save_image(surface, "inverted");
+
     SDL_FreeSurface(surface);
 
     SDL_DestroyTexture(colored);
-    SDL_DestroyTexture(grayscale);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
