@@ -1,23 +1,40 @@
 # Makefile
 
-CC = gcc
-CPPFLAGS =
-CFLAGS = -Wall -Wextra -O3 `pkg-config --cflags sdl2 SDL2_image`
-LDFLAGS =
-LDLIBS = `pkg-config --libs sdl2 SDL2_image`
+CC = gcc -Iinclude/
 
-all: image_processing
+CPPFLAGS = `pkg-config --cflags sdl2`
+CFLAGS = -Wall -Wextra -O3 -g -fsanitize=address -Wno-unknown-pragmas
+LDFLAGS = -lm -lpthread
+LDLIBS = `pkg-config --libs sdl2 SDL2_image` -rdynamic
 
-SRC = image_processing.c
-OBJ = ${SRC:.c=.o}
-EXE = ${SRC:.c=}
+BUILD := build
+SOURCE_DIR := src
 
-image_processing: image_processing.o
+SRC = $(shell find $(SOURCE_DIR) -name "*.c")
+OBJ = $(SRC:%.c=$(BUILD)/%.o)
+DEP = $(SRC:%.c=$(BUILD)/%.d)
+
+all: init main clear
+
+clear:
+	find . -type d -empty -delete
+
+init:
+	$(shell mkdir -p $(BUILD))
+	$(shell mkdir -p $(SRC:%.c=$(BUILD)/%))
+
+main: $(OBJ)
+	gcc -o $@ $(CFLAGS) $^ $(LDLFLAGS) $(LDLIBS)
+
+$(BUILD)/%.o : %.c
+	$(CC) $(CFLAGS) -c $< -o $@ $(LDLFLAGS) $(CPPFLAGS) $(LDLIBS)
 
 .PHONY: clean
 
 clean:
-	${RM} ${OBJ}
-	${RM} ${EXE}
+	rm -rf $(BUILD)
+	${RM} ${OBJ} ${DEP} main
+	rm *.bmp
+	clear
 
 # END
