@@ -36,7 +36,7 @@ int main(int argc, char** argv)
     saveImageToBmp(surface, "greyscale");
 
     surfaceProcessing(surface, UP_CONTRAST);
-    saveImageToBmp(surface, "contrast");
+    saveImageToBmp(surface, "blackwhite");
 
     surfaceProcessing(surface, COLOR_INVERT);
     saveImageToBmp(surface, "inverted");

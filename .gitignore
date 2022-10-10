@@ -2,3 +2,5 @@
 *.o
 *.bmp
 .DS_Store
+*.d
+.vscode

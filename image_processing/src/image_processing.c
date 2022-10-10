@@ -8,15 +8,22 @@ Uint32 pixelInvert(Uint32 pixelColor, SDL_PixelFormat* format)
     return SDL_MapRGB(format, 255 - r, 255 - g, 255 - b);
 }
 
-Uint32 pixelUpContrast(Uint32 pixelColor, SDL_PixelFormat* format)
+Uint32 pixelBlackWhite(Uint32 pixelColor, SDL_PixelFormat* format)
 {
     Uint8 r, g, b;
     SDL_GetRGB(pixelColor, format, &r, &g, &b);
-    int contrast_force = 200;
-    float contrast_factor = (259 * (255 + contrast_force)) / (255 * (259 - contrast_force));
-    r = truncate(contrast_factor * (r - 128) + 128, 0, 255);
-    g = truncate(contrast_factor * (g - 128) + 128, 0, 255);
-    b = truncate(contrast_factor * (b - 128) + 128, 0, 255);
+    if((r + g + b) / 3 >= 127)
+    {
+        r = 255;
+        g = 255;
+        b = 255;    
+    }
+    else
+    {
+        r = 0;
+        g = 0;
+        b = 0;
+    }
     Uint32 color = SDL_MapRGB(format, r, g, b);
     return color;
 }
@@ -52,7 +59,7 @@ void surfaceProcessing(SDL_Surface* surface, enum ProcessingType processingType)
             processor = &pixelInvert;
             break;
         case UP_CONTRAST:
-            processor = &pixelUpContrast;
+            processor = &pixelBlackWhite;
             break;
     }
 

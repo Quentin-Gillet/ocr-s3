@@ -18,7 +18,7 @@ enum ProcessingType
 
 Uint32 pixelInvert(Uint32 pixelColor, SDL_PixelFormat* format);
 void surfaceProcessing(SDL_Surface* surface, enum ProcessingType processingType);
-Uint32 pixelUpContrast(Uint32 pixelColor, SDL_PixelFormat* format);
+Uint32 pixelBlackWhite(Uint32 pixelColor, SDL_PixelFormat* format);
 Uint32 pixelToGrayScale(Uint32 pixelColor, SDL_PixelFormat* format);
 
 #endif

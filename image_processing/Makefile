@@ -3,14 +3,15 @@
 CC = gcc -Iinclude/
 
 CPPFLAGS = `pkg-config --cflags sdl2`
-CFLAGS = -Wall -Wextra -O3 -g -fsanitize=address -Wno-unknown-pragmas
-LDFLAGS = -lm -lpthread
-LDLIBS = `pkg-config --libs sdl2 SDL2_image` -rdynamic
+CFLAGS = -Wall -Wextra -O3 -g -fsanitize=address
+LDFLAGS =
+LDLIBS = `pkg-config --libs sdl2 SDL2_image`
+LIBS = -lpthread -ldl
 
 BUILD := build
 SOURCE_DIR := src
 
-SRC = $(shell find $(SOURCE_DIR) -name "*.c")
+SRC = $(wildcard src/*.c)
 OBJ = $(SRC:%.c=$(BUILD)/%.o)
 DEP = $(SRC:%.c=$(BUILD)/%.d)
 
