@@ -35,11 +35,17 @@ int main(int argc, char** argv)
     surfaceProcessing(surface, GRAYSCALE);
     saveImageToBmp(surface, "greyscale");
 
+    surfaceMedianBlur(surface);
+    saveImageToBmp(surface, "blur");
+
     surfaceProcessing(surface, UP_CONTRAST);
     saveImageToBmp(surface, "blackwhite");
 
     surfaceProcessing(surface, COLOR_INVERT);
     saveImageToBmp(surface, "inverted");
+
+    surfaceSobelFilter(surface);
+    saveImageToBmp(surface, "sobel");
 
     SDL_FreeSurface(surface);
 
