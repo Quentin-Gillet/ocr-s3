@@ -4,8 +4,8 @@ CC = gcc -Iinclude/
 
 CPPFLAGS = `pkg-config --cflags sdl2`
 CFLAGS = -Wall -Wextra -O0 -g -fsanitize=address
-LDFLAGS =
-LDLIBS = `pkg-config --libs sdl2 SDL2_image`
+LDFLAGS = 
+LDLIBS = -lm `pkg-config --libs sdl2 SDL2_image`
 LIBS = -lpthread -ldl
 
 BUILD := build

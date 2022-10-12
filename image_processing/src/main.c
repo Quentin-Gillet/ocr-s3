@@ -1,5 +1,6 @@
 #include "../include/image_processing.h"
 #include "../include/image_loading.h"
+#include "../include/manual_rotation.h"
 
 void clearSdl(SDL_Renderer* renderer, SDL_Window* window)
 {
@@ -11,8 +12,8 @@ void clearSdl(SDL_Renderer* renderer, SDL_Window* window)
 int main(int argc, char** argv)
 {
     // Checks the number of arguments.
-    if (argc != 2)
-        errx(EXIT_FAILURE, "Usage: image-file");
+    if (argc != 2 && argc != 3)
+        errx(EXIT_FAILURE, "Usage: image-file (+ rotation)");
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
@@ -29,6 +30,7 @@ int main(int argc, char** argv)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
 
     SDL_Surface* surface = loadPngImage(argv[1]);
+
     // Gets the width and the height of the texture.
     SDL_SetWindowSize(window, surface->w, surface->h);
 
@@ -46,6 +48,12 @@ int main(int argc, char** argv)
 
     surfaceSobelFilter(surface);
     saveImageToBmp(surface, "sobel");
+
+    if(argc == 3)
+    {
+	    surfaceManualRotation(surface, 90);
+	    saveImageToBmp(surface, "rotated");
+    }
 
     SDL_FreeSurface(surface);
 
