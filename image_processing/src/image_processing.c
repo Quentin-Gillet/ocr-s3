@@ -58,8 +58,11 @@ void surfaceProcessing(SDL_Surface* surface, enum ProcessingType processingType)
         case COLOR_INVERT:
             processor = &pixelInvert;
             break;
-        case UP_CONTRAST:
+        case BLACK_WHITE:
             processor = &pixelBlackWhite;
+            break;
+        case UP_CONTRAST:
+            processor = &pixelContrast;
             break;
     }
 
@@ -67,6 +70,19 @@ void surfaceProcessing(SDL_Surface* surface, enum ProcessingType processingType)
         pixels[i] = (*processor)(pixels[i], format);
 
     SDL_UnlockSurface(surface);
+}
+
+Uint32 pixelContrast(Uint32 pixel_color, SDL_PixelFormat* format)
+{
+    Uint8 r, g, b;
+    SDL_GetRGB(pixel_color, format, &r, &g, &b);
+    int contrast_force = 100;
+    float contrast_factor = (259 * (255 + contrast_force)) / (255 * (259 - contrast_force));
+    r = truncate(contrast_factor * (r - 128) + 128, 0, 255);
+    g = truncate(contrast_factor * (g - 128) + 128, 0, 255);
+    b = truncate(contrast_factor * (b - 128) + 128, 0, 255);
+    Uint32 color = SDL_MapRGB(format, r, g, b);
+    return color;
 }
 
 /*
@@ -161,6 +177,83 @@ Uint32* getAdjacentPixels(SDL_Surface* surface, int x, int y)
     pixels[8] = getPixel(surface, x, y);
     return pixels;
 }
+
+int otsuMethod(SDL_Surface* surface)
+{
+    long totalPixels = surface->w * surface->h;
+
+    float var_max = 0, sum = 0, sumB = 0;
+    int threshold = 0, q1 = 0, q2 = 0;
+    int max_intensity = 255;
+    unsigned histogram[256] = {0};
+
+    for(int i = 0; i < totalPixels; i++)
+    {
+        Uint32* pixels = surface->pixels;
+        Uint32 pixel = pixels[i];
+        Uint8 r, g, b;
+        SDL_GetRGB(pixel, surface->format, &r, &g, &b);
+        int pixel_value = (int)truncate((r + g + b) / 3, 0, 255);
+        histogram[pixel_value]++;
+    }
+
+    for(int i = 0; i <= max_intensity; i++)
+    {
+        sum += i * (int)histogram[i];
+    }
+
+    for(int t = 0; t <= max_intensity; t++)
+    {
+        q1 += histogram[t];
+        if(q1 == 0)
+            continue;
+        q2 = totalPixels - q1;
+
+        if(q2 == 0)
+            break;
+
+        sumB += (float)(t * histogram[t]);
+        float u1 = sumB / q1;
+        float u2 = (sum - sumB) / q2;
+
+        float otsu = (float)q1 * (float)q2 * (u1 - u2) * (u1 - u2);
+        if(otsu > var_max)
+        {
+            threshold = t;
+            var_max = otsu;
+        }
+    }
+
+    return threshold;
+}
+
+void surfaceBinarisaion(SDL_Surface* surface)
+{
+    if(SDL_LockSurface(surface) < 0)
+        errx(EXIT_FAILURE, "%s", SDL_GetError());
+    
+    int x, y;
+    int meanIntensity = otsuMethod(surface);
+
+    Uint8 r, g, b;
+    for(x = 0; x < surface->w; x++)
+    {
+        for(y = 0; y < surface->h; y++)
+        {
+            Uint32 pixel = getPixel(surface, x, y);
+            SDL_GetRGB(pixel, surface->format, &r, &g, &b);
+            long intensity = (r + g + b) / 3;
+            Uint32 finalPixel;
+            if(intensity > meanIntensity)
+                finalPixel = SDL_MapRGB(surface->format, 255, 255, 255);
+            else
+                finalPixel = SDL_MapRGB(surface->format, 0, 0, 0);
+            putPixel(surface, x, y, finalPixel);
+        }
+    }
+
+    SDL_UnlockSurface(surface);
+} 
 
 /*
 Sort pixels list and get the median value

@@ -40,8 +40,11 @@ int main(int argc, char** argv)
     surfaceMedianBlur(surface);
     saveImageToBmp(surface, "blur");
 
-    surfaceProcessing(surface, UP_CONTRAST);
-    saveImageToBmp(surface, "blackwhite");
+    // surfaceProcessing(surface, BLACK_WHITE);
+    // saveImageToBmp(surface, "blackwhite");
+
+    surfaceBinarisaion(surface);
+    saveImageToBmp(surface, "mean");
 
     surfaceProcessing(surface, COLOR_INVERT);
     saveImageToBmp(surface, "inverted");
