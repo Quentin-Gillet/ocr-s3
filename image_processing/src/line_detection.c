@@ -64,7 +64,7 @@ struct Line* houghTransform(SDL_Surface* surface, float threshold, int* lineLeng
 			SDL_GetRGB(pixel, surface->format, &r, &g, &b);
             if ((r + g + b) / 3 == 255)
             {
-                /*for (int theta = 0; theta <= nbTheta; theta++)
+                for (int theta = 0; theta <= nbTheta; theta++)
                 {
                     rho = x * saveCos[theta] + y * saveSin[theta];
                     croppedRho = rho + diagonal;
@@ -73,11 +73,6 @@ struct Line* houghTransform(SDL_Surface* surface, float threshold, int* lineLeng
                     {
                         max = accumulator[croppedRho][theta];
                     }
-                }*/
-                for(int t = 0; t < 180; t++)
-                {
-                    unsigned int p = x * saveCos[t] + y * saveSin[t];
-                    accumulator[p][t]++;
                 }
             }
         }
@@ -104,7 +99,7 @@ struct Line* houghTransform(SDL_Surface* surface, float threshold, int* lineLeng
         {
             int val = accumulator[rho][theta];
 
-            /*if (val >= prev)
+            if (val >= prev)
             {
                 prev = val;
                 prev_rho = rho;
@@ -122,18 +117,18 @@ struct Line* houghTransform(SDL_Surface* surface, float threshold, int* lineLeng
                 prev_rho = rho;
                 prev_theta = theta;
                 continue;
-            }*/
+            }
 
             if (val >= lineThreshold)
             {
                 double r = arrRhos[rho], t = arrThetas[theta];
 
-                /*if (t > tempMaxTheta)
+                if (t > tempMaxTheta)
                 {
                     tempMaxTheta = t;
                     rounded_angle = (unsigned int)radToDeg(t);
                     histogram[rounded_angle]++;
-                }*/
+                }
 
                 double c = cos(t), s = sin(t);
                 int x0, y0, x1, x2, y1, y2;
