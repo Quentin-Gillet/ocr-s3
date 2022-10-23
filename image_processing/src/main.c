@@ -50,11 +50,11 @@ int main(int argc, char** argv)
     surfaceProcessing(surface, GRAYSCALE);
     saveImageToBmp(surface, "greyscale");
 
+    surfaceUpContrast(surface);
+    saveImageToBmp(surface, "contrast");
+
     surfaceMedianBlur(surface);
     saveImageToBmp(surface, "blur");
-
-    // surfaceProcessing(surface, BLACK_WHITE);
-    // saveImageToBmp(surface, "blackwhite");
 
     surfaceBinarisaion(surface);
     saveImageToBmp(surface, "mean");

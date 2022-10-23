@@ -144,10 +144,10 @@ struct Line* houghTransform(SDL_Surface* surface, float threshold, int* lineLeng
                 y2 = y0 - (int)(diagonal * c);
 
                 struct Line line;
-                line.x1 = x1;
-                line.x2 = x2;
-                line.y1 = y1;
-                line.y2 = y2;
+                line.x1 = truncate(x1, 0, surface->w);
+                line.x2 = truncate(x2, 0, surface->w);
+                line.y1 = truncate(y1, 0, surface->h);
+                line.y2 = truncate(y2, 0, surface->h);
 
 				lines[indexLine] = line;
 				indexLine++;
