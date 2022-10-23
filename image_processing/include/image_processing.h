@@ -24,8 +24,6 @@ void surfaceProcessing(SDL_Surface* surface, enum ProcessingType processingType)
 Uint32 pixelBlackWhite(Uint32 pixelColor, SDL_PixelFormat* format);
 Uint32 pixelToGrayScale(Uint32 pixelColor, SDL_PixelFormat* format);
 void surfaceMedianBlur(SDL_Surface* surface);
-Uint32 getPixel(SDL_Surface *surface, int x, int y);
-void putPixel(SDL_Surface *surface, int x, int y, Uint32 pixel);
 Uint32* getAdjacentPixels(SDL_Surface* surface, int x, int y);
 Uint32 getPixelMedian(SDL_PixelFormat* format, Uint32* pixels);
 void surfaceSobelFilter(SDL_Surface* surface);

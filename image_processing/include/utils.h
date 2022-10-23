@@ -9,6 +9,7 @@
 #include <string.h>
 #include <err.h>
 #include <stdlib.h>
+#include <math.h>
 
 typedef struct {
     double r;       // a fraction between 0 and 1
@@ -28,5 +29,13 @@ rgb hsv2rgb(hsv in);
 float truncate(float value, int val1, int val2);
 char* stradd(const char* a, const char* b);
 void insertionSort(double arr[], int n);
+
+Uint32 getPixel(SDL_Surface *surface, int x, int y);
+void putPixel(SDL_Surface *surface, int x, int y, Uint32 pixel);
+unsigned int **initMatrice(unsigned int x, unsigned int y);
+void freeMatrice(unsigned int **matrice, size_t height);
+
+#define degToRad(angleInDegrees) ((angleInDegrees) * M_PI / 180.0)
+#define radToDeg(angleInRadians) ((angleInRadians) * 180.0 / M_PI)
 
 #endif
