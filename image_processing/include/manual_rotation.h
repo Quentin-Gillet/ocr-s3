@@ -3,10 +3,8 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include "utils.h"
+#include <err.h>
 
-Uint32 SDL_LirePixel(SDL_Surface* surface, int x, int y);
-void SDL_EcrirePixel(SDL_Surface* surface, int x, int y, Uint32 pixel);
-SDL_Surface* surfaceManualRotation(SDL_Surface* origine, float angle);
+SDL_Surface* surfaceManualRotation(SDL_Surface* surface, SDL_Renderer* renderer, long angle);
 
 #endif
