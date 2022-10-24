@@ -30,5 +30,7 @@ void surfaceBinarisaion(SDL_Surface* surface);
 int otsuMethod(SDL_Surface* surface);
 int* getHistogram(SDL_Surface* surface);
 void surfaceUpContrast(SDL_Surface* surface);
+void surfaceUpBrightness(SDL_Surface* surface, int brightness);
+void surfaceContrastFilter(SDL_Surface* surface);
 
 #endif

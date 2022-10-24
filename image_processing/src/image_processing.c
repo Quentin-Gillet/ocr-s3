@@ -36,7 +36,7 @@ Uint32 pixelToGrayScale(Uint32 pixelColor, SDL_PixelFormat* format)
 {
     Uint8 r, g, b;
     SDL_GetRGB(pixelColor, format, &r, &g, &b);
-    Uint8 average = 0.3*r + 0.59*g + 0.11*b;
+    Uint8 average = truncate(0.3*r + 0.59*g + 0.11*b, 0, 255);
     Uint32 color = SDL_MapRGB(format, average, average, average);
     return color;
 }
@@ -84,6 +84,89 @@ void surfaceUpContrast(SDL_Surface* surface)
             r = truncate(contrast_factor * (r - 128) + 128, 0, 255);
             g = truncate(contrast_factor * (g - 128) + 128, 0, 255);
             b = truncate(contrast_factor * (b - 128) + 128, 0, 255);
+            Uint32 color = SDL_MapRGB(surface->format, r, g, b);
+            putPixel(surface, x, y, color);
+        }
+    }
+    SDL_UnlockSurface(surface);
+}
+
+int maxColor(SDL_Surface* surface)
+{
+    Uint8 r, g, b;
+    int m = 0;
+    for(int x  = 0; x < surface->w; x++)
+    {
+        for(int y = 0; y < surface->h; y++)
+        {
+            Uint32 pixel = getPixel(surface, x, y);
+            SDL_GetRGB(pixel, surface->format, &r, &g, &b);
+            if(r > m)
+                m = r;
+        }
+    }
+
+    return m;
+}
+
+void normalizeBrightness(SDL_Surface* surface)
+{
+    int m  = maxColor(surface);
+    Uint8 r, g, b;
+    for(int x  = 0; x < surface->w; x++)
+    {
+        for(int y = 0; y < surface->h; y++)
+        {
+            Uint32 pixel = getPixel(surface, x, y);
+            SDL_GetRGB(pixel, surface->format, &r, &g, &b);
+            int val = 255 - r * (255 / m);
+            Uint32 newPixel = SDL_MapRGB(surface->format, val, val, val);
+            putPixel(surface, x, y, newPixel);
+        }
+    }
+}
+
+void surfaceContrastFilter(SDL_Surface* surface)
+{
+
+    SDL_LockSurface(surface);
+    Uint8 r, g, b;
+    for(int x  = 0; x < surface->w; x++)
+    {
+        for(int y = 0; y < surface->h; y++)
+        {
+            Uint32 pixel = getPixel(surface, x, y);
+            SDL_GetRGB(pixel, surface->format, &r, &g, &b);
+            for(int i = 0; i < 10; i++)
+            {
+                if(r >= i * (255 / 10) && r <= (i + 1) * (255 / 10))
+                {
+                    int v = (i + 1) * (255 / 10);
+                    Uint32 newPixel = SDL_MapRGB(surface->format, v, v, v);
+                    putPixel(surface, x, y, newPixel);
+                }
+            }
+        }
+    }
+    SDL_UnlockSurface(surface);
+
+    surfaceProcessing(surface, COLOR_INVERT);
+    normalizeBrightness(surface);
+}
+
+void surfaceUpBrightness(SDL_Surface* surface, int brightness)
+{
+    SDL_LockSurface(surface);
+    Uint8 r, g, b;
+    for(int x = 0; x < surface->w; x++)
+    {
+        for(int y = 0; y < surface->h; y++)
+        {
+            Uint32 pixel = getPixel(surface, x, y);
+            SDL_GetRGB(pixel, surface->format, &r, &g, &b);
+            r = truncate(r + brightness, 0, 255);
+            g = truncate(g + brightness, 0, 255);
+            b = truncate(b + brightness, 0, 255);
             Uint32 color = SDL_MapRGB(surface->format, r, g, b);
             putPixel(surface, x, y, color);
         }
@@ -205,7 +288,7 @@ void surfaceBinarisaion(SDL_Surface* surface)
 /*
 Sort pixels list and get the median value
 To perform good sorting with no color error we need to transform RGB to HSV
-And after the sort retransform back HSV to RGB
+And after the sort transform back HSV to RGB
 */
 Uint32 getPixelMedian(SDL_PixelFormat* format, Uint32* pixels)
 {

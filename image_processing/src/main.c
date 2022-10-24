@@ -50,11 +50,14 @@ int main(int argc, char** argv)
     surfaceProcessing(surface, GRAYSCALE);
     saveImageToBmp(surface, "greyscale");
 
-    surfaceUpContrast(surface);
+    surfaceContrastFilter(surface);
     saveImageToBmp(surface, "contrast");
 
     surfaceMedianBlur(surface);
     saveImageToBmp(surface, "blur");
+
+    surfaceUpBrightness(surface, -30);
+    saveImageToBmp(surface, "brightness");
 
     surfaceBinarisaion(surface);
     saveImageToBmp(surface, "mean");
@@ -78,7 +81,6 @@ int main(int argc, char** argv)
         struct Line line = lines[i];
         SDL_RenderDrawLine(renderer, line.x1, line.y1, line.x2, line.y2);
     }
-
     SDL_RenderPresent(renderer);
 
     // if(argc == 3)
@@ -88,7 +90,7 @@ int main(int argc, char** argv)
     // }
 
     pollEvent();
-
+    SDL_DestroyTexture(texture);
     SDL_FreeSurface(surface);
 
     clearSdl(renderer, window);
