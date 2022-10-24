@@ -68,6 +68,12 @@ int main(int argc, char** argv)
     surfaceSobelFilter(surface);
     saveImageToBmp(surface, "sobel");
 
+    if (argc == 3)
+    {
+        surfaceManualRotation(surface, renderer, (long)argv[3]);
+        saveImageToBmp(surface, "rotated");
+    }
+
     int linesLength = 0;
     struct Line* lines = houghTransform(surface, 0.4, &linesLength);
 
