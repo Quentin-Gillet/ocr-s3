@@ -18,5 +18,6 @@ struct Line
 };
 
 struct Line* houghTransform(SDL_Surface* surface, float threshold, int* lineLength);
+void drawLinesOnSurface(SDL_Renderer* renderer, SDL_Surface* surface, struct Line* lines, int linesLength);
 
 #endif

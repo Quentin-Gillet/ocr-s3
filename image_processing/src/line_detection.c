@@ -121,7 +121,7 @@ struct Line* houghTransform(SDL_Surface* surface, float threshold, int* lineLeng
 
             if (val >= lineThreshold)
             {
-                double r = arrRhos[rho], t = arrThetas[theta];
+                double r = arrRhos[prev_rho], t = arrThetas[prev_theta];
 
                 if (t > tempMaxTheta)
                 {
@@ -136,18 +136,18 @@ struct Line* houghTransform(SDL_Surface* surface, float threshold, int* lineLeng
                 x0 = (int)(c * r);
                 y0 = (int)(s * r);
 
-                x1 = (int)(x0 + 1000 * (-s));
+                /*x1 = (int)(x0 + 1000 * (-s));
                 y1 = (int)(y0 + 1000 * (c));
                 x2 = (int)(x0 - 1000 * (-s));
-                y2 = (int)(y0 - 1000 * (c));
+                y2 = (int)(y0 - 1000 * (c));*/
 
                 // Calculate one point of the edge
-                /*x1 = x0 + (int)(diagonal * (-s));
+                x1 = x0 + (int)(diagonal * (-s));
                 y1 = y0 + (int)(diagonal * c);
 
                 // Calculate the other point of the edge
                 x2 = x0 - (int)(diagonal * (-s));
-                y2 = y0 - (int)(diagonal * c);*/
+                y2 = y0 - (int)(diagonal * c);
 
                 struct Line line;
                 line.x1 = truncate(x1, 0, surface->w);
@@ -170,4 +170,22 @@ struct Line* houghTransform(SDL_Surface* surface, float threshold, int* lineLeng
 	freeMatrice(accumulator, nbTheta + 1);
 
 	return lines;
+}
+
+void drawLinesOnSurface(SDL_Renderer* renderer, SDL_Surface* surface, struct Line* lines, int linesLength)
+{
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
+
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+
+    for(int i = 0; i < linesLength; i++)
+    {
+        struct Line line = lines[i];
+        SDL_RenderDrawLine(renderer, line.x1, line.y1, line.x2, line.y2);
+    }
+
+    SDL_RenderReadPixels(renderer, NULL, 0, surface->pixels, surface->pitch);
+
+    SDL_DestroyTexture(texture);
 }

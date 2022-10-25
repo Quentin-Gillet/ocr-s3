@@ -26,11 +26,11 @@ Uint32* getAdjacentPixels(SDL_Surface* surface, int x, int y);
 Uint32 getPixelMedian(SDL_PixelFormat* format, Uint32* pixels);
 void surfaceSobelFilter(SDL_Surface* surface);
 double convolution(SDL_Surface* surface, double kernel[3][3], int row, int col);
-void surfaceBinarisaion(SDL_Surface* surface);
+void surfaceBinarization(SDL_Surface* surface);
 int otsuMethod(SDL_Surface* surface);
 int* getHistogram(SDL_Surface* surface);
 void surfaceUpContrast(SDL_Surface* surface);
-void surfaceUpBrightness(SDL_Surface* surface, int brightness);
+void surfaceBrightness(SDL_Surface* surface, int brightness);
 void surfaceContrastFilter(SDL_Surface* surface);
 
 #endif

@@ -9,7 +9,7 @@
 #include <SDL2/SDL_image.h>
 #include "utils.h"
 
-SDL_Surface* loadPngImage(const char* path);
+SDL_Surface* loadImage(const char* path);
 void saveImageToBmp(SDL_Surface* surface, char* name);
 
 #endif

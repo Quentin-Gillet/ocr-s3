@@ -8,7 +8,7 @@
 // The format of the surface is SDL_PIXELFORMAT_RGB888.
 //
 // path: Path of the image.
-SDL_Surface* loadPngImage(const char* path)
+SDL_Surface* loadImage(const char* path)
 {
     SDL_Surface* tSurface = IMG_Load(path);
     if(tSurface == NULL)
@@ -22,7 +22,7 @@ SDL_Surface* loadPngImage(const char* path)
 
 void saveImageToBmp(SDL_Surface* surface, char* name)
 {
-    char* fileName = stradd(name, "_.bmp");
+    char* fileName = stradd(name, ".bmp");
     if(SDL_SaveBMP(surface, fileName) != 0)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
     free(fileName);

@@ -128,7 +128,6 @@ void normalizeBrightness(SDL_Surface* surface)
 
 void surfaceContrastFilter(SDL_Surface* surface)
 {
-
     SDL_LockSurface(surface);
     Uint8 r, g, b;
     for(int x  = 0; x < surface->w; x++)
@@ -154,7 +153,7 @@ void surfaceContrastFilter(SDL_Surface* surface)
     normalizeBrightness(surface);
 }
 
-void surfaceUpBrightness(SDL_Surface* surface, int brightness)
+void surfaceBrightness(SDL_Surface* surface, int brightness)
 {
     SDL_LockSurface(surface);
     Uint8 r, g, b;
@@ -175,7 +174,7 @@ void surfaceUpBrightness(SDL_Surface* surface, int brightness)
 }
 
 /*
-Get adjacente pixels of given coords
+Get adjacent pixels of given coords
 */
 Uint32* getAdjacentPixels(SDL_Surface* surface, int x, int y)
 {
@@ -255,7 +254,7 @@ int otsuMethod(SDL_Surface* surface)
     return threshold;
 }
 
-void surfaceBinarisaion(SDL_Surface* surface)
+void surfaceBinarization(SDL_Surface* surface)
 {
     if(SDL_LockSurface(surface) < 0)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
