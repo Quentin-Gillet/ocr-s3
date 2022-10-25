@@ -4,7 +4,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <err.h>
+#include "utils.h"
 
-SDL_Surface* surfaceManualRotation(SDL_Surface* surface, SDL_Renderer* renderer, long angle);
+void surfaceManualRotation(SDL_Surface* surface, SDL_Renderer* renderer, int angle);
 
 #endif

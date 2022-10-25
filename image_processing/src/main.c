@@ -25,14 +25,17 @@ void pollEvent()
 int main(int argc, char** argv)
 {
     // Checks the number of arguments.
-    if (argc != 2 && argc != 3)
+    if (argc < 2 || argc > 3)
         errx(EXIT_FAILURE, "Usage: image-file (+ rotation)");
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
 
+    for(int i = 0; i < argc; i++)
+        printf("%s -> %i\n", argv[i], i);
+
     // Creates a window.
-    SDL_Window* window = SDL_CreateWindow("Image", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 500, 500,
+    SDL_Window* window = SDL_CreateWindow("Image", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0,
                                           SDL_WINDOW_SHOWN);
     if (window == NULL)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
@@ -45,7 +48,7 @@ int main(int argc, char** argv)
     SDL_Surface* surface = loadPngImage(argv[1]);
 
     // Gets the width and the height of the texture.
-    //SDL_SetWindowSize(window, surface->w, surface->h);
+    SDL_SetWindowSize(window, surface->w, surface->h);
 
     surfaceProcessing(surface, GRAYSCALE);
     saveImageToBmp(surface, "greyscale");
@@ -70,30 +73,26 @@ int main(int argc, char** argv)
 
     if (argc == 3)
     {
-        surfaceManualRotation(surface, renderer, (long)argv[3]);
+        surfaceManualRotation(surface, renderer, atoi(argv[2]));
         saveImageToBmp(surface, "rotated");
     }
 
     int linesLength = 0;
-    struct Line* lines = houghTransform(surface, 0.4, &linesLength);
+    //struct Line* lines = houghTransform(surface, 0.4, &linesLength);
 
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_RenderCopy(renderer, texture, NULL, NULL);
 
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    /*SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 
     for(int i = 0; i < linesLength; i++)
     {
         struct Line line = lines[i];
         SDL_RenderDrawLine(renderer, line.x1, line.y1, line.x2, line.y2);
-    }
-    SDL_RenderPresent(renderer);
+    }*/
 
-    // if(argc == 3)
-    // {
-	//     surfaceManualRotation(surface, 90);
-	//     saveImageToBmp(surface, "rotated");
-    // }
+    SDL_SetWindowSize(window, 500, 500);
+    SDL_RenderPresent(renderer);
 
     pollEvent();
     SDL_DestroyTexture(texture);

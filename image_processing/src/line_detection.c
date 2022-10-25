@@ -135,13 +135,19 @@ struct Line* houghTransform(SDL_Surface* surface, float threshold, int* lineLeng
                 // Calculate d0 point
                 x0 = (int)(c * r);
                 y0 = (int)(s * r);
+
+                x1 = (int)(x0 + 1000 * (-s));
+                y1 = (int)(y0 + 1000 * (c));
+                x2 = (int)(x0 - 1000 * (-s));
+                y2 = (int)(y0 - 1000 * (c));
+
                 // Calculate one point of the edge
-                x1 = x0 + (int)(diagonal * (-s));
+                /*x1 = x0 + (int)(diagonal * (-s));
                 y1 = y0 + (int)(diagonal * c);
 
                 // Calculate the other point of the edge
                 x2 = x0 - (int)(diagonal * (-s));
-                y2 = y0 - (int)(diagonal * c);
+                y2 = y0 - (int)(diagonal * c);*/
 
                 struct Line line;
                 line.x1 = truncate(x1, 0, surface->w);
