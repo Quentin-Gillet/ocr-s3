@@ -9,28 +9,21 @@
 #include <SDL2/SDL_image.h>
 #include <math.h>
 #include "utils.h"
+#include "image.h"
 
-enum ProcessingType
-{
-    GRAYSCALE,
-    BLACK_WHITE,
-    COLOR_INVERT
-};
-
-Uint32 pixelInvert(Uint32 pixelColor, SDL_PixelFormat* format);
-void surfaceProcessing(SDL_Surface* surface, enum ProcessingType processingType);
-Uint32 pixelBlackWhite(Uint32 pixelColor, SDL_PixelFormat* format);
-Uint32 pixelToGrayScale(Uint32 pixelColor, SDL_PixelFormat* format);
-void surfaceMedianBlur(SDL_Surface* surface);
-Uint32* getAdjacentPixels(SDL_Surface* surface, int x, int y);
-Uint32 getPixelMedian(SDL_PixelFormat* format, Uint32* pixels);
-void surfaceSobelFilter(SDL_Surface* surface);
-double convolution(SDL_Surface* surface, double kernel[3][3], int row, int col);
-void surfaceBinarization(SDL_Surface* surface);
-int otsuMethod(SDL_Surface* surface);
-int* getHistogram(SDL_Surface* surface);
-void surfaceUpContrast(SDL_Surface* surface);
-void surfaceBrightness(SDL_Surface* surface, int brightness);
-void surfaceContrastFilter(SDL_Surface* surface);
+void imageGrayscale(Image* image);
+void imageInvert(Image* image);
+unsigned int maxColor(Image* image);
+void normalizeBrightness(Image* image);
+void imageContrastFilter(Image* image);
+void imageBrightness(Image* image, int brightness);
+Pixel* getAdjacentPixels(Image* image, int x, int y);
+int* getImageHistogram(Image* image);
+int otsuMethod(Image* image);
+void imageBinarization(Image* image);
+Pixel getPixelMedian(Pixel* pixels);
+void imageMedianBlur(Image* image);
+double convolution(Image* image, double kernel[3][3], int row, int col);
+void imageSobelFilter(Image* image);
 
 #endif

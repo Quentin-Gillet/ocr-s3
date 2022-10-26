@@ -8,8 +8,10 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include "utils.h"
+#include "image.h"
 
 SDL_Surface* loadImage(const char* path);
-void saveImageToBmp(SDL_Surface* surface, char* name);
+void saveImageToBmp(Image* image, char* name);
+void saveSurfaceToBmp(SDL_Surface* surface, char* name);
 
 #endif

@@ -3,7 +3,7 @@
 
 void surfaceManualRotation(SDL_Surface* surface, SDL_Renderer* renderer, int angle)
 {
-    angle = truncate(angle, -360, 360);
+    angle = clamp(angle, -360, 360);
 	if(SDL_LockSurface(surface) < 0)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
 

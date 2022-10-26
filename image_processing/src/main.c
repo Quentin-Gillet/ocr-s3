@@ -2,6 +2,7 @@
 #include "../include/image_loading.h"
 #include "../include/manual_rotation.h"
 #include "../include/line_detection.h"
+#include "image.h"
 
 void clearSdl(SDL_Renderer* renderer, SDL_Window* window)
 {
@@ -43,42 +44,46 @@ int main(int argc, char** argv)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
 
     SDL_Surface* surface = loadImage(argv[1]);
+    Image image = newImage(surface);
+    SDL_FreeSurface(surface);
 
     // Gets the width and the height of the texture.
-    SDL_SetWindowSize(window, surface->w, surface->h);
+    SDL_SetWindowSize(window, image.width, image.height);
 
-    surfaceProcessing(surface, GRAYSCALE);
-    saveImageToBmp(surface, "greyscale");
+    imageGrayscale(&image);
+    saveImageToBmp(&image, "greyscale");
 
-    surfaceContrastFilter(surface);
-    saveImageToBmp(surface, "contrast");
+    imageContrastFilter(&image);
+    saveImageToBmp(&image, "contrast");
 
-    surfaceMedianBlur(surface);
-    saveImageToBmp(surface, "blur");
+    imageMedianBlur(&image);
+    saveImageToBmp(&image, "blur");
 
-    surfaceBrightness(surface, -30);
-    saveImageToBmp(surface, "brightness");
+    /*imageBrightness(&image, -30);
+    saveImageToBmp(&image, "brightness");*/
 
-    surfaceBinarization(surface);
-    saveImageToBmp(surface, "mean");
+    imageBinarization(&image);
+    saveImageToBmp(&image, "mean");
 
-    surfaceProcessing(surface, COLOR_INVERT);
-    saveImageToBmp(surface, "inverted");
+    imageInvert(&image);
+    saveImageToBmp(&image, "inverted");
 
-    surfaceSobelFilter(surface);
-    saveImageToBmp(surface, "sobel");
+    imageSobelFilter(&image);
+    saveImageToBmp(&image, "sobel");
 
     if (argc == 3)
     {
         surfaceManualRotation(surface, renderer, atoi(argv[2]));
-        saveImageToBmp(surface, "rotated");
+        saveImageToBmp(&image, "rotated");
     }
 
-    /*int linesLength = 0;
-    struct Line* lines = houghTransform(surface, 0.4, &linesLength);
+    surface = crateSurfaceFromImage(&image);
+
+    int linesLength = 0;
+    struct Line* lines = houghTransform(&image, 0.4, &linesLength);
 
     drawLinesOnSurface(renderer, surface, lines, linesLength);
-    saveImageToBmp(surface, "hough");*/
+    saveSurfaceToBmp(surface, "hough");
 
     SDL_FreeSurface(surface);
 

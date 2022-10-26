@@ -20,7 +20,19 @@ SDL_Surface* loadImage(const char* path)
     return surface;
 }
 
-void saveImageToBmp(SDL_Surface* surface, char* name)
+void saveImageToBmp(Image* image, char* name)
+{
+    char* fileName = stradd(name, ".bmp");
+
+    SDL_Surface* surface = crateSurfaceFromImage(image);
+
+    if(SDL_SaveBMP(surface, fileName) != 0)
+        errx(EXIT_FAILURE, "%s", SDL_GetError());
+    free(fileName);
+    free(surface);
+}
+
+void saveSurfaceToBmp(SDL_Surface* surface, char* name)
 {
     char* fileName = stradd(name, ".bmp");
     if(SDL_SaveBMP(surface, fileName) != 0)

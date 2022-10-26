@@ -26,14 +26,13 @@ typedef struct {
 hsv rgb2hsv(rgb in);
 rgb hsv2rgb(hsv in);
 
-float truncate(float value, int val1, int val2);
+float clamp(float value, int val1, int val2);
+Uint8 clampUint8(Uint8 value, Uint8 min, Uint8 max);
 char* stradd(const char* a, const char* b);
 void insertionSort(double arr[], int n);
 
-Uint32 getPixel(SDL_Surface *surface, int x, int y);
-void putPixel(SDL_Surface *surface, int x, int y, Uint32 pixel);
-unsigned int **initMatrice(unsigned int x, unsigned int y);
-void freeMatrice(unsigned int **matrice, size_t height);
+unsigned int **initMatrix(unsigned int x, unsigned int y);
+void freeMatrix(unsigned int **matrice, size_t height);
 
 #define degToRad(angleInDegrees) ((angleInDegrees) * M_PI / 180.0)
 #define radToDeg(angleInRadians) ((angleInRadians) * 180.0 / M_PI)

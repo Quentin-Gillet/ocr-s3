@@ -3,12 +3,21 @@
 //
 #include "../include/utils.h"
 
-float truncate(float value, int val1, int val2)
+float clamp(float value, int val1, int val2)
 {
     if(value < val1)
         return val1;
     if(value > val2)
         return val2;
+    return value;
+}
+
+Uint8 clampUint8(Uint8 value, Uint8 min, Uint8 max)
+{
+    if(value < min)
+        value = min;
+    if(value > max)
+        value = max;
     return value;
 }
 
@@ -19,7 +28,7 @@ char* stradd(const char* a, const char* b){
     return strcat(strcat(ret, a) ,b);
 }
 
-unsigned int **initMatrice(unsigned int x, unsigned int y)
+unsigned int **initMatrix(unsigned int x, unsigned int y)
 {
     unsigned int **matrice = NULL;
     matrice = calloc(y + 1, sizeof(unsigned int *));
@@ -38,7 +47,7 @@ unsigned int **initMatrice(unsigned int x, unsigned int y)
     return matrice;
 }
 
-void freeMatrice(unsigned int **matrice, size_t height)
+void freeMatrix(unsigned int **matrice, size_t height)
 {
     for (size_t y = 0; y < height; y++)
     {
@@ -167,74 +176,4 @@ rgb hsv2rgb(hsv in)
         break;
     }
     return out;     
-}
-
-/*
-Get pixel at a certain x and y
-*/
-Uint32 getPixel(SDL_Surface *surface, int x, int y)
-{
-    int bpp = surface->format->BytesPerPixel;
-    /* Here p is the address to the pixel we want to retrieve */
-    Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
-
-    switch(bpp) {
-    case 1:
-        return *p;
-        break;
-
-    case 2:
-        return *(Uint16 *)p;
-        break;
-
-    case 3:
-        if(SDL_BYTEORDER == SDL_BIG_ENDIAN)
-            return p[0] << 16 | p[1] << 8 | p[2];
-        else
-            return p[0] | p[1] << 8 | p[2] << 16;
-        break;
-
-    case 4:
-        return *(Uint32 *)p;
-        break;
-
-    default:
-        return 0;       /* shouldn't happen, but avoids warnings */
-    }
-}
-
-/*
-Replace a pixel at an x and y
-*/
-void putPixel(SDL_Surface *surface, int x, int y, Uint32 pixel)
-{
-    int bpp = surface->format->BytesPerPixel;
-    /* Here p is the address to the pixel we want to set */
-    Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
-
-    switch(bpp) {
-    case 1:
-        *p = pixel;
-        break;
-
-    case 2:
-        *(Uint16 *)p = pixel;
-        break;
-
-    case 3:
-        if(SDL_BYTEORDER == SDL_BIG_ENDIAN) {
-            p[0] = (pixel >> 16) & 0xff;
-            p[1] = (pixel >> 8) & 0xff;
-            p[2] = pixel & 0xff;
-        } else {
-            p[0] = pixel & 0xff;
-            p[1] = (pixel >> 8) & 0xff;
-            p[2] = (pixel >> 16) & 0xff;
-        }
-        break;
-
-    case 4:
-        *(Uint32 *)p = pixel;
-        break;
-    }
 }

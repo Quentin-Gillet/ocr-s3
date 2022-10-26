@@ -1,10 +1,10 @@
 #include "../include/line_detection.h"
 
 
-struct Line* houghTransform(SDL_Surface* surface, float threshold, int* lineLength)
+struct Line* houghTransform(Image* image, float threshold, int* lineLength)
 {
 	// Save the image dimensions
-    const double width = surface->w, height = surface->h;
+    const double width = image->width, height = image->height;
     // Calculate the diagonal of the image
     const double diagonal = sqrt(width * width + height * height);
 
@@ -47,7 +47,7 @@ struct Line* houghTransform(SDL_Surface* surface, float threshold, int* lineLeng
         saveSin[theta] = sin(arrThetas[theta]);
     }
 
-    unsigned int **accumulator = initMatrice(nbTheta + 1, nbRho + 1);
+    unsigned int **accumulator = initMatrix(nbTheta + 1, nbRho + 1);
 
     // We intialize the accumulator with all the value
     // In the same time, we search for the max value in the accumulator
@@ -59,10 +59,7 @@ struct Line* houghTransform(SDL_Surface* surface, float threshold, int* lineLeng
     {
         for (int x = 0; x < width; x++)
         {
-			Uint32 pixel = getPixel(surface, x, y);
-			Uint8 r, g, b;
-			SDL_GetRGB(pixel, surface->format, &r, &g, &b);
-            if ((r + g + b) / 3 == 255)
+            if (image->pixels[x][y].pixelAverage == 255)
             {
                 for (int theta = 0; theta <= nbTheta; theta++)
                 {
@@ -150,10 +147,10 @@ struct Line* houghTransform(SDL_Surface* surface, float threshold, int* lineLeng
                 y2 = y0 - (int)(diagonal * c);
 
                 struct Line line;
-                line.x1 = truncate(x1, 0, surface->w);
-                line.x2 = truncate(x2, 0, surface->w);
-                line.y1 = truncate(y1, 0, surface->h);
-                line.y2 = truncate(y2, 0, surface->h);
+                line.x1 = clamp(x1, 0, image->width);
+                line.x2 = clamp(x2, 0, image->width);
+                line.y1 = clamp(y1, 0, image->height);
+                line.y2 = clamp(y2, 0, image->height);
 
 				lines[indexLine] = line;
 				indexLine++;
@@ -167,7 +164,7 @@ struct Line* houghTransform(SDL_Surface* surface, float threshold, int* lineLeng
     free(arrThetas);
     free(arrRhos);
 
-	freeMatrice(accumulator, nbTheta + 1);
+    freeMatrix(accumulator, nbTheta + 1);
 
 	return lines;
 }
