@@ -9,3 +9,4 @@ clean:
 	rm -f xor.o
 	rm -f xor.d
 	rm -f xor
+	rm -rf training-result
