@@ -28,5 +28,6 @@ Image newImage(SDL_Surface* surface);
 void setPixelSameValue(Pixel* pixel, unsigned int value);
 void setPixelValue(Pixel* pixel, Uint8 r, Uint8 g, Uint8 b);
 void calculatePixelAverage(Pixel* pixel);
+void freeImage(Image* image);
 
 #endif //IMAGE_PROCESSING_IMAGE_H

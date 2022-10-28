@@ -86,6 +86,7 @@ int main(int argc, char** argv)
     saveSurfaceToBmp(surface, "hough");
 
     SDL_FreeSurface(surface);
+    freeImage(&image);
 
     clearSdl(renderer, window);
     return EXIT_SUCCESS;

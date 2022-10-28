@@ -3,6 +3,9 @@
 //
 #include "image.h"
 
+/*
+ * Get a pixel from x and y
+ */
 Uint32 getPixel(SDL_Surface *surface, int x, int y)
 {
     int bpp = surface->format->BytesPerPixel;
@@ -26,6 +29,9 @@ Uint32 getPixel(SDL_Surface *surface, int x, int y)
     }
 }
 
+/*
+ * change pixel value on a x and y
+ */
 void putPixel(SDL_Surface *surface, int x, int y, Uint32 pixel)
 {
     int bpp = surface->format->BytesPerPixel;
@@ -56,6 +62,12 @@ void putPixel(SDL_Surface *surface, int x, int y, Uint32 pixel)
     }
 }
 
+/*
+ * Transform a SDL_Surface into Image
+ * with a double array pixels
+ * width = surface->w
+ * height = surface->h
+ */
 Image newImage(SDL_Surface* surface)
 {
     const unsigned int surfaceHeight = surface->h;
@@ -91,6 +103,9 @@ Image newImage(SDL_Surface* surface)
     return image;
 }
 
+/*
+ * Transform a Image into SDL_Surface
+ */
 SDL_Surface* crateSurfaceFromImage(Image* image)
 {
     const unsigned int width = image->width;
@@ -119,6 +134,9 @@ SDL_Surface* crateSurfaceFromImage(Image* image)
     return surface;
 }
 
+/*
+ * Free image for memory leaking
+ */
 void freeImage(Image* image)
 {
     for(unsigned int x = 0; x < image->width; x++)
@@ -128,6 +146,9 @@ void freeImage(Image* image)
     free(image->pixels);
 }
 
+/*
+ * Set all color of a pixel into the same value
+ */
 void setPixelSameValue(Pixel* pixel, unsigned int value)
 {
     pixel->r = value;
@@ -137,6 +158,9 @@ void setPixelSameValue(Pixel* pixel, unsigned int value)
     pixel->pixelAverage = value;
 }
 
+/*
+ * Set different color for each color of a pixel
+ */
 void setPixelValue(Pixel* pixel, Uint8 r, Uint8 g, Uint8 b)
 {
     pixel->r = r;
@@ -146,6 +170,9 @@ void setPixelValue(Pixel* pixel, Uint8 r, Uint8 g, Uint8 b)
     pixel->pixelAverage = (r + g + b) / 3;
 }
 
+/*
+ * Recalculate pixel average when needed
+ */
 void calculatePixelAverage(Pixel* pixel)
 {
     pixel->pixelAverage = (pixel->r + pixel->g + pixel->b) / 3;
