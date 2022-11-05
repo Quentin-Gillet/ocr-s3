@@ -161,6 +161,7 @@ struct Line* houghTransform(Image* image, float threshold, int* lineLength)
 	*lineLength = indexLine;
 
     // Free cos and sin arrays
+    free(lines);
     free(arrThetas);
     free(arrRhos);
 

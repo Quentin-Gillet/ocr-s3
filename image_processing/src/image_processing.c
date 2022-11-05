@@ -158,7 +158,7 @@ int otsuMethod(Image* image)
             var_max = otsu;
         }
     }
-
+    free(histogram);
     return threshold;
 }
 

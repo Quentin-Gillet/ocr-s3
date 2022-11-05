@@ -48,7 +48,7 @@ int main(int argc, char** argv)
     SDL_FreeSurface(surface);
 
     // Gets the width and the height of the texture.
-    SDL_SetWindowSize(window, image.width, image.height);
+    SDL_SetWindowSize(window, (int)image.width, (int)image.height);
 
     imageGrayscale(&image);
     saveImageToBmp(&image, "greyscale");
@@ -59,8 +59,8 @@ int main(int argc, char** argv)
     imageMedianBlur(&image);
     saveImageToBmp(&image, "blur");
 
-    /*imageBrightness(&image, -30);
-    saveImageToBmp(&image, "brightness");*/
+    imageBrightness(&image, -30);
+    saveImageToBmp(&image, "brightness");
 
     imageBinarization(&image);
     saveImageToBmp(&image, "mean");
@@ -80,7 +80,7 @@ int main(int argc, char** argv)
     surface = crateSurfaceFromImage(&image);
 
     int linesLength = 0;
-    struct Line* lines = houghTransform(&image, 0.4, &linesLength);
+    struct Line* lines = houghTransform(&image, 0.5, &linesLength);
 
     drawLinesOnSurface(renderer, surface, lines, linesLength);
     saveSurfaceToBmp(surface, "hough");
