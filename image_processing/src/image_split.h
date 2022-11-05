@@ -1,0 +1,8 @@
+//
+// Created by alexiscognet on 05/11/22.
+//
+
+#ifndef IMAGE_PROCESSING_IMAGE_SPLIT_H
+#define IMAGE_PROCESSING_IMAGE_SPLIT_H
+
+#endif //IMAGE_PROCESSING_IMAGE_SPLIT_H
