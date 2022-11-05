@@ -209,10 +209,12 @@ void toTab(char s[], char *argv)
 
 	    		continue;
 		}
+		/*
 		else if ((c<'0') || (c>'9'))
 		{
 	    		continue;
 		}
+		*/
 		else
 		{
 	    		s[i] =c;
@@ -249,7 +251,7 @@ int check_error(char *argv, char s[])
     	int i = 0;
     	while(s[i] != 0)
     	{
-		if (s[i] != '.' && !(s[i] >= '0' && s[i] <= '9'))
+		if (s[i] != '.' && (s[i] <'0' || s[i] > '9'))
 		{
 	    		printf("INCORRECT SUDOKU !\n");
 	    		return 1;
@@ -277,24 +279,20 @@ int main(int argc, char *argv[])
     	toTab(s,argv[1]);
 
 	if (check_error(argv[1],s) == 1)
+	{
 		return 1;
+	}
 
     	/*
     	for(size_t i = 0; s[i] != 0; i++)
 		printf("%c",s[i]);
     	printf("\n");
     	*/
-	
-    	sudoku_solver(0, is_empty(0,s),s);
-
-    	/*
-    	for(size_t i = 0; s[i] != 0; i++)
-		printf("%c",s[i]);
-    	printf("\n");
-    	*/
-
-
-    	return_sudoku(argv[1],s);
+	else
+	{
+    		sudoku_solver(0, is_empty(0,s),s);
+    		return_sudoku(argv[1],s);
+	}
 	
     	return 0;
 }
