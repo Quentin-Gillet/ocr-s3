@@ -29,10 +29,12 @@ void saveImageToBmp(Image* image, char* name)
 void saveSurfaceToBmp(SDL_Surface* surface, char* name)
 {
     char* fileName = stradd(name, ".bmp");
-    //fileName = stradd("images/", fileName);
+    fileName = stradd("images/", fileName);
+
+    mkdir("images/", 0777);
 
     if(SDL_SaveBMP(surface, fileName) != 0)
-        errx(EXIT_FAILURE, "saveImageTpBmp: %s", SDL_GetError());
+        errx(EXIT_FAILURE, "saveImageToBmp: %s", SDL_GetError());
     free(fileName);
     free(surface);
 }

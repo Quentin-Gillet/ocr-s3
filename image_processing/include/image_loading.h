@@ -9,6 +9,7 @@
 #include <SDL2/SDL_image.h>
 #include "utils.h"
 #include "image.h"
+#include <sys/stat.h>
 
 SDL_Surface* loadImage(const char* path);
 void saveImageToBmp(Image* image, char* name);

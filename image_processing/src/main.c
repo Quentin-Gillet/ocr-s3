@@ -85,6 +85,7 @@ int main(int argc, char** argv)
     drawLinesOnSurface(renderer, surface, lines, linesLength);
     saveSurfaceToBmp(surface, "hough");
 
+    free(lines);
     SDL_FreeSurface(surface);
     freeImage(&image);
 
