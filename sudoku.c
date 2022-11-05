@@ -258,6 +258,7 @@ int check_error(char *argv, char s[])
 		}
 		i++;
     	}
+	
     	return 0;
 	
 }
@@ -290,10 +291,18 @@ int main(int argc, char *argv[])
     	*/
 	else
 	{
-    		sudoku_solver(0, is_empty(0,s),s);
-    		return_sudoku(argv[1],s);
+    		int a = sudoku_solver(0, is_empty(0,s),s);
+		if (a == -1)
+		{
+		    	printf("INCORRECT SUDOKU !\n");
+			return 1;
+		}
+		else
+		{
+    			return_sudoku(argv[1],s);
+			return 0;
+		}
 	}
-	
-    	return 0;
+
 }
 
