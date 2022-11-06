@@ -6,11 +6,11 @@ void surfaceManualRotation(SDL_Surface* surface, int angle)
     // Creates a renderer.
     SDL_Renderer* renderer = SDL_CreateSoftwareRenderer(surface);
     if (renderer == NULL)
-        errx(EXIT_FAILURE, "%s", SDL_GetError());
+        errx(EXIT_FAILURE, "renderer: %s", SDL_GetError());
 
     angle = clamp(angle, -360, 360);
 	if(SDL_LockSurface(surface) < 0)
-        errx(EXIT_FAILURE, "%s", SDL_GetError());
+        errx(EXIT_FAILURE, "surface: %s", SDL_GetError());
 
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
 	SDL_RenderCopyEx(renderer, texture, NULL, NULL, angle, NULL, SDL_FLIP_NONE);

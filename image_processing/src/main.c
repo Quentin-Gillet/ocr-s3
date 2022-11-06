@@ -26,6 +26,13 @@ int main(int argc, char** argv)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
 
     SDL_Surface* surface = loadImage(argv[1]);
+
+    if (argc == 3)
+    {
+        surfaceManualRotation(surface, atoi(argv[2]));
+        saveSurfaceToBmp(surface, "rotated");
+    }
+
     Image image = newImage(surface);
     SDL_FreeSurface(surface);
 
@@ -35,11 +42,11 @@ int main(int argc, char** argv)
     imageContrastFilter(&image);
     saveImageToBmp(&image, "contrast");
 
-    imageMedianBlur(&image);
-    saveImageToBmp(&image, "blur");
-
     imageBinarization(&image);
     saveImageToBmp(&image, "mean");
+
+    imageMedianBlur(&image);
+    saveImageToBmp(&image, "blur");
 
     imageInvert(&image);
     saveImageToBmp(&image, "inverted");
@@ -48,12 +55,6 @@ int main(int argc, char** argv)
     saveImageToBmp(&image, "sobel");
 
     surface = crateSurfaceFromImage(&image);
-
-    if (argc == 3)
-    {
-        surfaceManualRotation(surface, atoi(argv[2]));
-        saveImageToBmp(&image, "rotated");
-    }
 
     int linesLength = 0;
     Line* lines = houghTransform(&image, 0.4f, &linesLength);
