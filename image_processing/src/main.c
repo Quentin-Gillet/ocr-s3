@@ -5,6 +5,7 @@
 #include "../include/image_split.h"
 #include "../include/image.h"
 
+
 void clearSdl(SDL_Renderer* renderer, SDL_Window* window)
 {
     SDL_DestroyRenderer(renderer);
@@ -90,6 +91,8 @@ int main(int argc, char** argv)
 
     drawLinesOnSurface(renderer, surfaceCopy, newlines, linesLength);
     saveSurfaceToBmp(surfaceCopy, "hough_line_reduced");
+
+    struct Square * Squares[] = get_Squares();
 
     free(newlines);
     free(lines);

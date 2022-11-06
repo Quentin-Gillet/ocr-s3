@@ -13,27 +13,31 @@
 
 int approx(int a, int b);
 struct Line* reduce_lines(struct Line* lines, int nbLines );
-
+struct Square* get_Squares(struct Line * lines, int NBLines);
 typedef struct Line Line;
 
-struct Intersection{
+typedef struct Intersection{
     int x;
     int y;
-};
+    struct Line line;
+}Intersection;
 
 struct Square{
-    int a;
-    int b;
-    int c;
-    int d;
+    int xa;
+    int ya;
+    int xb;
+    int yb;
+    int xc;
+    int yc;
+    int xd;
+    int yd;
 };
-
 /*
-    a _______ b
-     |       |
-     |       |
-     |       |
-    c|_______|d
+a _______ b
+ |       |
+ |       |
+ |       |
+c|_______|d
  */
 
 #endif //IMAGE_PROCESSING_IMAGE_SPLIT_H
