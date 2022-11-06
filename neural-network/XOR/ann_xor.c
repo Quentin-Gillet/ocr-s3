@@ -420,7 +420,7 @@ int main(int argc, char *argv[])
     	if (argc == 1)
 	{
 	    	printf("training...\n");
-	    	train(0);
+	    	train(1);
 		return 0;
 	}
 	else if(argc != 3)
