@@ -21,19 +21,20 @@ struct Intersection{
     int y;
 };
 
-struct Square{
-    int a;
-    int b;
-    int c;
-    int d;
-};
+struct LineIntersection{
+    Intersection intersection;
+    Line line;
+}
 
-/*
-    a _______ b
-     |       |
-     |       |
-     |       |
-    c|_______|d
- */
+struct Square{
+    int xa;
+    int ya;
+    int xb;
+    int yb;
+    int xc;
+    int yc;
+    int xd;
+    int yd;
+};
 
 #endif //IMAGE_PROCESSING_IMAGE_SPLIT_H

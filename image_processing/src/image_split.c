@@ -136,11 +136,11 @@ struct Intersection line_intersection(struct Line Line1, struct Line Line2)
 // max intersection = 9
 struct Intersection* get_intersections(struct Line* lines, int NBLines)
 {
-    struct Intersection* intersections_list= calloc(9,sizeof(struct Intersection));
+    struct Intersection* intersections_list = calloc(9, sizeof(struct Intersection));
     size_t countIntersections = 0;
     for(int i = 0; i < NBLines; ++i)
     {
-        Line currLine =  lines[i];
+        Line currLine = lines[i];
         for (int j = 0; j < NBLines; j++) {
 
             if(j == i)
@@ -161,8 +161,69 @@ struct Intersection* get_intersections(struct Line* lines, int NBLines)
     return intersections_list;
 }
 
-
-struct Square * get_Squares(struct Line * lines,int NBLines)
+struct Intersection[4] __get_Squares(struct Line line, int NBLines, struct Intersection[4] intersections_square, int j, struct Line firstLine)
 {
+    struct Intersection* intersections_line = get_intersections(line, NBLines);
+    if (j == 4)
+    {
+        for(int i = 0; intersections_line[i] != NULL; i++)
+        {
+            if (firstLine == intersections_line[i].line)
+            {
+                intersections_square[i] = intersections_line[i].intersection;
+                struct Line line1;
+                struct Line line2;
 
+                line1.x1 = intersections_square[0].x;
+                line1.y1 = intersections_square[0].y;
+                line1.x2 = intersections_square[2].x;
+                line1.y2 = intersections_square[2].y;
+
+                line2.x1 = intersections_square[1].x;
+                line2.y1 = intersections_square[1].y;
+                line2.x2 = intersections_square[3].x;
+                line2.y2 = intersections_square[3].y;
+
+                if (line_intersection(Line1, Line2) != NULL)
+                    return intersections_square;
+            }
+            return NULL;
+        }
+    }
+    else 
+    {
+        for(int j = 0; intersections_line[j] != NULL; j++)
+        {
+            intersections_square[j] = intersections_line[j].intersection;
+            __get_Squares(intersections_line[j].line, NBLines, intersections_square, j + 1, firstLine);
+        }
+    }
+}
+
+
+struct Square* get_Squares(struct Line * lines, int NBLines)
+{
+    struct Square* squares;
+    struct Square square;
+    struct Intersection[4] intersections_square;
+    int j = 0;
+    for(int i = 0; i > NBLines; i++)
+    {
+        intersections_square = __get_Squares(lines[i], NBLines, intersections_square, 0);
+        if(intersections_square != NULL)
+        {
+            intersections_square[0].x = square.xa;
+            intersections_square[0].y = square.ya;
+            intersections_square[1].x = square.xb;
+            intersections_square[1].y = square.yb;
+            intersections_square[2].x = square.xc;
+            intersections_square[2].y = square.yc;
+            intersections_square[3].x = square.xd;
+            intersections_square[3].y = square.yd;
+            squares[j] = square;
+            j++;
+        }
+    }
+
+    return squares;
 }
