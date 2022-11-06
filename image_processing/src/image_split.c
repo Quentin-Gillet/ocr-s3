@@ -68,9 +68,9 @@ struct Line* reduce_lines(struct Line* lines, int nbLines )
             int y1f = otherLine.y2;
 
             if(approx(x0d,x1d)
-            && approx(y0d,y1d)
-            && approx(x0f,x1f)
-            && approx(y0f,y1f))
+               && approx(y0d,y1d)
+               && approx(x0f,x1f)
+               && approx(y0f,y1f))
             {
                 newlines[countLines].x1 = (x0d + x1d)/2;
                 newlines[countLines].y1 = (y0d + y1d)/2;
@@ -158,7 +158,7 @@ struct Intersection* get_intersections(struct Line Line, struct Line otherLines[
 
 
 struct Intersection * __get_Squares(struct Line line, int NBLines,
-        struct Intersection intersections_square[4],int j, struct Line firstLine, struct Line lines[])
+                                    struct Intersection intersections_square[4],int j, struct Line firstLine, struct Line lines[])
 {
     struct Intersection* intersections_line = get_intersections(line,lines, NBLines);
     if (j == 3)
@@ -167,7 +167,7 @@ struct Intersection * __get_Squares(struct Line line, int NBLines,
         {
             Intersection intersection = intersections_line[i];
             if (firstLine.x1 == intersection.line.x1 && firstLine.x2 == intersection.line.x2 &&
-            firstLine.y1 == intersection.line.y1 && firstLine.y2 == intersection.line.y2 )
+                firstLine.y1 == intersection.line.y1 && firstLine.y2 == intersection.line.y2 )
             {
                 intersections_square[i] = intersections_line[i];
                 struct Line line1;

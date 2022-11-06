@@ -62,6 +62,28 @@ void putPixel(SDL_Surface *surface, int x, int y, Uint32 pixel)
     }
 }
 
+Pixel copyPixel(Pixel* pixel)
+{
+    Pixel cpPixel = {pixel->r, pixel->g, pixel->b, pixel->pixelAverage};
+    return cpPixel;
+}
+
+Image copyImage(Image* image)
+{
+    Pixel **pixels = NULL;
+    pixels = calloc(image->width + 1, sizeof (Pixel *));
+    for(int x = 0; x < image->width; x++)
+    {
+        pixels[x] = calloc(image->height + 1, sizeof (Pixel));
+        for(int y = 0; y < image->height; y++)
+        {
+            pixels[x][y] = copyPixel(&image->pixels[x][y]);
+        }
+    }
+    Image cpImage = {image->width, image->height, pixels};
+    return cpImage;
+}
+
 /*
  * Transform a SDL_Surface into Image
  * with a double array pixels
@@ -70,15 +92,15 @@ void putPixel(SDL_Surface *surface, int x, int y, Uint32 pixel)
  */
 Image newImage(SDL_Surface* surface)
 {
-    const unsigned int surfaceHeight = surface->h;
-    const unsigned int surfaceWidth = surface->w;
+    const int surfaceHeight = surface->h;
+    const int surfaceWidth = surface->w;
     Pixel **pixels = NULL;
     pixels = calloc(surfaceWidth + 1, sizeof(Pixel *));
     if (pixels == NULL)
     {
         errx(1, "Memory error");
     }
-    for (size_t j = 0; j < surfaceWidth; j++)
+    for (int j = 0; j < surfaceWidth; j++)
     {
         pixels[j] = calloc(surfaceHeight + 1, sizeof(Pixel));
         if (pixels[j] == NULL)
@@ -87,9 +109,9 @@ Image newImage(SDL_Surface* surface)
         }
     }
 
-    for(size_t x  = 0; x < surfaceWidth; x++)
+    for(int x  = 0; x < surfaceWidth; x++)
     {
-        for(size_t y = 0; y < surfaceHeight; y++)
+        for(int y = 0; y < surfaceHeight; y++)
         {
             Uint32 pixelAddr = getPixel(surface, x, y);
             Uint8 r, g, b;
@@ -108,17 +130,17 @@ Image newImage(SDL_Surface* surface)
  */
 SDL_Surface* crateSurfaceFromImage(Image* image)
 {
-    const unsigned int width = image->width;
-    const unsigned int height = image->height;
+    const int width = image->width;
+    const int height = image->height;
 
     // Create rgb surface from image
     SDL_Surface *surface =
             SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
 
     // For each pixel in the source image
-    for (unsigned int x = 0; x < width; x++)
+    for (int x = 0; x < width; x++)
     {
-        for (unsigned int y = 0; y < height; y++)
+        for (int y = 0; y < height; y++)
         {
             // Get pixel from image
             Pixel _pixel = image->pixels[x][y];
@@ -139,7 +161,7 @@ SDL_Surface* crateSurfaceFromImage(Image* image)
  */
 void freeImage(Image* image)
 {
-    for(unsigned int x = 0; x < image->width; x++)
+    for(int x = 0; x < image->width; x++)
     {
         free(image->pixels[x]);
     }
@@ -149,7 +171,7 @@ void freeImage(Image* image)
 /*
  * Set all color of a pixel into the same value
  */
-void setPixelSameValue(Pixel* pixel, unsigned int value)
+void setPixelSameValue(Pixel* pixel, Uint8 value)
 {
     pixel->r = value;
     pixel->g = value;

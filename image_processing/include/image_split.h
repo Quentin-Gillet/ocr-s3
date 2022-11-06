@@ -14,6 +14,7 @@
 int approx(int a, int b);
 struct Line* reduce_lines(struct Line* lines, int nbLines );
 struct Square* get_Squares(struct Line * lines, int NBLines);
+
 typedef struct Line Line;
 
 typedef struct Intersection{
@@ -21,6 +22,11 @@ typedef struct Intersection{
     int y;
     struct Line line;
 }Intersection;
+
+struct LineIntersection{
+    Intersection intersection;
+    Line line;
+};
 
 struct Square{
     int xa;

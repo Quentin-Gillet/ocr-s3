@@ -3,9 +3,9 @@
 // Converts a image into grayscale image.
 void imageGrayscale(Image* image)
 {
-    for(size_t x = 0; x < image->width; x++)
+    for(int x = 0; x < image->width; x++)
     {
-        for(size_t y = 0; y < image->height; y ++)
+        for(int y = 0; y < image->height; y ++)
         {
             Uint8 average = clamp(0.3 * image->pixels[x][y].r
                                   + 0.59 * image->pixels[x][y].g
@@ -18,9 +18,9 @@ void imageGrayscale(Image* image)
 // Invert image color
 void imageInvert(Image* image)
 {
-    for(size_t x = 0; x < image->width; x++)
+    for(int x = 0; x < image->width; x++)
     {
-        for(size_t y = 0; y < image->height; y ++)
+        for(int y = 0; y < image->height; y ++)
         {
             setPixelValue(&image->pixels[x][y], 255 - image->pixels[x][y].r,
                                                     255 - image->pixels[x][y].g,
@@ -32,8 +32,8 @@ void imageInvert(Image* image)
 unsigned int maxColor(Image* image)
 {
     unsigned int m = 0;
-    for(size_t x = 0; x < image->width; x++)
-        for(size_t y = 0; y < image->height; y++)
+    for(int x = 0; x < image->width; x++)
+        for(int y = 0; y < image->height; y++)
             if(image->pixels[x][y].r > m)
                 m = image->pixels[x][y].r;
     return m;
@@ -42,9 +42,9 @@ unsigned int maxColor(Image* image)
 void normalizeBrightness(Image* image)
 {
     int m  = maxColor(image);
-    for(size_t x  = 0; x < image->width; x++)
+    for(int x  = 0; x < image->width; x++)
     {
-        for(size_t y = 0; y < image->height; y++)
+        for(int y = 0; y < image->height; y++)
         {
             int val = 255 - image->pixels[x][y].r * (255 / m);
             setPixelSameValue(&image->pixels[x][y], val);
@@ -54,11 +54,11 @@ void normalizeBrightness(Image* image)
 
 void imageContrastFilter(Image* image)
 {
-    for(size_t x  = 0; x < image->width; x++)
+    for(int x  = 0; x < image->width; x++)
     {
-        for(size_t y = 0; y < image->height; y++)
+        for(int y = 0; y < image->height; y++)
         {
-            int r = image->pixels[x][y].r;
+            Uint8 r = image->pixels[x][y].r;
             for(int i = 0; i < 10; i++)
             {
                 if(r >= i * (255 / 10) && r <= (i + 1) * (255 / 10))
@@ -98,9 +98,9 @@ int* getImageHistogram(Image* image)
 {
     int *histogram = calloc(256, sizeof(int));
 
-    for(size_t x = 0; x < image->width; x++)
+    for(int x = 0; x < image->width; x++)
     {
-        for(size_t y = 0; y < image->height; y++)
+        for(int y = 0; y < image->height; y++)
         {
             histogram[image->pixels[x][y].pixelAverage]++;
         }
@@ -111,7 +111,7 @@ int* getImageHistogram(Image* image)
 
 int otsuMethod(Image* image)
 {
-    long totalPixels = image->width * image->height;
+    int totalPixels = image->width * image->height;
 
     float var_max = 0, sum = 0, sumB = 0;
     int threshold = 0, q1 = 0, q2 = 0;
@@ -153,9 +153,9 @@ void imageBinarization(Image* image)
 {
     int meanIntensity = otsuMethod(image);
 
-    for(size_t x = 0; x < image->width; x++)
+    for(int x = 0; x < image->width; x++)
     {
-        for(size_t y = 0; y < image->height; y++)
+        for(int y = 0; y < image->height; y++)
         {
             if(image->pixels[x][y].pixelAverage > meanIntensity)
                 setPixelSameValue(&image->pixels[x][y], 255);
@@ -207,9 +207,9 @@ Median filter algorithm apply on surface
 */
 void imageMedianBlur(Image* image)
 {
-    for(size_t x = 1; x < image->width - 1; x++)
+    for(int x = 1; x < image->width - 1; x++)
     {
-        for(size_t y = 1; y < image->height - 1; y++)
+        for(int y = 1; y < image->height - 1; y++)
         {
             Pixel* adjacentPixels = getAdjacentPixels(image, x, y);
             Pixel pixel = getPixelMedian(adjacentPixels);
