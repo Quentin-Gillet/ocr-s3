@@ -68,7 +68,7 @@ int main(int argc, char** argv)
     saveImageToBmp(&image, "hough");
 
     int newLinesCounts = 0;
-    struct Line* newlines = reduce_lines(lines, linesLength);
+    struct Line* newlines = reduce_lines(lines, linesLength, &newLinesCounts);
 
     drawLineOnImage(&cpImage, newlines, newLinesCounts);
     saveImageToBmp(&cpImage, "hough_line_reduced");

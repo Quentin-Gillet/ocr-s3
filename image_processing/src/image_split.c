@@ -1,7 +1,7 @@
 //
 // Created by alexiscognet on 05/11/22.
 //
-#define Threshold 4
+#define Threshold 2
 #include "../include/image_split.h"
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
 #define MAX(X, Y) (((X) < (Y)) ? (Y) : (X))
@@ -45,7 +45,7 @@ size_t NBLines(struct Line* lines, int nbLines )
 
 
 // Réduit le nombre de lignes résultant de la transformation de Hough
-struct Line* reduce_lines(struct Line* lines, int nbLines )
+struct Line* reduce_lines(struct Line* lines, int nbLines, int* newLinesCount)
 {
     struct Line* newlines = calloc(NBLines(lines,nbLines), sizeof(struct Line));
     size_t countLines = 0;
@@ -80,6 +80,7 @@ struct Line* reduce_lines(struct Line* lines, int nbLines )
             }
         }
     }
+    *newLinesCount = countLines;
     return newlines;
 }
 

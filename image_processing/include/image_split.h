@@ -11,24 +11,18 @@
 #include "image.h"
 #include "line_detection.h"
 
-int approx(int a, int b);
-struct Line* reduce_lines(struct Line* lines, int nbLines );
-struct Square* get_Squares(struct Line * lines, int NBLines);
-
-typedef struct Line Line;
-
 typedef struct Intersection{
     int x;
     int y;
     struct Line line;
-}Intersection;
+} Intersection;
 
-struct LineIntersection{
+typedef struct LineIntersection{
     Intersection intersection;
     Line line;
-};
+} LineIntersection;
 
-struct Square{
+typedef struct Square{
     int xa;
     int ya;
     int xb;
@@ -37,7 +31,12 @@ struct Square{
     int yc;
     int xd;
     int yd;
-};
+} Square;
+
+int approx(int a, int b);
+Line* reduce_lines(Line* lines, int nbLines, int* newLinesCount);
+Square* get_Squares(Line * lines, int NBLines);
+
 /*
 a _______ b
  |       |
