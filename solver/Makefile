@@ -9,4 +9,5 @@ clean:
 	rm -f sudoku.o
 	rm -f sudoku.d
 	rm -f solver
+	rm *.result
 
