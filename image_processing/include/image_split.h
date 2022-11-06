@@ -16,4 +16,24 @@ struct Line* reduce_lines(struct Line* lines, int nbLines );
 
 typedef struct Line Line;
 
+struct Intersection{
+    int x;
+    int y;
+};
+
+struct Square{
+    int a;
+    int b;
+    int c;
+    int d;
+};
+
+/*
+    a _______ b
+     |       |
+     |       |
+     |       |
+    c|_______|d
+ */
+
 #endif //IMAGE_PROCESSING_IMAGE_SPLIT_H

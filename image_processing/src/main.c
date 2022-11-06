@@ -3,7 +3,7 @@
 #include "../include/manual_rotation.h"
 #include "../include/line_detection.h"
 #include "../include/image_split.h"
-#include "image.h"
+#include "../include/image.h"
 
 void clearSdl(SDL_Renderer* renderer, SDL_Window* window)
 {
