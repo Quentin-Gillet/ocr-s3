@@ -2,8 +2,8 @@
 xor: xor.o
 	gcc xor.o -o xor -lm
 
-xor.o: cnn_xor.c
-	gcc -Wall -Wextra -c -o xor.o cnn_xor.c 
+xor.o: ann_xor.c
+	gcc -Wall -Wextra -c -o xor.o ann_xor.c 
 
 clean:
 	rm -f xor.o
