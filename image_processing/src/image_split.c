@@ -4,9 +4,8 @@
 #define Threshold 5
 #include "image_split.h"
 
-// réduit le nombre de ligne
-// Compte le nombre de ligne que l'on va avoir à la fin de la réduction
-// du nombre de ligne
+// Reduce line count
+// Return how many lines we are going to have at the end of reduction
 size_t NBLines(struct Line* lines, int nbLines )
 {
     size_t cpt = 0;
@@ -43,7 +42,7 @@ size_t NBLines(struct Line* lines, int nbLines )
 }
 
 
-// Réduit le nombre de lignes résultant de la transformation de Hough
+// Reduce line count from hough transform
 struct Line* reduce_lines(struct Line* lines, int nbLines )
 {
     struct Line* newlines = calloc(NBLines(lines,nbLines), sizeof(struct Line));
