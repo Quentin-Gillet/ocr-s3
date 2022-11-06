@@ -133,11 +133,6 @@ struct Line* houghTransform(Image* image, float threshold, int* lineLength)
                 x0 = (int)(c * r);
                 y0 = (int)(s * r);
 
-                /*x1 = (int)(x0 + 1000 * (-s));
-                y1 = (int)(y0 + 1000 * (c));
-                x2 = (int)(x0 - 1000 * (-s));
-                y2 = (int)(y0 - 1000 * (c));*/
-
                 // Calculate one point of the edge
                 x1 = x0 + (int)(diagonal * (-s));
                 y1 = y0 + (int)(diagonal * c);
@@ -170,20 +165,42 @@ struct Line* houghTransform(Image* image, float threshold, int* lineLength)
 	return lines;
 }
 
-void drawLinesOnSurface(SDL_Renderer* renderer, SDL_Surface* surface, struct Line* lines, int linesLength)
+void drawLineOnImage(Image* image, Line* lines, int linesLength)
 {
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_RenderCopy(renderer, texture, NULL, NULL);
-
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-
     for(int i = 0; i < linesLength; i++)
     {
-        struct Line line = lines[i];
-        SDL_RenderDrawLine(renderer, line.x1, line.y1, line.x2, line.y2);
+        int x0 = lines[i].x1, x1 = lines[i].x2;
+        int y0 = lines[i].y1, y1 = lines[i].y2;
+
+        int dX = abs(x1 - x0);
+        int dY = -abs(y1 - y0);
+
+        int sX = x0 < x1 ? 1 : -1;
+        int sY = y0 < y1 ? 1 : -1;
+
+        int err = dX + dY;
+
+        while(1)
+        {
+            if(0 <= x0 && x0 < image->width && 0 <= y0 && y0 < image->height)
+            {
+                setPixelValue(&image->pixels[x0][y0], 255, 0, 0);
+            }
+
+            if(x0 == x1 && y0 == y1)
+                break;
+
+            int e2 = 2 * err;
+            if(e2 >= dY)
+            {
+                err += dY;
+                x0 += sX;
+            }
+            if(e2 <= dX)
+            {
+                err += dX;
+                y0 += sY;
+            }
+        }
     }
-
-    SDL_RenderReadPixels(renderer, NULL, 0, surface->pixels, surface->pitch);
-
-    SDL_DestroyTexture(texture);
 }

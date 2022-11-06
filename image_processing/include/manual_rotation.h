@@ -6,6 +6,6 @@
 #include <err.h>
 #include "utils.h"
 
-void surfaceManualRotation(SDL_Surface* surface, SDL_Renderer* renderer, int angle);
+void surfaceManualRotation(SDL_Surface* surface, int angle);
 
 #endif

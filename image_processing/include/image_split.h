@@ -12,7 +12,7 @@
 #include "line_detection.h"
 
 int approx(int a, int b);
-struct Line* reduce_lines(struct Line* lines, int nbLines );
+struct Line* reduce_lines(struct Line* lines, int nbLines , int* temp);
 
 typedef struct Line Line;
 
