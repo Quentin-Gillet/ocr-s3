@@ -11,16 +11,16 @@
 #include "image.h"
 
 
-struct Line
+typedef struct Line
 {
     int x1;
     int y1;
     int x2;
     int y2;
     int theta;
-};
+} Line;
 
 struct Line* houghTransform(Image* image, float threshold, int* lineLength);
-void drawLinesOnSurface(SDL_Renderer* renderer, SDL_Surface* surface, struct Line* lines, int linesLength);
+void drawLineOnImage(Image* image, Line* lines, int linesLength);
 
 #endif

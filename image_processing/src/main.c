@@ -3,14 +3,6 @@
 #include "../include/manual_rotation.h"
 #include "../include/line_detection.h"
 #include "../include/image_split.h"
-#include "../include/image.h"
-
-void clearSdl(SDL_Renderer* renderer, SDL_Window* window)
-{
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-}
 
 void pollEvent()
 {
@@ -33,23 +25,19 @@ int main(int argc, char** argv)
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
 
-    // Creates a window.
-    SDL_Window* window = SDL_CreateWindow("Image", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0,
-                                          SDL_WINDOW_SHOWN);
-    if (window == NULL)
-        errx(EXIT_FAILURE, "%s", SDL_GetError());
-
-    // Creates a renderer.
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (renderer == NULL)
-        errx(EXIT_FAILURE, "%s", SDL_GetError());
-
     SDL_Surface* surface = loadImage(argv[1]);
     Image image = newImage(surface);
     SDL_FreeSurface(surface);
 
-    // Gets the width and the height of the texture.
-    SDL_SetWindowSize(window, (int)image.width, (int)image.height);
+
+    if (argc == 3)
+    {
+        imageRotate(&image, atoi(argv[2]));
+        saveImageToBmp(&image, "rotated");
+        freeImage(&image);
+        SDL_Quit();
+        return EXIT_SUCCESS;
+    }
 
     imageGrayscale(&image);
     saveImageToBmp(&image, "greyscale");
@@ -57,11 +45,11 @@ int main(int argc, char** argv)
     imageContrastFilter(&image);
     saveImageToBmp(&image, "contrast");
 
-    imageMedianBlur(&image);
-    saveImageToBmp(&image, "blur");
-
     imageBinarization(&image);
     saveImageToBmp(&image, "mean");
+
+    imageMedianBlur(&image);
+    saveImageToBmp(&image, "blur");
 
     imageInvert(&image);
     saveImageToBmp(&image, "inverted");
@@ -69,33 +57,28 @@ int main(int argc, char** argv)
     imageSobelFilter(&image);
     saveImageToBmp(&image, "sobel");
 
-    if (argc == 3)
-    {
-        surfaceManualRotation(surface, renderer, atoi(argv[2]));
-        saveImageToBmp(&image, "rotated");
-    }
-
     surface = crateSurfaceFromImage(&image);
 
     int linesLength = 0;
-    struct Line* lines = houghTransform(&image, 0.4, &linesLength);
+    Line* lines = houghTransform(&image, 0.4f, &linesLength);
 
-    SDL_Surface* surfaceCopy = SDL_CreateRGBSurfaceWithFormat(0, surface->w, surface->h, 32, SDL_PIXELFORMAT_RGB888);
-    SDL_BlitSurface(surface,NULL,surfaceCopy,NULL);
+    Image cpImage = copyImage(&image);
 
-    drawLinesOnSurface(renderer, surface, lines, linesLength);
-    saveSurfaceToBmp(surface, "hough");
+    drawLineOnImage(&image, lines, linesLength);
+    saveImageToBmp(&image, "hough");
 
-    struct Line* newlines = reduce_lines(lines, linesLength);
+    int newLinesCounts = 0;
+    struct Line* newlines = reduce_lines(lines, linesLength, &newLinesCounts);
 
-    drawLinesOnSurface(renderer, surfaceCopy, newlines, linesLength);
-    saveSurfaceToBmp(surfaceCopy, "hough_line_reduced");
+    drawLineOnImage(&cpImage, newlines, newLinesCounts);
+    saveImageToBmp(&cpImage, "hough_line_reduced");
 
     free(newlines);
     free(lines);
     SDL_FreeSurface(surface);
     freeImage(&image);
+    freeImage(&cpImage);
 
-    clearSdl(renderer, window);
+    SDL_Quit();
     return EXIT_SUCCESS;
 }
