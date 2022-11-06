@@ -1,0 +1,9 @@
+.idea
+*.o
+*.bmp
+.DS_Store
+*.d
+.vscode
+Makefile-clion
+.images
+main
