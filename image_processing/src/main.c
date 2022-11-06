@@ -2,6 +2,7 @@
 #include "../include/image_loading.h"
 #include "../include/manual_rotation.h"
 #include "../include/line_detection.h"
+#include "../include/image_split.h"
 #include "image.h"
 
 void clearSdl(SDL_Renderer* renderer, SDL_Window* window)
@@ -59,8 +60,8 @@ int main(int argc, char** argv)
     imageMedianBlur(&image);
     saveImageToBmp(&image, "blur");
 
-    imageBrightness(&image, -30);
-    saveImageToBmp(&image, "brightness");
+    //imageBrightness(&image, -30);
+    //saveImageToBmp(&image, "brightness");
 
     imageBinarization(&image);
     saveImageToBmp(&image, "mean");
@@ -80,11 +81,20 @@ int main(int argc, char** argv)
     surface = crateSurfaceFromImage(&image);
 
     int linesLength = 0;
-    struct Line* lines = houghTransform(&image, 0.5, &linesLength);
+    struct Line* lines = houghTransform(&image, 0.4, &linesLength);
+
+    SDL_Surface* surfaceCopy = SDL_CreateRGBSurfaceWithFormat(0, surface->w, surface->h, 32, SDL_PIXELFORMAT_RGB888);
+    SDL_BlitSurface(surface,NULL,surfaceCopy,NULL);
 
     drawLinesOnSurface(renderer, surface, lines, linesLength);
     saveSurfaceToBmp(surface, "hough");
 
+    struct Line* newlines = reduce_lines(lines, linesLength);
+
+    drawLinesOnSurface(renderer, surfaceCopy, newlines, linesLength);
+    saveSurfaceToBmp(surfaceCopy, "hough_line_reduced");
+
+    free(newlines);
     free(lines);
     SDL_FreeSurface(surface);
     freeImage(&image);

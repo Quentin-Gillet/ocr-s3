@@ -151,6 +151,7 @@ struct Line* houghTransform(Image* image, float threshold, int* lineLength)
                 line.x2 = clamp(x2, 0, image->width);
                 line.y1 = clamp(y1, 0, image->height);
                 line.y2 = clamp(y2, 0, image->height);
+                line.theta = theta;
 
 				lines[indexLine] = line;
 				indexLine++;

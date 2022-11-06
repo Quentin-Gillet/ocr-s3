@@ -17,6 +17,7 @@ struct Line
     int x2;
     int y1;
     int y2;
+    int theta;
 };
 
 struct Line* houghTransform(Image* image, float threshold, int* lineLength);
