@@ -1,21 +1,60 @@
 #include "manual_rotation.h"
 
 
-void surfaceManualRotation(SDL_Surface* surface, int angle)
+double bilinearInterpolation(unsigned int top, unsigned int bottom, unsigned int right, unsigned int left,
+                             double horizontalPos, double verticalPos, Image* image)
 {
-    // Creates a renderer.
-    SDL_Renderer* renderer = SDL_CreateSoftwareRenderer(surface);
-    if (renderer == NULL)
-        errx(EXIT_FAILURE, "renderer: %s", SDL_GetError());
+    double topLeft = image->pixels[left][top].r;
+    double topRight = image->pixels[right][top].r;
+    double bottomLeft = image->pixels[left][bottom].r;
+    double bottomRight = image->pixels[right][bottom].r;
 
-    angle = clamp(angle, -360, 360);
-	if(SDL_LockSurface(surface) < 0)
-        errx(EXIT_FAILURE, "surface: %s", SDL_GetError());
+    double horizontal_progress = horizontalPos - (double)left;
+    double vertical_progress = verticalPos - (double)top;
 
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-	SDL_RenderCopyEx(renderer, texture, NULL, NULL, angle, NULL, SDL_FLIP_NONE);
-	SDL_RenderReadPixels(renderer, NULL, 0, surface->pixels, surface->pitch);
+    double top_block = topLeft + horizontal_progress * (topRight - topLeft);
+    double bottom_block =
+            bottomLeft + horizontal_progress * (bottomRight - bottomLeft);
 
-    SDL_DestroyRenderer(renderer);
-	SDL_UnlockSurface(surface);
+    return top_block + vertical_progress * (bottom_block - top_block);
+}
+
+void imageRotate(Image* image, int angleDegree)
+{
+    const double middleX = (double)(image->width / 2.0);
+    const double middleY = (double)(image->height / 2.0);
+
+    const double angle = degToRad(angleDegree);
+
+    Image newImage = copyImage(image);
+
+    double newX, newY;
+    unsigned int top, bottom, left, right;
+
+    for(int x = 0; x < image->width; x++)
+    {
+        for(int y = 0; y < image->height; y++)
+        {
+            newX = ((double)(cos(angle) * ((double)x - middleX)
+                             - sin(angle) * ((double)y - middleY))
+                    + middleX);
+            newY = ((double)(cos(angle) * ((double)y - middleY)
+                             + sin(angle) * ((double)x - middleX))
+                    + middleY);
+
+            top = floor(newY);
+            bottom = top + 1;
+            left = floor(newX);
+            right = left + 1;
+
+            if(top < image->height && bottom < image->height && left < image->width && right < image->width)
+            {
+                unsigned int interpolate = bilinearInterpolation(top, bottom, right, left,
+                                                        newX, newY, &newImage);
+                setPixelSameValue(&image->pixels[x][y], interpolate);
+            }
+        }
+    }
+
+    freeImage(&newImage);
 }

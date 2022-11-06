@@ -26,15 +26,18 @@ int main(int argc, char** argv)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
 
     SDL_Surface* surface = loadImage(argv[1]);
+    Image image = newImage(surface);
+    SDL_FreeSurface(surface);
+
 
     if (argc == 3)
     {
-        surfaceManualRotation(surface, atoi(argv[2]));
-        saveSurfaceToBmp(surface, "rotated");
+        imageRotate(&image, atoi(argv[2]));
+        saveImageToBmp(&image, "rotated");
+        freeImage(&image);
+        SDL_Quit();
+        return EXIT_SUCCESS;
     }
-
-    Image image = newImage(surface);
-    SDL_FreeSurface(surface);
 
     imageGrayscale(&image);
     saveImageToBmp(&image, "greyscale");
