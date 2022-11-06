@@ -2,10 +2,10 @@
 
 CC = gcc -Iinclude/
 
-CPPFLAGS = -D_THREAD_SAFE -I/opt/homebrew/include -I/opt/homebrew/include/SDL2
+CPPFLAGS = `pkg-config --cflags sdl2`
 CFLAGS = -Wall -Wextra -O0 -g -fsanitize=address
 LDFLAGS = 
-LDLIBS = -lm -L/opt/homebrew/Cellar/sdl2_image/2.6.2/lib -L/opt/homebrew/lib -lSDL2_image -lSDL2
+LDLIBS = -lm `pkg-config --libs sdl2 SDL2_image`
 LIBS = -lpthread -ldl
 
 BUILD := build
@@ -35,7 +35,7 @@ $(BUILD)/%.o : %.c
 clean:
 	rm -rf $(BUILD)
 	${RM} ${OBJ} ${DEP} main
-	rm -r images/
+	rm -rf images/*.bmp
 	clear
 
 # END
