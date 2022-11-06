@@ -16,7 +16,6 @@ void imageInvert(Image* image);
 unsigned int maxColor(Image* image);
 void normalizeBrightness(Image* image);
 void imageContrastFilter(Image* image);
-void imageBrightness(Image* image, int brightness);
 Pixel* getAdjacentPixels(Image* image, int x, int y);
 int* getImageHistogram(Image* image);
 int otsuMethod(Image* image);

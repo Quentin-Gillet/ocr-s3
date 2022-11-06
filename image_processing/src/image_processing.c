@@ -74,19 +74,6 @@ void imageContrastFilter(Image* image)
     normalizeBrightness(image);
 }
 
-void imageBrightness(Image* image, int brightness)
-{
-    for(size_t x = 0; x < image->width; x++)
-    {
-        for(size_t y = 0; y < image->height; y++)
-        {
-            Uint8 val =
-                    clampUint8((image->pixels[x][y].r + brightness), 0, 255);
-            setPixelSameValue(&image->pixels[x][y], val);
-        }
-    }
-}
-
 /*
 Get adjacent pixels of given coords
 */

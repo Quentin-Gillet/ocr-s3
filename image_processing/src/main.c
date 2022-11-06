@@ -60,9 +60,6 @@ int main(int argc, char** argv)
     imageMedianBlur(&image);
     saveImageToBmp(&image, "blur");
 
-    //imageBrightness(&image, -30);
-    //saveImageToBmp(&image, "brightness");
-
     imageBinarization(&image);
     saveImageToBmp(&image, "mean");
 

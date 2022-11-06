@@ -5,3 +5,4 @@
 *.d
 .vscode
 Makefile-clion
+.images
