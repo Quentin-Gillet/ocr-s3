@@ -28,11 +28,14 @@ void saveImageToBmp(Image* image, char* name)
 
 void saveSurfaceToBmp(SDL_Surface* surface, char* name)
 {
-    char* fileName = stradd(stradd("images/", name), ".bmp");
+    char* imageFile = concat("images/", name);
+    char* fileName = concat(imageFile, ".bmp");
 
     mkdir("images/", 0777);
 
     if(SDL_SaveBMP(surface, fileName) != 0)
         errx(EXIT_FAILURE, "saveImageToBmp: %s", SDL_GetError());
     free(fileName);
+    free(imageFile);
+    SDL_FreeSurface(surface);
 }
