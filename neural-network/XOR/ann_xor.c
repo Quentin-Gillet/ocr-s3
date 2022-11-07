@@ -230,7 +230,7 @@ void save(int nb_inputs, int nb_hiddenNeurons, int nb_outputs,
 }
 
 //training function
-void train(int print)
+void train()
 {
     	
 	// number of neurons of each layer
@@ -285,9 +285,13 @@ void train(int print)
 
 	for (int epoch = 0; epoch <= 10000; epoch++)
 	{
-	    	printf("epoch %d/10000 \r",epoch);
-		fflush(stdout);
-	    	if (print == 1)
+	    	//printf("epoch %d/10000 \r",epoch);
+		//fflush(stdout);
+
+		if (epoch == 6)
+			    printf("...\n");
+
+	    	if (epoch < 5 || epoch > 9995)
 		{
 			printf("\n");
 	    		printf("epoch: %d	---------------------------------------------------\n", epoch);
@@ -317,13 +321,13 @@ void train(int print)
 			computeActivation(nb_hiddenNeurons, nb_outputs, hiddenLayer, outputW,
 				outputB, output);
 			*/
-			if (print == 1)
+			if (epoch < 5 || epoch > 9995)
 			{
 				printf("Input: %f  %f  |  Output: %f  |  Expected Output: %f \n",
 					inputs[i][0],inputs[i][1],
 					output[0],expected_output[i]);
 			}
-
+	
 
 
 			// BACK PROPAGATION
@@ -420,7 +424,9 @@ int main(int argc, char *argv[])
     	if (argc == 1)
 	{
 	    	printf("training...\n");
-	    	train(1);
+	    	train();
+		printf("\ndone.\n");
+
 		return 0;
 	}
 	else if(argc != 3)
