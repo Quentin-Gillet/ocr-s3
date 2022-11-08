@@ -28,6 +28,30 @@ char* stradd(const char* a, const char* b){
     return strcat(strcat(ret, a) ,b);
 }
 
+char* concat(const char* str1, const char* str2)
+{
+    size_t len = strlen(str1) + strlen(str2);
+    char* result = calloc(len + 1, sizeof(char));
+    int i = 0;
+    int newI = 0;
+    while(str1[i] != 0)
+    {
+        result[newI] = str1[i];
+        i++;
+        newI++;
+    }
+
+    i = 0;
+    while(str2[i] != 0)
+    {
+        result[newI] = str2[i];
+        i++;
+        newI++;
+    }
+    result[newI] = '\0';
+    return result;
+}
+
 unsigned int **initMatrix(unsigned int x, unsigned int y)
 {
     unsigned int **matrice = NULL;
