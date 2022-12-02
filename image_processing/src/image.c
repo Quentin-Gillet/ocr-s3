@@ -85,12 +85,31 @@ Image copyImage(Image* image)
 }
 
 /*
+ * Convert Image 2D pixel array into image with 1D pixel array
+ * Use row major order
+ */
+ImageMajorOrder convertImageToMajorOrder(Image* image)
+{
+    Pixel* pixels = calloc(image->width * image->height, sizeof (Pixel));
+    for(int x = 0; x < image->width; x++)
+    {
+        for(int y = 0; y < image->height; y++)
+        {
+            pixels[image->width * x + y] = image->pixels[x][y];
+        }
+    }
+
+    ImageMajorOrder imageMajorOrder = {image->width, image->height, pixels};
+    return imageMajorOrder;
+}
+
+/*
  * Transform a SDL_Surface into Image
  * with a double array pixels
  * width = surface->w
  * height = surface->h
  */
-Image newImage(SDL_Surface* surface)
+Image createImageFromSurface(SDL_Surface* surface)
 {
     const int surfaceHeight = surface->h;
     const int surfaceWidth = surface->w;
@@ -125,8 +144,40 @@ Image newImage(SDL_Surface* surface)
     return image;
 }
 
+Image createImage(int width, int height)
+{
+    Image image;
+    image.width = width;
+    image.height = height;
+
+    image.pixels = calloc(width, sizeof(Pixel *));
+    if (image.pixels == NULL)
+    {
+        errx(1, "Memory error");
+    }
+
+    for (int j = 0; j < width; j++)
+    {
+        image.pixels[j] = calloc(height, sizeof(Pixel));
+        if (image.pixels[j] == NULL)
+        {
+            errx(1, "Memory error");
+        }
+    }
+
+    for(int x  = 0; x < width; x++)
+    {
+        for(int y = 0; y < height; y++)
+        {
+            setPixelSameValue(&image.pixels[x][y], 0);
+        }
+    }
+
+    return image;
+}
+
 /*
- * Transform a Image into SDL_Surface
+ * Transform an Image into SDL_Surface
  */
 SDL_Surface* crateSurfaceFromImage(Image* image)
 {
