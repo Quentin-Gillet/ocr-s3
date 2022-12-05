@@ -9,28 +9,26 @@
 #include <SDL2/SDL_image.h>
 #include <math.h>
 #include "utils.h"
+#include "image.h"
+#include "image_loading.h"
 
-enum ProcessingType
-{
-    GRAYSCALE,
-    BLACK_WHITE,
-    UP_CONTRAST,
-    COLOR_INVERT
-};
+void imageGrayscale(Image* image);
+void imageInvert(Image* image);
+unsigned int maxColor(Image* image);
+void normalizeBrightness(Image* image);
+void imageContrastFilter(Image* image);
+Pixel* getAdjacentPixels(Image* image, int x, int y);
+int* getImageHistogram(Image* image);
+int otsuMethod(Image* image);
+void imageBinarization(Image* image);
+Pixel getPixelMedian(Pixel* pixels);
+void imageMedianBlur(Image* image);
+double convolution(Image* image, double kernel[3][3], int row, int col);
+void imageSobelFilter(Image* image);
+void imagePixelGrouping(Image* image);
+int maxPixelValueFromAdjacentPixels(Image* image, int x, int y, int size);
 
-Uint32 pixelInvert(Uint32 pixelColor, SDL_PixelFormat* format);
-Uint32 pixelContrast(Uint32 pixel_color, SDL_PixelFormat* format);
-void surfaceProcessing(SDL_Surface* surface, enum ProcessingType processingType);
-Uint32 pixelBlackWhite(Uint32 pixelColor, SDL_PixelFormat* format);
-Uint32 pixelToGrayScale(Uint32 pixelColor, SDL_PixelFormat* format);
-void surfaceMedianBlur(SDL_Surface* surface);
-Uint32 getPixel(SDL_Surface *surface, int x, int y);
-void putPixel(SDL_Surface *surface, int x, int y, Uint32 pixel);
-Uint32* getAdjacentPixels(SDL_Surface* surface, int x, int y);
-Uint32 getPixelMedian(SDL_PixelFormat* format, Uint32* pixels);
-void surfaceSobelFilter(SDL_Surface* surface);
-double convolution(SDL_Surface* surface, double kernel[3][3], int row, int col);
-void surfaceBinarisaion(SDL_Surface* surface);
-int otsuMethod(SDL_Surface* surface);
+ImageMajorOrder prepareImageFileForNeuralNetwork(const char* file);
+void printImagePixels(ImageMajorOrder image);
 
 #endif

@@ -5,12 +5,10 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <string.h>
-
-#include "/mnt/c/FG/EPITA/S3/OCR/alexis.cognet/neural-network/number-recognition/include/save.h"
-#include "/mnt/c/FG/EPITA/S3/OCR/alexis.cognet/neural-network/number-recognition/include/train.h"
-
-#include "/mnt/c/FG/EPITA/S3/OCR/alexis.cognet/image_processing/include/image_processing.h"
-#include "/mnt/c/FG/EPITA/S3/OCR/alexis.cognet/image_processing/include/image.h"
+#include "../include/save.h"
+#include "../include/train.h"
+#include "../include/image_processing.h"
+#include "../include/image.h"
 
 char **initMatrixChar(unsigned int x, unsigned int y)
 {

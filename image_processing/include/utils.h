@@ -9,6 +9,8 @@
 #include <string.h>
 #include <err.h>
 #include <stdlib.h>
+#include <math.h>
+#include <stdio.h>
 
 typedef struct {
     double r;       // a fraction between 0 and 1
@@ -25,8 +27,16 @@ typedef struct {
 hsv rgb2hsv(rgb in);
 rgb hsv2rgb(hsv in);
 
-float truncate(float value, int val1, int val2);
+float clamp(float value, int val1, int val2);
+Uint8 clampUint8(Uint8 value, Uint8 min, Uint8 max);
 char* stradd(const char* a, const char* b);
 void insertionSort(double arr[], int n);
+char* concat(const char* str1, const char* str2);
+
+unsigned int **initMatrix(unsigned int x, unsigned int y);
+void freeMatrix(unsigned int **matrice, size_t height);
+
+#define degToRad(angleInDegrees) ((angleInDegrees) * M_PI / 180.0)
+#define radToDeg(angleInRadians) ((angleInRadians) * 180.0 / M_PI)
 
 #endif

@@ -1,48 +1,60 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <../include/manual_rotation.h>
-#include <../include/image_processing.h>
+#include "manual_rotation.h"
 
-SDL_Surface* surfaceManualRotation(SDL_Surface* surface, SDL_Renderer* renderer, double angle)
+
+double bilinearInterpolation(unsigned int top, unsigned int bottom, unsigned int right, unsigned int left,
+                             double horizontalPos, double verticalPos, Image* image)
 {
-	SDL_Texture* texture = 
-		SDL_CreateTextureFromSurface(renderer, surface);
+    double topLeft = image->pixels[left][top].r;
+    double topRight = image->pixels[right][top].r;
+    double bottomLeft = image->pixels[left][bottom].r;
+    double bottomRight = image->pixels[right][bottom].r;
 
-	SDL_RenderCopyEx(renderer, texture, NULL, NULL, angle, NULL,
-		       	SDL_FLIP_NONE);
-	
-	SDL_RenderReadPixels(renderer, NULL, 
-			surface->format->BitsPerPixel, surface->format->Rmask,
-		    surface->format->Gmask, surface->format->Bmask,
-			surface->format->Amask, surface->pixels,
-			surface->pitch);
-/*	Uint32 couleur;
-	int bx, by;
+    double horizontal_progress = horizontalPos - (double)left;
+    double vertical_progress = verticalPos - (double)top;
 
-	float angle_radian = -angle * M_PI / 180.0;
+    double top_block = topLeft + horizontal_progress * (topRight - topLeft);
+    double bottom_block =
+            bottomLeft + horizontal_progress * (bottomRight - bottomLeft);
 
-	SDL_Surface* newSurface = SDL_CreateRGBSurface(SDL_SWSURFACE, origine->w, origine->h, origine->format->BitsPerPixel,
-			origine->format->Rmask, origine->format->Gmask, origine->format->Bmask, origine->format->Amask);
-	if (newSurface == NULL)		return NULL;
+    return top_block + vertical_progress * (bottom_block - top_block);
+}
 
-	int mx = origine->w / 2;
-	int my = origine->h / 2;
+void imageRotate(Image* image, int angleDegree)
+{
+    const double middleX = (double)(image->width / 2.0);
+    const double middleY = (double)(image->height / 2.0);
 
-	for(int i = 0; i < origine->h; i++)
-	{
-		for(int j = 0; j < origine->w; j++)
-		{
-			bx = (int) (cos(angle_radian) * (j-mx) + sin(angle_radian) * (i-my)) + mx;
-			by = (int) (-sin(angle_radian) * (j-mx) + cos(angle_radian) * (i-my)) + my;
+    const double angle = degToRad(angleDegree);
 
-			if (bx >= 0 && bx < origine->w && by >= 0 && by < origine->h)
-			{
-				couleur = getPixel(origine, bx, by);
-				putPixel (newSurface, i, j, couleur);
-			}
-		}
-	}
+    Image newImage = copyImage(image);
 
-	return newSurface;
-	*/
+    double newX, newY;
+    unsigned int top, bottom, left, right;
+
+    for(int x = 0; x < image->width; x++)
+    {
+        for(int y = 0; y < image->height; y++)
+        {
+            newX = ((double)(cos(angle) * ((double)x - middleX)
+                             - sin(angle) * ((double)y - middleY))
+                    + middleX);
+            newY = ((double)(cos(angle) * ((double)y - middleY)
+                             + sin(angle) * ((double)x - middleX))
+                    + middleY);
+
+            top = floor(newY);
+            bottom = top + 1;
+            left = floor(newX);
+            right = left + 1;
+
+            if(top < image->height && bottom < image->height && left < image->width && right < image->width)
+            {
+                unsigned int interpolate = bilinearInterpolation(top, bottom, right, left,
+                                                        newX, newY, &newImage);
+                setPixelSameValue(&image->pixels[x][y], interpolate);
+            }
+        }
+    }
+
+    freeImage(&newImage);
 }

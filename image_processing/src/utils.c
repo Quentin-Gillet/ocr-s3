@@ -2,8 +2,9 @@
 // Created by quentin on 06/10/22.
 //
 #include "../include/utils.h"
+#include "../include/image.h"
 
-float truncate(float value, int val1, int val2)
+float clamp(float value, int val1, int val2)
 {
     if(value < val1)
         return val1;
@@ -12,11 +13,72 @@ float truncate(float value, int val1, int val2)
     return value;
 }
 
+Uint8 clampUint8(Uint8 value, Uint8 min, Uint8 max)
+{
+    if(value < min)
+        value = min;
+    if(value > max)
+        value = max;
+    return value;
+}
+
 char* stradd(const char* a, const char* b){
     size_t len = strlen(a) + strlen(b);
     char *ret = (char*)malloc(len * sizeof(char) + 1);
     *ret = '\0';
     return strcat(strcat(ret, a) ,b);
+}
+
+char* concat(const char* str1, const char* str2)
+{
+    size_t len = strlen(str1) + strlen(str2);
+    char* result = calloc(len + 1, sizeof(char));
+    int i = 0;
+    int newI = 0;
+    while(str1[i] != 0)
+    {
+        result[newI] = str1[i];
+        i++;
+        newI++;
+    }
+
+    i = 0;
+    while(str2[i] != 0)
+    {
+        result[newI] = str2[i];
+        i++;
+        newI++;
+    }
+    result[newI] = '\0';
+    return result;
+}
+
+unsigned int **initMatrix(unsigned int x, unsigned int y)
+{
+    unsigned int **matrice = NULL;
+    matrice = calloc(y + 1, sizeof(unsigned int *));
+    if (matrice == NULL)
+    {
+        errx(1, "Memory error");
+    }
+    for (size_t j = 0; j < y; j++)
+    {
+        matrice[j] = calloc(x + 1, sizeof(unsigned int));
+        if (matrice[j] == NULL)
+        {
+            errx(1, "Memory error");
+        }
+    }
+    return matrice;
+}
+
+void freeMatrix(unsigned int **matrice, size_t height)
+{
+    for (size_t y = 0; y < height; y++)
+    {
+        free(matrice[y]);
+    }
+    free(matrice);
 }
 
 void insertionSort(double arr[], int n)
@@ -140,3 +202,5 @@ rgb hsv2rgb(hsv in)
     }
     return out;     
 }
+
+

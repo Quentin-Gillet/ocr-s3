@@ -6,35 +6,8 @@
 #include <string.h>
 #include "../include/save.h"
 #include "../include/train.h"
-
-double **initMatrix(unsigned int x, unsigned int y)
-{
-    double **matrice = NULL;
-    matrice = calloc(y + 1, sizeof(unsigned int *));
-    if (matrice == NULL)
-    {
-        return NULL;
-    }
-    for (size_t j = 0; j < y; j++)
-    {
-        matrice[j] = calloc(x + 1, sizeof(unsigned int));
-        if (matrice[j] == NULL)
-        {
-            //err(1, "Memory error");
-			return NULL;
-        }
-    }
-    return matrice;
-}
-
-void freeMatrix(double **matrice, size_t height)
-{
-    for (size_t y = 0; y < height; y++)
-    {
-        free(matrice[y]);
-    }
-    free(matrice);
-}
+#include "../../../image_processing/include/image.h"
+#include "../../../image_processing/include/image_processing.h"
 
 // to get finals W after training from files
 int to_W(int layer, int next_layer, double **W, char* f)
@@ -85,7 +58,7 @@ int to_B(int layer, double *B, char* f)
 }
 
 
-
+/*
 int main(int argc, char** argv)
 {
 	if (argc == 1)
@@ -101,7 +74,7 @@ int main(int argc, char** argv)
 	}
 	else
 	{
-		/* Check if the input file exist
+		/// Check if the input file exist
 		for (int i = 1; i <= 2; i++)
 		{
 			if (*argv[i] != '1' && *argv[i] != '0')
@@ -110,7 +83,7 @@ int main(int argc, char** argv)
 				return 1;
 			}
 		}
-		*/
+		///
 
 		double hiddenLayer1[NB_HIDDEN_N_L1];
 		double hiddenLayer2[NB_HIDDEN_N_L1];
@@ -175,4 +148,29 @@ int main(int argc, char** argv)
 	}
 
 
+}
+*/
+
+int main(int argc, char** argv)
+{
+	//train(0);
+	
+	size_t y = 3000;
+	char**images = initMatrixChar(1024,y);
+	int numbers[3000];
+	//get_input("C:/FG/EPITA/S3/OCR/Training Neural Network/images_link.csv",filenames,numbers,300);
+	
+	LoadCSV("/mnt/c/FG/EPITA/S3/OCR/alexis.cognet/images_link.csv", images, numbers);
+	for(int i = 2999; i < 3000; i++)
+	{
+		printf("%s", images[i]);
+		printf("\t%d", numbers[i]);
+		printf("\n");
+	}
+
+	const char * path = images[0];
+	ImageMajorOrder im = prepareImageFileForNeuralNetwork(path);
+
+	freeMatrixChar(images, y);
+	return 0;
 }

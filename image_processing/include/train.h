@@ -1,6 +1,13 @@
 #ifndef TRAIN_H
 #define TRAIN_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <string.h>
+
 #define NB_INPUTS 784
 #define NB_HIDDEN_N_L1 16
 #define NB_HIDDEN_N_L2 16

@@ -3,7 +3,7 @@
 CC = gcc -Iinclude/
 
 CPPFLAGS = `pkg-config --cflags sdl2`
-CFLAGS = -Wall -Wextra -O0 -g -fsanitize=address
+CFLAGS = -O3
 LDFLAGS = 
 LDLIBS = -lm `pkg-config --libs sdl2 SDL2_image`
 LIBS = -lpthread -ldl
@@ -28,14 +28,14 @@ main: $(OBJ)
 	gcc -o $@ $(CFLAGS) $^ $(LDLFLAGS) $(LDLIBS)
 
 $(BUILD)/%.o : %.c
-	$(CC) $(CFLAGS) -c $< -o $@ $(LDLFLAGS) $(CPPFLAGS) $(LDLIBS)
+	$(CC) $(CFLAGS) -c $< -o $@ $(LDLFLAGS) $(CPPFLAGS)
 
 .PHONY: clean
 
 clean:
 	rm -rf $(BUILD)
 	${RM} ${OBJ} ${DEP} main
-	rm *.bmp
+	rm -rf images/*.bmp
 	clear
 
 # END
