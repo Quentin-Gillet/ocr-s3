@@ -7,9 +7,9 @@ void imageGrayscale(Image* image)
     {
         for(int y = 0; y < image->height; y ++)
         {
-            Uint8 average = clamp(0.3 * image->pixels[x][y].r
-                                  + 0.59 * image->pixels[x][y].g
-                                  + 0.11 * image->pixels[x][y].b, 0, 255);
+            Uint8 average = clampFloat(0.3 * image->pixels[x][y].r
+                                       + 0.59 * image->pixels[x][y].g
+                                       + 0.11 * image->pixels[x][y].b, 0, 255);
             setPixelSameValue(&image->pixels[x][y], average);
         }
     }
@@ -208,7 +208,7 @@ void imageBlackWhite(Image* image)
     {
         for(int y = 0; y < image->height; y++)
         {
-            if(getPixelMedian(&image->pixels[x][y]).pixelAverage >= 220)
+            if(image->pixels[x][y].pixelAverage >= 150)
                 setPixelSameValue(&image->pixels[x][y], 1);
             else
                 setPixelSameValue(&image->pixels[x][y], 0);
@@ -292,30 +292,4 @@ void imageSobelFilter(Image* image)
             setPixelSameValue(&image->pixels[j][i], color);
         }
     }
-}
-
-void imagePixelGrouping(Image* image)
-{
-    for(int x = 1; x < image->width - 1; x += 3)
-    {
-        for(int y = 1; y < image->height - 1; y += 3)
-        {
-            int maxValue = maxPixelValueFromAdjacentPixels(image, x, y, 0);
-            setPixelSameValue(&image->pixels[x][y], maxValue);
-        }
-    }
-}
-
-int maxPixelValueFromAdjacentPixels(Image* image, int x, int y, int size)
-{
-    Pixel* pixels = getAdjacentPixels(image, x, y);
-    unsigned int maxPixelValue = 0;
-
-    for(int i = 0; i < 9; i++)
-    {
-        if(pixels[i].r > maxPixelValue)
-            maxPixelValue = pixels[i].r;
-    }
-
-    return (int)maxPixelValue;
 }

@@ -11,15 +11,14 @@ int main(int argc, char** argv)
         errx(EXIT_FAILURE, "Usage: image-file (+ rotation)");
 
     SDL_Surface* surface = loadImage(argv[1]);
-    Image image = newImage(surface);
+    Image image = createImageFromSurface(surface);
     SDL_FreeSurface(surface);
-
 
     if (argc == 3)
     {
-        imageRotate(&image, atoi(argv[2]));
-        saveImageToBmp(&image, "rotated");
-        freeImage(&image);
+        Image img = imageRotate(&image, atoi(argv[2]));
+        saveImageToBmp(&img, "rotated");
+        freeImage(&img);
         return EXIT_SUCCESS;
     }
 
@@ -32,35 +31,23 @@ int main(int argc, char** argv)
     imageBinarization(&image);
     saveImageToBmp(&image, "mean");
 
-    imageMedianBlur(&image);
-    saveImageToBmp(&image, "blur");
-
     imageInvert(&image);
     saveImageToBmp(&image, "inverted");
 
     imageSobelFilter(&image);
     saveImageToBmp(&image, "sobel");
 
-    int linesLength = 0;
-    Line* lines = houghTransform(&image, 0.4f, &linesLength);
+    imageMedianBlur(&image);
+    saveImageToBmp(&image, "blur");
 
-    Image cpImage = copyImage(&image);
+    int linesLength = 0;
+    Line* lines = getImageLines(&image, 450, &linesLength);
 
     drawLineOnImage(&image, lines, linesLength);
     saveImageToBmp(&image, "hough");
 
-    int newLinesCounts = 0;
-    Line* newlines = reduce_lines(lines, linesLength, &newLinesCounts);
-
-    drawLineOnImage(&cpImage, newlines, newLinesCounts);
-    saveImageToBmp(&cpImage, "hough_line_reduced");
-
-    //struct Square * Squares[] = get_Squares();
-
-    free(newlines);
     free(lines);
     freeImage(&image);
-    freeImage(&cpImage);
 
     return EXIT_SUCCESS;
 }
