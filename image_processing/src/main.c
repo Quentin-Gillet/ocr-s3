@@ -1,6 +1,6 @@
 #include "../include/image_processing.h"
 #include "../include/image_loading.h"
-#include "../include/manual_rotation.h"
+#include "../include/image_rotation.h"
 #include "../include/line_detection.h"
 #include "../include/image_split.h"
 

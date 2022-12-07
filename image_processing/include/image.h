@@ -11,7 +11,7 @@
 typedef struct Pixel
 {
     unsigned int r, g, b;
-    Uint8 pixelAverage;
+    unsigned int pixelAverage;
 } Pixel;
 
 typedef struct Image
@@ -28,6 +28,8 @@ typedef struct ImageMajorOrder
     Pixel *pixels;
 } ImageMajorOrder;
 
+double bilinearInterpolation(unsigned int top, unsigned int bottom, unsigned int right, unsigned int left,
+                             double horizontalPos, double verticalPos, Image* image);
 
 Uint32 getPixel(SDL_Surface *surface, int x, int y);
 void putPixel(SDL_Surface *surface, int x, int y, Uint32 pixel);
