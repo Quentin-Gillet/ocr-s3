@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.40.0 -->
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <object class="GtkWindow" id="window">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="default-width">1920</property>
+    <property name="default-height">1080</property>
+    <child>
+      <object class="GtkPaned">
+        <property name="visible">True</property>
+        <property name="can-focus">True</property>
+        <child>
+          <object class="GtkFixed">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <child>
+              <object class="GtkButton" id="NextButton">
+                <property name="label" translatable="yes">Next</property>
+                <property name="width-request">195</property>
+                <property name="height-request">76</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes">To go to next step of the process</property>
+              </object>
+              <packing>
+                <property name="x">36</property>
+                <property name="y">261</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkFileChooserButton" id="file_chooser">
+                <property name="width-request">272</property>
+                <property name="height-request">33</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="tooltip-text" translatable="yes">Select a Sudoku Image please</property>
+                <property name="title" translatable="yes">Select a Sudoku Image</property>
+              </object>
+              <packing>
+                <property name="y">178</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="width-request">254</property>
+                <property name="height-request">74</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Sudoku Solver</property>
+                <attributes>
+                  <attribute name="font-desc" value="Sans Bold 10"/>
+                  <attribute name="foreground" value="#f6f6f5f5f4f4"/>
+                  <attribute name="size" value="25600"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="x">5</property>
+                <property name="y">4</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="resize">False</property>
+            <property name="shrink">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkFixed">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <child>
+              <object class="GtkImage" id="ImageToPrint">
+                <property name="width-request">1195</property>
+                <property name="height-request">840</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="stock">gtk-missing-image</property>
+              </object>
+              <packing>
+                <property name="x">285</property>
+                <property name="y">44</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLevelBar" id="ProgressBar">
+                <property name="width-request">749</property>
+                <property name="height-request">30</property>
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="tooltip-text" translatable="yes">Current progress of the process</property>
+                <property name="value">26.71</property>
+                <property name="max-value">100</property>
+              </object>
+              <packing>
+                <property name="x">540</property>
+                <property name="y">892</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="resize">True</property>
+            <property name="shrink">True</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
