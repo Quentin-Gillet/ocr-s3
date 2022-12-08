@@ -95,8 +95,8 @@
                 <property name="max-value">100</property>
               </object>
               <packing>
-                <property name="x">537</property>
-                <property name="y">920</property>
+                <property name="x">538</property>
+                <property name="y">939</property>
               </packing>
             </child>
             <child>
@@ -113,8 +113,8 @@
                 </attributes>
               </object>
               <packing>
-                <property name="x">662</property>
-                <property name="y">951</property>
+                <property name="x">664</property>
+                <property name="y">975</property>
               </packing>
             </child>
           </object>
