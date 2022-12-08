@@ -21,6 +21,7 @@
                 <property name="width-request">195</property>
                 <property name="height-request">76</property>
                 <property name="visible">True</property>
+                <property name="sensitive">False</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">To go to next step of the process</property>
@@ -91,7 +92,6 @@
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="tooltip-text" translatable="yes">Current progress of the process</property>
-                <property name="value">26.71</property>
                 <property name="max-value">100</property>
               </object>
               <packing>
