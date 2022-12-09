@@ -21,7 +21,6 @@
                 <property name="width-request">195</property>
                 <property name="height-request">76</property>
                 <property name="visible">True</property>
-                <property name="sensitive">False</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">To go to next step of the process</property>
@@ -60,6 +59,20 @@
               <packing>
                 <property name="x">5</property>
                 <property name="y">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label" translatable="yes">button</property>
+                <property name="width-request">200</property>
+                <property name="height-request">76</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="x">34</property>
+                <property name="y">421</property>
               </packing>
             </child>
           </object>
@@ -105,7 +118,6 @@
                 <property name="height-request">30</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Processing filter...</property>
                 <attributes>
                   <attribute name="font-desc" value="Source Code Pro Bold 10"/>
                   <attribute name="foreground" value="#ffffffffffff"/>
