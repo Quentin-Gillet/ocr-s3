@@ -10,6 +10,7 @@
 #include <math.h>
 #include "utils.h"
 #include "image.h"
+#include "image_loading.h"
 
 void imageGrayscale(Image* image);
 void imageInvert(Image* image);
@@ -24,5 +25,7 @@ Pixel getPixelMedian(Pixel* pixels);
 void imageMedianBlur(Image* image);
 double convolution(Image* image, double kernel[3][3], int row, int col);
 void imageSobelFilter(Image* image);
+
+ImageMajorOrder prepareImageFileForNeuralNetwork(const char* file);
 
 #endif

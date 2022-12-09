@@ -20,7 +20,7 @@ typedef struct Line
     int theta;
 } Line;
 
-struct Line* houghTransform(Image* image, float threshold, int* lineLength);
 void drawLineOnImage(Image* image, Line* lines, int linesLength);
+struct Line* getImageLines(Image *image, int threshold, int *lineLength);
 
 #endif

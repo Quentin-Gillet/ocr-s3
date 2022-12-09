@@ -1,174 +1,82 @@
 #include "../include/line_detection.h"
 
-
-struct Line* houghTransform(Image* image, float threshold, int* lineLength)
+struct Line* getImageLines(Image *image, int threshold, int *lineLength)
 {
-	// Save the image dimensions
-    const double width = image->width, height = image->height;
-    // Calculate the diagonal of the image
-    const double diagonal = sqrt(width * width + height * height);
+    int width = image->width, height = image->height;
+    double hough_h = (sqrt(2.0) * (double) (height > width ? height : width)) / 2.0;
+    int accumulatorHeight = (int)(hough_h * 2.0), accumulatorWidth = 180;
 
-    // Initialize the constant values for theta and rho
-    const double maxTheta = 180.0, minTheta = 0.0;
-    const double maxRho = diagonal, minRho = -diagonal;
-    const double nbRho = 2 * diagonal, nbTheta = nbRho;
+    int accumulatorSize = accumulatorWidth * accumulatorHeight;
+    unsigned int *accumulator = calloc(accumulatorSize + 1, sizeof(unsigned int));
 
-    // Create an array of rhos
-    double rhoStep = (maxRho - minRho) / nbRho;
-    double *arrRhos = calloc(nbRho + 1, sizeof(double));
-    int index = 0;
-    for (double val = minRho; val <= maxRho && index < nbTheta;
-         val += rhoStep, index++)
-    {
-        arrRhos[index] = val;
+    double center_x = width / 2.0;
+    double center_y = height / 2.0;
+
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            if (image->pixels[x][y].r > 250) {
+                for (int t = 0; t < 180; t++) {
+                    double r = ( ((double)x - center_x) * cos(degToRad(t))) + (((double)y - center_y) * sin(degToRad(t)));
+                    int i = clampInt((int)((round(r + hough_h) * 180.0)) + t, 0, accumulatorSize);
+                    accumulator[i]++;
+                }
+            }
+        }
     }
 
-    // Create an array of theta
-    double step = (maxTheta - minTheta) / nbTheta;
-    double *arrThetas = calloc(nbTheta + 1, sizeof(double));
-    index = 0;
-    for (double val = minTheta; val <= maxTheta && index < nbTheta;
-         val += step, index++)
-    {
-        arrThetas[index] = val;
-    }
+    struct Line *lines = calloc((int) (width * height), sizeof(struct Line));
+    int lineIndex = 0;
 
-    // Create a save of cos and sin value for each theta, to optimize
-    // performance.
-    double *saveCos = calloc(nbTheta + 1, sizeof(double));
-    double *saveSin = calloc(nbTheta + 1, sizeof(double));
-    for (int theta = 0; theta < nbTheta; theta++)
-    {
-        // Convert each value of theta's array into radians
-        arrThetas[theta] = degToRad(arrThetas[theta]);
-
-        // Save each cos(theta) and sin(theta) into their respective arrays
-        saveCos[theta] = cos(arrThetas[theta]);
-        saveSin[theta] = sin(arrThetas[theta]);
-    }
-
-    unsigned int **accumulator = initMatrix(nbTheta + 1, nbRho + 1);
-
-    // We intialize the accumulator with all the value
-    // In the same time, we search for the max value in the accumulator
-
-    unsigned int max = 0;
-    double rho;
-    int croppedRho;
-    for (int y = 0; y < height; y++)
-    {
-        for (int x = 0; x < width; x++)
-        {
-            if (image->pixels[x][y].pixelAverage == 255)
-            {
-                for (int theta = 0; theta <= nbTheta; theta++)
-                {
-                    rho = x * saveCos[theta] + y * saveSin[theta];
-                    croppedRho = rho + diagonal;
-                    accumulator[croppedRho][theta]++;
-                    if (accumulator[croppedRho][theta] > max)
-                    {
-                        max = accumulator[croppedRho][theta];
+    for (int r = 0; r < accumulatorHeight; r++) {
+        for (int t = 0; t < accumulatorWidth; t++) {
+            if ((int) accumulator[r * accumulatorWidth + t] >= threshold) {
+                unsigned int max = accumulator[r * accumulatorWidth + t];
+                for (int ly = -4; ly <= 4; ly++) {
+                    for (int lx = -4; lx <= 4; lx++) {
+                        if ((ly + r >= 0 && ly + r < accumulatorHeight) && (lx + t >= 0 && lx + t <= accumulatorWidth)) {
+                            if ((int) accumulator[((r + ly) * accumulatorWidth) + (t + lx)] > (int)max) {
+                                max = accumulator[((r + ly) * accumulatorWidth) + (t + lx)];
+                                ly = lx = 5;
+                            }
+                        }
                     }
                 }
-            }
-        }
-    }
+                if (max > accumulator[(r * accumulatorWidth) + t])
+                    continue;
 
-    free(saveCos);
-    free(saveSin);
+                int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
 
-	int lineThreshold = max * threshold;
-
-	struct Line* lines = calloc((int)(nbTheta * nbRho + 2), sizeof(struct Line));
-	double tempMaxTheta = 0.0;
-    unsigned int histogram[181] = { 0 };
-    unsigned int rounded_angle;
-
-    int prev = accumulator[0][0];
-    int prev_theta = 0, prev_rho = 0;
-    int boolIsIncreasing = 1;
-	int indexLine = 0;
-
-	for (int theta = 0; theta <= nbTheta; theta++)
-    {
-        for (int rho = 0; rho <= nbRho; rho++)
-        {
-            int val = accumulator[rho][theta];
-
-            if (val >= prev)
-            {
-                prev = val;
-                prev_rho = rho;
-                prev_theta = theta;
-                boolIsIncreasing = 1;
-                continue;
-            }
-            else if (val < prev && boolIsIncreasing)
-            {
-                boolIsIncreasing = 0;
-            }
-            else if (val < prev)
-            {
-                prev = val;
-                prev_rho = rho;
-                prev_theta = theta;
-                continue;
-            }
-
-            if (val >= lineThreshold)
-            {
-                double r = arrRhos[prev_rho], t = arrThetas[prev_theta];
-
-                if (t > tempMaxTheta)
-                {
-                    tempMaxTheta = t;
-                    rounded_angle = (unsigned int)radToDeg(t);
-                    histogram[rounded_angle]++;
+                if (t >= 45 && t <= 135) {
+                    x1 = 0;
+                    y1 = (r - accumulatorHeight / 2) - ((x1 - (int)(width / 2)) * cos(degToRad(t))) / sin(degToRad(t)) +
+                         (int)(height / 2);
+                    x2 = width;
+                    y2 = (r - (accumulatorHeight / 2)) - ((x2 - (int)(width / 2)) * cos(degToRad(t))) / sin(degToRad(t)) +
+                         (int)(height / 2);
+                } else {
+                    y1 = 0;
+                    x1 = (r - (accumulatorHeight / 2)) - ((y1 - (int)(height / 2)) * sin(degToRad(t))) / cos(degToRad(t)) +
+                         (int)(width / 2);
+                    y2 = height;
+                    x2 = (r - (accumulatorHeight / 2)) - ((y2 - (int)(height / 2)) * sin(degToRad(t))) / cos(degToRad(t)) +
+                         (int)(width / 2);
                 }
-
-                double c = cos(t), s = sin(t);
-                int x0, y0, x1, x2, y1, y2;
-                // Calculate d0 point
-                x0 = (int)(c * r);
-                y0 = (int)(s * r);
-
-                // Calculate one point of the edge
-                x1 = x0 + (int)(diagonal * (-s));
-                y1 = y0 + (int)(diagonal * c);
-
-                // Calculate the other point of the edge
-                x2 = x0 - (int)(diagonal * (-s));
-                y2 = y0 - (int)(diagonal * c);
-
-                struct Line line;
-                line.x1 = clamp(x1, 0, image->width);
-                line.x2 = clamp(x2, 0, image->width);
-                line.y1 = clamp(y1, 0, image->height);
-                line.y2 = clamp(y2, 0, image->height);
-                line.theta = theta;
-
-				lines[indexLine] = line;
-				indexLine++;
+                Line line = {x1, y1, x2, y2, t};
+                lines[lineIndex] = line;
+                lineIndex++;
             }
         }
     }
 
-	*lineLength = indexLine;
+    free(accumulator);
 
-    // Free cos and sin arrays
-    free(arrThetas);
-    free(arrRhos);
-
-    freeMatrix(accumulator, nbTheta + 1);
-
-	return lines;
+    *lineLength = lineIndex;
+    return lines;
 }
 
-void drawLineOnImage(Image* image, Line* lines, int linesLength)
-{
-    for(int i = 0; i < linesLength; i++)
-    {
+
+void drawLineOnImage(Image *image, Line *lines, int linesLength) {
+    for (int i = 0; i < linesLength; i++) {
         int x0 = lines[i].x1, x1 = lines[i].x2;
         int y0 = lines[i].y1, y1 = lines[i].y2;
 
@@ -180,24 +88,20 @@ void drawLineOnImage(Image* image, Line* lines, int linesLength)
 
         int err = dX + dY;
 
-        while(1)
-        {
-            if(0 <= x0 && x0 < image->width && 0 <= y0 && y0 < image->height)
-            {
-                setPixelValue(&image->pixels[x0][y0], 255, 0, 0);
+        while (1) {
+            if (0 <= x0 && x0 < image->width && 0 <= y0 && y0 < image->height) {
+                setPixelValue(&image->pixels[x0][y0], 0, 0, 255);
             }
 
-            if(x0 == x1 && y0 == y1)
+            if (x0 == x1 && y0 == y1)
                 break;
 
             int e2 = 2 * err;
-            if(e2 >= dY)
-            {
+            if (e2 >= dY) {
                 err += dY;
                 x0 += sX;
             }
-            if(e2 <= dX)
-            {
+            if (e2 <= dX) {
                 err += dX;
                 y0 += sY;
             }
