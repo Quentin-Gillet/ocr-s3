@@ -3,6 +3,7 @@
 #include "../include/image_rotation.h"
 #include "../include/line_detection.h"
 #include "../include/image_split.h"
+#include "sudoku_builder.h"
 
 int main(int argc, char** argv)
 {
@@ -10,9 +11,7 @@ int main(int argc, char** argv)
     if (argc < 2 || argc > 3)
         errx(EXIT_FAILURE, "Usage: image-file (+ rotation)");
 
-    SDL_Surface* surface = loadImage(argv[1]);
-    Image image = createImageFromSurface(surface);
-    SDL_FreeSurface(surface);
+    Image image = getImageFromPng(argv[1]);
 
     if (argc == 3)
     {

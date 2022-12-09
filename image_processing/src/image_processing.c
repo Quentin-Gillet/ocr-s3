@@ -157,7 +157,7 @@ void imageBinarization(Image* image)
     {
         for(int y = 0; y < image->height; y++)
         {
-            if(image->pixels[x][y].pixelAverage > meanIntensity)
+            if((int)image->pixels[x][y].pixelAverage > meanIntensity)
                 setPixelSameValue(&image->pixels[x][y], 255);
             else
                 setPixelSameValue(&image->pixels[x][y], 0);
@@ -218,9 +218,7 @@ void imageBlackWhite(Image* image)
 
 ImageMajorOrder prepareImageFileForNeuralNetwork(const char* file)
 {
-    SDL_Surface* surface = loadImage(file);
-    Image image = createImageFromSurface(surface);
-    SDL_FreeSurface(surface);
+    Image image = getImageFromPng(file);
 
     imageBlackWhite(&image);
     ImageMajorOrder convertedImage = convertImageToMajorOrder(&image);
