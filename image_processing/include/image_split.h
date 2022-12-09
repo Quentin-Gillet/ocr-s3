@@ -1,15 +1,14 @@
-//
-// Created by alexiscognet on 05/11/22.
-//
-
 #ifndef IMAGE_PROCESSING_IMAGE_SPLIT_H
 #define IMAGE_PROCESSING_IMAGE_SPLIT_H
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <stdio.h>
+#include <math.h>
 #include "utils.h"
 #include "image.h"
 #include "line_detection.h"
+#include "manual_rotation.h"
 
 typedef struct Intersection{
     int x;
@@ -17,25 +16,24 @@ typedef struct Intersection{
     struct Line line;
 } Intersection;
 
-typedef struct LineIntersection{
-    Intersection intersection;
-    Line line;
-} LineIntersection;
-
 typedef struct Square{
     int xa;
-    int ya;
     int xb;
-    int yb;
     int xc;
-    int yc;
     int xd;
+    int ya;
+    int yb;
+    int yc;
     int yd;
+    double perimeter;
 } Square;
 
-int approx(int a, int b);
+int approx(int a, int b, int Threshold);
 Line* reduce_lines(Line* lines, int nbLines, int* newLinesCount);
-Square* get_Squares(Line * lines, int NBLines);
+struct Line* get_Bigger_Squares(struct Line* lines, int NBLine);
+Image* split(struct Line *lines, Image *image, Image *cells);
+
+struct Line* print_squares(struct Line* lines, int NBLine);
 
 /*
 a _______ b
@@ -45,4 +43,4 @@ a _______ b
 c|_______|d
  */
 
-#endif //IMAGE_PROCESSING_IMAGE_SPLIT_H
+#endif

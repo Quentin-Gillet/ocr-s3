@@ -22,7 +22,6 @@ int main(int argc, char** argv)
         freeImage(&image);
         return EXIT_SUCCESS;
     }
-
     imageGrayscale(&image);
     saveImageToBmp(&image, "greyscale");
 
@@ -45,6 +44,7 @@ int main(int argc, char** argv)
     Line* lines = houghTransform(&image, 0.4f, &linesLength);
 
     Image cpImage = copyImage(&image);
+    Image cpImage2 = copyImage(&image);
 
     drawLineOnImage(&image, lines, linesLength);
     saveImageToBmp(&image, "hough");
@@ -54,6 +54,24 @@ int main(int argc, char** argv)
 
     drawLineOnImage(&cpImage, newlines, newLinesCounts);
     saveImageToBmp(&cpImage, "hough_line_reduced");
+
+    //test detection carré
+    Line* newlines2 = get_Bigger_Squares(newlines, newLinesCounts);
+    //Line* newlines2 = print_squares(newlines, newLinesCounts);
+    drawLineOnImage(&cpImage2, newlines2, 4);
+    saveImageToBmp(&cpImage2, "Big_Rectangle");
+
+    //test découpage
+    Image *images = calloc(82, sizeof(Image));
+    images = split(newlines2, &cpImage2, images);
+    for(int i = 0; i < 82; i++)
+    {
+        char name[3];
+        snprintf(name, 3, "%i", i);
+        saveImageToBmp(&images[i], name);
+    }
+    free(images);
+    free(newlines2);
 
     //struct Square * Squares[] = get_Squares();
 
