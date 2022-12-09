@@ -16,8 +16,8 @@ typedef struct Pixel
 
 typedef struct Image
 {
-    const int width;
-    const int height;
+    int width;
+    int height;
     Pixel **pixels;
 } Image;
 

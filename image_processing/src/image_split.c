@@ -1,8 +1,5 @@
-//
-// Created by alexiscognet on 05/11/22.
-//
-#define Threshold 2
 #include "../include/image_split.h"
+#include "../include/linked_list.h"
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
 #define MAX(X, Y) (((X) < (Y)) ? (Y) : (X))
 
@@ -31,10 +28,10 @@ size_t NBLines(struct Line* lines, int nbLines )
             int x1f = otherLine.x2;
             int y1f = otherLine.y2;
 
-            if(approx(x0d,x1d)
-               && approx(y0d,y1d)
-               && approx(x0f,x1f)
-               && approx(y0f,y1f))
+            if(approx(x0d,x1d, 2)
+               && approx(y0d,y1d, 2)
+               && approx(x0f,x1f, 2)
+               && approx(y0f,y1f, 2))
             {
                 cpt++;
             }
@@ -48,7 +45,7 @@ size_t NBLines(struct Line* lines, int nbLines )
 struct Line* reduce_lines(struct Line* lines, int nbLines, int* newLinesCount)
 {
     struct Line* newlines = calloc(NBLines(lines,nbLines), sizeof(struct Line));
-    size_t countLines = 0;
+    int countLines = 0;
     for(int i = 0; i < nbLines; ++i)
     {
         Line currLine =  lines[i];
@@ -67,10 +64,10 @@ struct Line* reduce_lines(struct Line* lines, int nbLines, int* newLinesCount)
             int x1f = otherLine.x2;
             int y1f = otherLine.y2;
 
-            if(approx(x0d,x1d)
-               && approx(y0d,y1d)
-               && approx(x0f,x1f)
-               && approx(y0f,y1f))
+            if(approx(x0d,x1d, 2)
+               && approx(y0d,y1d, 2)
+               && approx(x0f,x1f, 2)
+               && approx(y0f,y1f, 2))
             {
                 newlines[countLines].x1 = (x0d + x1d)/2;
                 newlines[countLines].y1 = (y0d + y1d)/2;
@@ -84,18 +81,18 @@ struct Line* reduce_lines(struct Line* lines, int nbLines, int* newLinesCount)
     return newlines;
 }
 
-int approx(int a, int b)
+int approx(int a, int b, int Threshold)
 {
     return (abs(a-b) <= Threshold) ? 1 : 0;
 }
 
 // Get the intersection between two lines
-// x = NULL,y = NULL --> means there is no intersection between the 2 lines
+// x = -1,y = -1 --> means there is no intersection between the 2 lines
 struct Intersection line_intersection(struct Line Line1, struct Line Line2)
 {
     struct Intersection intersection;
-    intersection.x = NULL;
-    intersection.y = NULL;
+    intersection.x = -1;
+    intersection.y = -1;
     intersection.line = Line1;
 
     int x1 = Line1.x1;
@@ -135,97 +132,368 @@ struct Intersection line_intersection(struct Line Line1, struct Line Line2)
 
 }
 
-// max intersection = 9
-struct Intersection* get_intersections(struct Line Line, struct Line otherLines[],int NBLine)
+
+//Length of a line
+double LineLength(int x1, int x2, int y1, int y2)
 {
-    struct Intersection* intersections_list= calloc(9,sizeof(struct Intersection));
-    size_t countIntersections = 0;
-
-    for (int i = 0; i < NBLines; i++) {
-
-        struct Line currLine =  otherLines[i];
-        struct Intersection intersection = line_intersection(Line,currLine);
-
-        if ((intersection.x == NULL) && (intersection.y == NULL))
-            continue;
-        else
-        {
-            intersections_list[countIntersections] = intersection;
-            countIntersections++;
-        }
-    }
-    return intersections_list;
+    double px = abs(x1 - x2);
+    double py = abs(y1 - y2);
+    return sqrt(px * px + py * py);
 }
 
-
-struct Intersection * __get_Squares(struct Line line, int NBLines,
-                                    struct Intersection intersections_square[4],int j, struct Line firstLine, struct Line lines[])
+//Perimeter of a square
+double SquareArea(struct Intersection inter1, struct Intersection inter2, struct Intersection inter3)
 {
-    struct Intersection* intersections_line = get_intersections(line,lines, NBLines);
-    if (j == 3)
+     return LineLength(inter1.x, inter2.x, inter1.y, inter2.y) *
+            LineLength(inter2.x, inter3.x, inter2.y, inter3.y);
+}
+
+//If the biggerSquare is a real square
+int IsSquare(struct Square square)
+{
+    int len1 = (int)LineLength(square.xa, square.ya, square.xb, square.yb);
+    int len2 = (int)LineLength(square.xb, square.yb, square.xc, square.yc);
+    int len3 = (int)LineLength(square.xc, square.yc, square.xd, square.yd);
+    int len4 = (int)LineLength(square.xd, square.yd, square.xa, square.ya);
+    int len5 = (int)LineLength(square.xa, square.ya, square.xc, square.yc);
+    int len6 = (int)LineLength(square.xb, square.yb, square.xd, square.yd);
+
+
+    return  approx(len1, len2, 400) &&
+            approx(len2, len3, 400) &&
+            approx(len3, len4, 400) &&
+            approx(len4, len1, 400) &&
+            approx(len5, len6, 400);
+}
+
+//Initialisation new square
+void square_init(struct Intersection inter1, struct Intersection inter2,
+                          struct Intersection inter3, struct Intersection inter4, struct Square *square)
+{
+    square->xa = inter1.x;
+    square->ya = inter1.y;
+    square->xb = inter2.x;
+    square->yb = inter2.y;
+    square->xc = inter3.x;
+    square->yc = inter3.y;
+    square->xd = inter4.x;
+    square->yd = inter4.y;
+    square->perimeter = SquareArea(inter1, inter2, inter3);
+}
+
+//Initialise a null Square (all values == -1)
+struct Square null_Square()
+{
+    struct Square square = {
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1
+    };
+    return square;
+}
+
+int compare_intersections(Intersection inter1, Intersection inter2, Intersection inter3, Intersection inter4)
+{
+    int test1 = inter1.x != inter2.x && inter1.x != inter3.x && inter1.x != inter4.x;
+    test1 = test1 && inter1.y != inter2.y && inter1.y != inter3.y && inter1.y != inter4.y;
+    int test2 = inter2.x != inter3.x && inter2.x != inter4.x;
+    test2 = test2 && inter2.y != inter3.y && inter2.y != inter4.y;
+    int test3 = inter3.x != inter4.x;
+    test3 = test3 && inter3.y != inter4.y;
+    return test1 && test2 && test3;
+}
+
+//Get all squares of the grid
+void get_all_squares(struct Line *lines, int NBLine, struct list *squares)
+{
+    struct Square square;
+    struct Intersection inter1;
+    struct Intersection inter2;
+    struct Intersection inter3;
+    struct Intersection inter4;
+
+    for(int h = 0; h < NBLine; h++)
     {
-        for(int i = 0; (intersections_line[i].x != NULL) && (intersections_line[i].y != NULL); i++)
+        for(int i = 0; i < NBLine; i++)
         {
-            Intersection intersection = intersections_line[i];
-            if (firstLine.x1 == intersection.line.x1 && firstLine.x2 == intersection.line.x2 &&
-                firstLine.y1 == intersection.line.y1 && firstLine.y2 == intersection.line.y2 )
+            if (h == i)
+                continue;
+            inter1 = line_intersection(lines[h], lines[i]);
+            if(inter1.x != -1 && inter1.y != -1)
             {
-                intersections_square[i] = intersections_line[i];
-                struct Line line1;
-                struct Line line2;
-
-                line1.x1 = intersections_square[0].x;
-                line1.y1 = intersections_square[0].y;
-                line1.x2 = intersections_square[2].x;
-                line1.y2 = intersections_square[2].y;
-
-                line2.x1 = intersections_square[1].x;
-                line2.y1 = intersections_square[1].y;
-                line2.x2 = intersections_square[3].x;
-                line2.y2 = intersections_square[3].y;
-
-                struct Intersection diagIntersection = line_intersection(line1, line2);
-                if (diagIntersection.x != NULL && diagIntersection.y != NULL)
-                    return intersections_square;
-
+                for(int j = 0; j < NBLine; j++)
+                {
+                    if (i == j)
+                        continue;
+                    inter2 = line_intersection(lines[i], lines[j]);
+                    if(inter2.x != -1 && inter2.y != -1)
+                    {
+                        for(int k = 0; k < NBLine; k++)
+                        {
+                            if (j == k)
+                                continue;
+                            inter3 = line_intersection(lines[j], lines[k]);
+                            if(inter3.x != -1 && inter3.y != -1)
+                            {
+                                if(k == h)
+                                    continue;
+                                inter4 = line_intersection(lines[k], lines[h]);
+                                if(inter4.x != -1 && inter4.y != -1)
+                                {
+                                    if(compare_intersections(inter1, inter2, inter3, inter4))
+                                    {
+                                        square_init(inter1, inter2, inter3, inter4, &square);
+                                        if(!IsSquare(square))
+                                            continue;
+                                        list_push_front(squares, square);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
-            return NULL;
         }
     }
+}
+
+struct Line* print_squares(struct Line* lines, int NBLine)
+{
+    struct list *squares = malloc(sizeof(struct list));
+    list_init(squares);
+    get_all_squares(lines, NBLine, squares);
+    printf("%u", squares->length);
+    struct Line *final = calloc(squares->length * 4, sizeof(struct Line));
+    struct list *p = squares->next;
+    for(int i = 0; p; p = p->next, i += 4)
+    {
+        struct Line line1 = {
+                .x1 = p->data.xa,
+                .y1 = p->data.ya,
+                .x2 = p->data.xb,
+                .y2 = p->data.yb
+        };
+        struct Line line2 = {
+                .x1 = p->data.xb,
+                .y1 = p->data.yb,
+                .x2 = p->data.xc,
+                .y2 = p->data.yc
+        };
+        struct Line line3 = {
+                .x1 = p->data.xc,
+                .y1 = p->data.yc,
+                .x2 = p->data.xd,
+                .y2 = p->data.yd
+        };
+        struct Line line4 = {
+                .x1 = p->data.xd,
+                .y1 = p->data.yd,
+                .x2 = p->data.xa,
+                .y2 = p->data.ya
+        };
+        final[i] = line1;
+        final[i + 1] = line2;
+        final[i + 2] = line3;
+        final[i + 3] = line4;
+    }
+    free_list(squares);
+    return final;
+}
+
+//Get the bigger square of the grid
+struct Line* get_Bigger_Squares(struct Line* lines, int NBLine)
+{
+    struct list *squares = malloc(sizeof(struct list));
+    list_init(squares);
+    get_all_squares(lines, NBLine, squares);
+    printf("%u", squares->length);
+    struct Square biggerSquare = null_Square();
+    for(struct list *p = squares->next; p; p = p->next)
+    {
+        if(p->data.perimeter > biggerSquare.perimeter)
+        {
+            printf("%f\n", p->data.perimeter);
+            biggerSquare = p->data;
+        }
+    }
+    free_list(squares);
+
+    struct Line *final;
+    if(IsSquare(biggerSquare))
+    {
+        final = calloc(4, sizeof(struct Line));
+    }
+
     else
     {
-        for(int j = 0; (intersections_line[j].x != NULL) && (intersections_line[j].y != NULL) ; j++)
-        {
-            intersections_square[j] = intersections_line[j];
-            __get_Squares(intersections_line[j].line, NBLines, intersections_square, j + 1, firstLine,lines);
-        }
+        final = calloc(4, sizeof(struct Line));
     }
+
+    struct Line line1 = {
+            .x1 = biggerSquare.xa,
+            .y1 = biggerSquare.ya,
+            .x2 = biggerSquare.xb,
+            .y2 = biggerSquare.yb
+    };
+    struct Line line2 = {
+            .x1 = biggerSquare.xb,
+            .y1 = biggerSquare.yb,
+            .x2 = biggerSquare.xc,
+            .y2 = biggerSquare.yc
+    };
+    struct Line line3 = {
+            .x1 = biggerSquare.xc,
+            .y1 = biggerSquare.yc,
+            .x2 = biggerSquare.xd,
+            .y2 = biggerSquare.yd
+    };
+    struct Line line4 = {
+            .x1 = biggerSquare.xd,
+            .y1 = biggerSquare.yd,
+            .x2 = biggerSquare.xa,
+            .y2 = biggerSquare.ya
+    };
+    final[0] = line1;
+    final[1] = line2;
+    final[2] = line3;
+    final[3] = line4;
+    return final;
 }
 
+//-----------------AutoRotation-----------//
 
-struct Square* get_Squares(struct Line * lines, int NBLines)
+int find_angle(struct Line line)
 {
-    struct Square* squares;
-    struct Square square;
-    struct Intersection * intersections_square = calloc(4, sizeof (Intersection));
-    int j = 0;
+    double len1 = LineLength(line.x1, line.x2, line.y1, line.y1);
+    double len2 = LineLength(line.x1, line.x2, line.y1, line.y2);
+    return radToDeg(acos(len1 / len2));
+}
 
-    for(int i = 0; i > NBLines; i++)
+void auto_rotation(Image* image, struct Intersection* intersection)
+{
+    struct Line line1 = {
+            intersection[0].x,
+            intersection[0].y,
+            intersection[1].x,
+            intersection[1].y,
+            find_angle(line1)
+    };
+    struct Line line2 = {
+            intersection[1].x,
+            intersection[1].y,
+            intersection[2].x,
+            intersection[2].y,
+            find_angle(line2)
+    };
+    if(approx(line1.theta, line2.theta, 20))
     {
-        intersections_square = __get_Squares(lines[i], NBLines, intersections_square, 0,lines[0],lines);
-        if(intersections_square != NULL)
+        line2.x1 = intersection[2].x;
+        line2.y1 = intersection[2].y;
+        line2.x2 = intersection[3].x;
+        line2.y2 = intersection[3].y;
+        line2.theta = find_angle(line2);
+    }
+    int rotationAngle = 90 - MAX(line1.theta, line2.theta);
+    imageRotate(image, rotationAngle);
+}
+
+//-----------------AutoRotation-----------//
+
+
+//-----------------FindCell-----------//
+
+
+Image cropImage(Image *image, SDL_Rect *rect)
+{
+    Image res = {
+            rect->w,
+            rect->h,
+            malloc((rect->w + 1) * sizeof(Pixel *))
+    };
+    for(int i = 0; i < rect->w; i++)
+    {
+        res.pixels[i] = (Pixel *)malloc((rect->h + 1) * sizeof(Pixel));
+    }
+
+    for(int x = rect->x; x < rect->x + rect->w; x++)
+    {
+        for(int y = rect->y; y < rect->y + rect->h; y++)
         {
-            intersections_square[0].x = square.xa;
-            intersections_square[0].y = square.ya;
-            intersections_square[1].x = square.xb;
-            intersections_square[1].y = square.yb;
-            intersections_square[2].x = square.xc;
-            intersections_square[2].y = square.yc;
-            intersections_square[3].x = square.xd;
-            intersections_square[3].y = square.yd;
-            squares[j] = square;
-            j++;
+            res.pixels[x - rect->x][y - rect->y].r = image->pixels[x][y].r;
+            res.pixels[x - rect->x][y - rect->y].g = image->pixels[x][y].g;
+            res.pixels[x - rect->x][y - rect->y].b = image->pixels[x][y].b;
         }
     }
-    return squares;
+    return res;
+}
+
+//split (marche seulement si l'image est droite)
+Image* split(struct Line *lines, Image *image, Image *cells)
+{
+    //recherche le point le plus en haut à gauche
+    int startX = lines->x1;
+    for(int i = 0; i < 4; i++)
+    {
+        startX = MIN(startX, (lines + i)->x1);
+        startX = MIN(startX, (lines + i)->x2);
+    }
+
+    int startY = lines->y1;
+    for(int i = 0; i < 4; i++)
+    {
+        startY = MIN(startY, (lines + i)->x1);
+        startY = MIN(startY, (lines + i)->x2);
+    }
+
+    //recherche un côté horizontal
+    struct Line lineX = *lines;
+    if(find_angle(lineX) <= 10)
+    {
+        lineX = *(lines + 1);
+
+        if(find_angle(lineX) <= 10)
+        {
+            lineX = *(lines + 2);
+        }
+    }
+    int xPlus = (int)LineLength(lineX.x1, lineX.x2, lineX.y1, lineX.y2) / 9;
+
+    //recherche un côté vertical
+    struct Line lineY = *lines;
+
+    if(find_angle(lineY) >= 80)
+    {
+        lineY = *(lines + 1);
+
+        if(find_angle(lineY) >= 80)
+        {
+            lineY = *(lines + 2);
+        }
+    }
+
+    int yPlus = (int)LineLength(lineY.x1, lineY.x2, lineY.y1, lineY.y2) / 9;
+    int i = 0;
+    int j = 0;
+    int count = 0;
+    SDL_Rect cell;
+
+    for(int x = startX; i < 9; i++, j = 0, x += xPlus)
+    {
+        for(int y = startY; j < 9; j++, y += yPlus)
+        {
+            cell.x = x;
+            cell.y = y;
+            cell.w = xPlus;
+            cell.h = yPlus;
+
+            cells[count++] = cropImage(image, &cell);
+        }
+    }
+    return cells;
 }

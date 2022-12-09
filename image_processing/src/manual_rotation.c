@@ -1,4 +1,4 @@
-#include "manual_rotation.h"
+#include "../include/manual_rotation.h"
 
 
 double bilinearInterpolation(unsigned int top, unsigned int bottom, unsigned int right, unsigned int left,
