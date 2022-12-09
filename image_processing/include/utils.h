@@ -27,11 +27,13 @@ typedef struct {
 hsv rgb2hsv(rgb in);
 rgb hsv2rgb(hsv in);
 
-float clamp(float value, int val1, int val2);
+float clampFloat(float value, float min, float max);
 Uint8 clampUint8(Uint8 value, Uint8 min, Uint8 max);
+int clampIntMin(int value, int min);
 char* stradd(const char* a, const char* b);
 void insertionSort(double arr[], int n);
 char* concat(const char* str1, const char* str2);
+int clampInt(int value, int min, int max);
 
 unsigned int **initMatrix(unsigned int x, unsigned int y);
 void freeMatrix(unsigned int **matrice, size_t height);

@@ -7,9 +7,9 @@ void imageGrayscale(Image* image)
     {
         for(int y = 0; y < image->height; y ++)
         {
-            Uint8 average = clamp(0.3 * image->pixels[x][y].r
-                                  + 0.59 * image->pixels[x][y].g
-                                  + 0.11 * image->pixels[x][y].b, 0, 255);
+            Uint8 average = clampFloat(0.3 * image->pixels[x][y].r
+                                       + 0.59 * image->pixels[x][y].g
+                                       + 0.11 * image->pixels[x][y].b, 0, 255);
             setPixelSameValue(&image->pixels[x][y], average);
         }
     }
@@ -157,7 +157,7 @@ void imageBinarization(Image* image)
     {
         for(int y = 0; y < image->height; y++)
         {
-            if(image->pixels[x][y].pixelAverage > meanIntensity)
+            if((int)image->pixels[x][y].pixelAverage > meanIntensity)
                 setPixelSameValue(&image->pixels[x][y], 255);
             else
                 setPixelSameValue(&image->pixels[x][y], 0);
@@ -200,6 +200,31 @@ Pixel getPixelMedian(Pixel* pixels)
     Pixel pixel = {r, g, b, average};
 
     return pixel;
+}
+
+void imageBlackWhite(Image* image)
+{
+    for(int x = 0; x < image->width; x++)
+    {
+        for(int y = 0; y < image->height; y++)
+        {
+            if(image->pixels[x][y].pixelAverage >= 150)
+                setPixelSameValue(&image->pixels[x][y], 1);
+            else
+                setPixelSameValue(&image->pixels[x][y], 0);
+        }
+    }
+}
+
+ImageMajorOrder prepareImageFileForNeuralNetwork(const char* file)
+{
+    Image image = getImageFromPng(file);
+
+    imageBlackWhite(&image);
+    ImageMajorOrder convertedImage = convertImageToMajorOrder(&image);
+    freeImage(&image);
+
+    return convertedImage;
 }
 
 /*

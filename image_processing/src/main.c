@@ -1,8 +1,9 @@
 #include "../include/image_processing.h"
 #include "../include/image_loading.h"
-#include "../include/manual_rotation.h"
+#include "../include/image_rotation.h"
 #include "../include/line_detection.h"
 #include "../include/image_split.h"
+#include "../include/sudoku_builder.h"
 
 int main(int argc, char** argv)
 {
@@ -10,16 +11,13 @@ int main(int argc, char** argv)
     if (argc < 2 || argc > 3)
         errx(EXIT_FAILURE, "Usage: image-file (+ rotation)");
 
-    SDL_Surface* surface = loadImage(argv[1]);
-    Image image = newImage(surface);
-    SDL_FreeSurface(surface);
-
+    Image image = getImageFromPng(argv[1]);
 
     if (argc == 3)
     {
-        imageRotate(&image, atoi(argv[2]));
-        saveImageToBmp(&image, "rotated");
-        freeImage(&image);
+        Image img = imageRotate(&image, atoi(argv[2]));
+        saveImageToBmp(&img, "rotated");
+        freeImage(&img);
         return EXIT_SUCCESS;
     }
     imageGrayscale(&image);
@@ -30,37 +28,29 @@ int main(int argc, char** argv)
 
     imageBinarization(&image);
     saveImageToBmp(&image, "mean");
-
-    imageMedianBlur(&image);
-    saveImageToBmp(&image, "blur");
+    Image image_cells = copyImage(&image);
+    Image cpImage = copyImage(&image);
 
     imageInvert(&image);
-    Image image_cells = copyImage(&image);
     saveImageToBmp(&image, "inverted");
 
     imageSobelFilter(&image);
     saveImageToBmp(&image, "sobel");
 
-    int linesLength = 0;
-    Line* lines = houghTransform(&image, 0.4f, &linesLength);
+    imageMedianBlur(&image);
+    saveImageToBmp(&image, "blur");
 
-    Image cpImage = copyImage(&image);
-    Image cpImage2 = copyImage(&image);
+    int linesLength = 0;
+    Line* lines = getImageLines(&image, 450, &linesLength);
 
     drawLineOnImage(&image, lines, linesLength);
     saveImageToBmp(&image, "hough");
 
-    int newLinesCounts = 0;
-    Line* newlines = reduce_lines(lines, linesLength, &newLinesCounts);
-
-    drawLineOnImage(&cpImage, newlines, newLinesCounts);
-    saveImageToBmp(&cpImage, "hough_line_reduced");
-
     //test detection carré
-    Line* newlines2 = get_Bigger_Squares(newlines, newLinesCounts);
-    //Line* newlines2 = print_squares(newlines, newLinesCounts);
-    drawLineOnImage(&cpImage2, newlines2, 4);
-    saveImageToBmp(&cpImage2, "Big_Rectangle");
+    Line* newlines2 = get_Bigger_Squares(lines, linesLength);
+    //Line* newlines2 = print_squares(lines, linesLength);
+    drawLineOnImage(&cpImage, newlines2, 4);
+    saveImageToBmp(&cpImage, "Big_Rectangle");
 
     //test découpage
     Image *images = calloc(81, sizeof(Image));
@@ -71,16 +61,12 @@ int main(int argc, char** argv)
         snprintf(name, 3, "%i", i);
         saveImageToBmp(&images[i], name);
     }
+
     freeImage(&image_cells);
     free(images);
     free(newlines2);
-
-    //struct Square * Squares[] = get_Squares();
-
-    free(newlines);
     free(lines);
     freeImage(&image);
-    freeImage(&cpImage);
 
     return EXIT_SUCCESS;
 }

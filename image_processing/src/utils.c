@@ -3,22 +3,27 @@
 //
 #include "../include/utils.h"
 
-float clamp(float value, int val1, int val2)
+float clampFloat(float value, float min, float max)
 {
-    if(value < val1)
-        return val1;
-    if(value > val2)
-        return val2;
-    return value;
+    const float t = value < min ? min : value;
+    return t > max ? max : t;
+}
+
+int clampIntMin(int value, int min)
+{
+    return value < min ? min : value;
+}
+
+int clampInt(int value, int min, int max)
+{
+    const int t = value < min ? min : value;
+    return t > max ? max : t;
 }
 
 Uint8 clampUint8(Uint8 value, Uint8 min, Uint8 max)
 {
-    if(value < min)
-        value = min;
-    if(value > max)
-        value = max;
-    return value;
+    const Uint8 t = value < min ? min : value;
+    return t > max ? max : t;
 }
 
 char* stradd(const char* a, const char* b){
