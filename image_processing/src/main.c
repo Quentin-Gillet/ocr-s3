@@ -30,6 +30,7 @@ int main(int argc, char** argv)
     saveImageToBmp(&image, "mean");
 
     imageInvert(&image);
+    Image image_cells = copyImage(&image);
     saveImageToBmp(&image, "inverted");
 
     imageSobelFilter(&image);
