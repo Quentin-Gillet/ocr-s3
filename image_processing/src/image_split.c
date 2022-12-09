@@ -155,15 +155,9 @@ int IsSquare(struct Square square)
     int len2 = (int)LineLength(square.xb, square.yb, square.xc, square.yc);
     int len3 = (int)LineLength(square.xc, square.yc, square.xd, square.yd);
     int len4 = (int)LineLength(square.xd, square.yd, square.xa, square.ya);
-    int len5 = (int)LineLength(square.xa, square.ya, square.xc, square.yc);
-    int len6 = (int)LineLength(square.xb, square.yb, square.xd, square.yd);
-
-
-    return  approx(len1, len2, 400) &&
-            approx(len2, len3, 400) &&
-            approx(len3, len4, 400) &&
-            approx(len4, len1, 400) &&
-            approx(len5, len6, 400);
+    return  approx(len1, len2, 10) &&
+            approx(len2, len3, 10) &&
+            approx(len3, len4, 10);
 }
 
 //Initialisation new square
@@ -268,7 +262,6 @@ struct Line* print_squares(struct Line* lines, int NBLine)
     struct list *squares = malloc(sizeof(struct list));
     list_init(squares);
     get_all_squares(lines, NBLine, squares);
-    printf("%u", squares->length);
     struct Line *final = calloc(squares->length * 4, sizeof(struct Line));
     struct list *p = squares->next;
     for(int i = 0; p; p = p->next, i += 4)
@@ -312,13 +305,11 @@ struct Line* get_Bigger_Squares(struct Line* lines, int NBLine)
     struct list *squares = malloc(sizeof(struct list));
     list_init(squares);
     get_all_squares(lines, NBLine, squares);
-    printf("%u", squares->length);
     struct Square biggerSquare = null_Square();
     for(struct list *p = squares->next; p; p = p->next)
     {
         if(p->data.perimeter > biggerSquare.perimeter)
         {
-            printf("%f\n", p->data.perimeter);
             biggerSquare = p->data;
         }
     }
@@ -453,44 +444,44 @@ Image* split(struct Line *lines, Image *image, Image *cells)
 
     //recherche un côté horizontal
     struct Line lineX = *lines;
-    if(find_angle(lineX) <= 10)
+    if(find_angle(lineX) >= 50)
     {
         lineX = *(lines + 1);
 
-        if(find_angle(lineX) <= 10)
+        if(find_angle(lineX) >= 50)
         {
             lineX = *(lines + 2);
         }
     }
-    int xPlus = (int)LineLength(lineX.x1, lineX.x2, lineX.y1, lineX.y2) / 9;
 
     //recherche un côté vertical
     struct Line lineY = *lines;
 
-    if(find_angle(lineY) >= 80)
+    if(find_angle(lineY) <= 50)
     {
         lineY = *(lines + 1);
 
-        if(find_angle(lineY) >= 80)
+        if(find_angle(lineY) <= 50)
         {
             lineY = *(lines + 2);
         }
     }
 
+    int xPlus = (int)LineLength(lineX.x1, lineX.x2, lineX.y1, lineX.y2) / 9;
     int yPlus = (int)LineLength(lineY.x1, lineY.x2, lineY.y1, lineY.y2) / 9;
     int i = 0;
     int j = 0;
     int count = 0;
     SDL_Rect cell;
 
-    for(int x = startX; i < 9; i++, j = 0, x += xPlus)
+    for(int x = startX + 10; i < 9; i++, j = 0, x += xPlus)
     {
-        for(int y = startY; j < 9; j++, y += yPlus)
+        for(int y = startY + 10; j < 9; j++, y += yPlus)
         {
             cell.x = x;
             cell.y = y;
-            cell.w = xPlus;
-            cell.h = yPlus;
+            cell.w = xPlus - 20;
+            cell.h = yPlus - 20;
 
             cells[count++] = cropImage(image, &cell);
         }

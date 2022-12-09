@@ -35,6 +35,7 @@ int main(int argc, char** argv)
     saveImageToBmp(&image, "blur");
 
     imageInvert(&image);
+    Image image_cells = copyImage(&image);
     saveImageToBmp(&image, "inverted");
 
     imageSobelFilter(&image);
@@ -62,14 +63,15 @@ int main(int argc, char** argv)
     saveImageToBmp(&cpImage2, "Big_Rectangle");
 
     //test découpage
-    Image *images = calloc(82, sizeof(Image));
-    images = split(newlines2, &cpImage2, images);
-    for(int i = 0; i < 82; i++)
+    Image *images = calloc(81, sizeof(Image));
+    images = split(newlines2, &image_cells, images);
+    for(int i = 0; i < 81; i++)
     {
         char name[3];
         snprintf(name, 3, "%i", i);
         saveImageToBmp(&images[i], name);
     }
+    freeImage(&image_cells);
     free(images);
     free(newlines2);
 
