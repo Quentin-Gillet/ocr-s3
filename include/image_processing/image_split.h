@@ -19,10 +19,9 @@ typedef struct Intersection{
 
 int approx(int a, int b, int Threshold);
 Line* reduce_lines(Line* lines, int nbLines, int* newLinesCount);
-struct Line* get_Bigger_Squares(struct Line* lines, int NBLine);
+struct Line* print_squares(struct Line* lines, int NBLine, int width, int height);
 Image* split(struct Line *lines, Image *image, Image *cells);
-
-struct Line* print_squares(struct Line* lines, int NBLine);
+struct Line* get_Bigger_Squares(struct Line* lines, int NBLine, int width, int height);
 
 /*
 a _______ b
