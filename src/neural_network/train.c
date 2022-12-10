@@ -1,15 +1,4 @@
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <string.h>
-#include "../include/save.h"
-#include "../include/train.h"
-#include "../include/image_processing.h"
-#include "../include/image.h"
-#include "../include/utils.h"
+#include "neural_network/train.h"
 
 // -------------------------- TOOLS --------------------------
 char **initMatrixChar(unsigned int y, unsigned int x)

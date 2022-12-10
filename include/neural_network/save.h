@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <string.h>
+#include <err.h>
 
 void to_B(int layer, double *B, char* f);
 void to_W(int layer, int next_layer, double **W, char* f);

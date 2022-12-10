@@ -1,9 +1,4 @@
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include "../include/save.h"
+#include "neural_network/save.h"
 
 // to get finals W after training from files
 void to_W(int layer, int next_layer, double **W, char* f)

@@ -8,7 +8,10 @@
 #include <sys/types.h>
 #include <string.h>
 
-#include "image.h"
+#include "image_processing/image_processing.h"
+#include "image_processing/image.h"
+#include "image_processing/utils.h"
+#include "neural_network/save.h"
 
 #define NB_INPUTS 784
 #define NB_HIDDEN_N_L1 128
