@@ -18,16 +18,16 @@
             <child>
               <object class="GtkButton" id="NextButton">
                 <property name="label" translatable="yes">Start Process</property>
-                <property name="width-request">195</property>
-                <property name="height-request">76</property>
+                <property name="width-request">202</property>
+                <property name="height-request">86</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">To go to next step of the process</property>
               </object>
               <packing>
-                <property name="x">37</property>
-                <property name="y">288</property>
+                <property name="x">33</property>
+                <property name="y">289</property>
               </packing>
             </child>
             <child>
@@ -62,17 +62,31 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton">
-                <property name="label" translatable="yes">button</property>
-                <property name="width-request">200</property>
-                <property name="height-request">76</property>
+              <object class="GtkButton" id="SkipButton">
+                <property name="label" translatable="yes">Skip All</property>
+                <property name="width-request">201</property>
+                <property name="height-request">83</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
               </object>
               <packing>
-                <property name="x">34</property>
-                <property name="y">421</property>
+                <property name="x">35</property>
+                <property name="y">440</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="ResetButton">
+                <property name="label" translatable="yes">Reset</property>
+                <property name="width-request">201</property>
+                <property name="height-request">83</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="x">35</property>
+                <property name="y">583</property>
               </packing>
             </child>
           </object>
