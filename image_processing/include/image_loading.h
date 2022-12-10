@@ -13,7 +13,7 @@
 
 SDL_Surface* loadPngToSurface(const char* path);
 Image getImageFromPng(const char* path);
-void saveImageToBmp(Image* image, char* name);
+void saveImageToBmp(Image* image, char* name, char* parent);
 void saveSurfaceToBmp(SDL_Surface* surface, char* name, char* parent, char* format);
 void saveImageToPdf(Image* image, char* name);
 

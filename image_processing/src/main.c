@@ -17,41 +17,41 @@ int main(int argc, char** argv)
     if (argc == 3)
     {
         Image img = imageRotate(&image, atoi(argv[2]));
-        saveImageToBmp(&img, "rotated");
+        saveImageToBmp(&img, "rotated", "");
         freeImage(&img);
         return EXIT_SUCCESS;
     }
     imageGrayscale(&image);
-    saveImageToBmp(&image, "greyscale");
+    saveImageToBmp(&image, "greyscale", "");
 
     imageContrastFilter(&image);
-    saveImageToBmp(&image, "contrast");
+    saveImageToBmp(&image, "contrast", "");
 
     imageBinarization(&image);
-    saveImageToBmp(&image, "mean");
+    saveImageToBmp(&image, "mean", "");
     Image image_cells = copyImage(&image);
     Image cpImage = copyImage(&image);
 
     imageInvert(&image);
-    saveImageToBmp(&image, "inverted");
+    saveImageToBmp(&image, "inverted", "");
 
     imageSobelFilter(&image);
-    saveImageToBmp(&image, "sobel");
+    saveImageToBmp(&image, "sobel", "");
 
     imageMedianBlur(&image);
-    saveImageToBmp(&image, "blur");
+    saveImageToBmp(&image, "blur", "");
 
     int linesLength = 0;
     Line* lines = getImageLines(&image, 450, &linesLength);
 
     drawLineOnImage(&image, lines, linesLength);
-    saveImageToBmp(&image, "hough");
+    saveImageToBmp(&image, "hough", "");
 
     //test detection carré
     Line* newlines2 = get_Bigger_Squares(lines, linesLength);
     //Line* newlines2 = print_squares(lines, linesLength);
     drawLineOnImage(&cpImage, newlines2, 4);
-    saveImageToBmp(&cpImage, "Big_Rectangle");
+    saveImageToBmp(&cpImage, "biggest-rectangle", "");
 
     //test découpage
     Image *images = calloc(81, sizeof(Image));
@@ -60,7 +60,7 @@ int main(int argc, char** argv)
     {
         char name[3];
         snprintf(name, 3, "%i", i);
-        saveImageToBmp(&images[i], name);
+        saveImageToBmp(&images[i], name, "numbers");
     }
 
     freeImage(&image_cells);
