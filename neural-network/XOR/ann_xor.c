@@ -152,6 +152,15 @@ void modifWeightBiais(int layer, int back_layer, double W[back_layer][layer],
 	}
 }
 
+void print_layer(double *layer, int nb_neurons)
+{
+	for (int i = 0; i < nb_neurons; i++)
+	{
+		printf("%f ", layer[i]);
+	}
+	printf("\n");
+}
+
 // ----------------------- SAVE WEIGHT & BIAS ------------------
 void save(int nb_inputs, int nb_hiddenNeurons, int nb_outputs,
 	double W1[nb_inputs][nb_hiddenNeurons], double B1[nb_hiddenNeurons],
@@ -241,8 +250,8 @@ void train()
 	// traning input values
     	double inputs[4][2] = {{0.0f,0.0f},
     			{0.0f,1.0f},
-			{1.0f,0.0f},
-			{1.0f,1.0f}};
+				{1.0f,0.0f},
+				{1.0f,1.0f}};
 	
 	// traning output values
 	double expected_output[4] = {0.0f, 1.0f, 1.0f, 0.0f};
@@ -279,11 +288,14 @@ void train()
 	computeB(nb_hiddenNeurons,hiddenLayerB);
 	computeB(nb_outputs,outputB);
 
+	print_layer(hiddenLayerW[0],nb_hiddenNeurons);
+	print_layer(outputW[0],nb_outputs);
+
 
 	// traning of the neural network for 10000 epochs
 	int steps[] = {0,1,2,3};
 
-	for (int epoch = 0; epoch <= 10000; epoch++)
+	for (int epoch = 0; epoch <= 10; epoch++)
 	{
 	    	//printf("epoch %d/10000 \r",epoch);
 		//fflush(stdout);
@@ -303,15 +315,10 @@ void train()
 		    	// FORWARD PROPAGATION
 		    	int i = steps[x];
 						
-			computeZ(nb_inputs, nb_hiddenNeurons, inputs[i], hiddenLayerW, hiddenLayerB,
-				Z_hidden);
-
+			computeZ(nb_inputs, nb_hiddenNeurons, inputs[i], hiddenLayerW, hiddenLayerB,Z_hidden);
 			computeA(nb_hiddenNeurons, Z_hidden, hiddenLayer);
-
-			
-			computeZ(nb_hiddenNeurons, nb_outputs, hiddenLayer, outputW, outputB,
-				Z_output);
-
+	
+			computeZ(nb_hiddenNeurons, nb_outputs, hiddenLayer, outputW, outputB,Z_output);
 			computeA(nb_outputs, Z_output, output);
 
 			/*
@@ -369,6 +376,8 @@ void train()
 	save(nb_inputs, nb_hiddenNeurons, nb_outputs, hiddenLayerW, hiddenLayerB, outputW, outputB);
 
 }
+
+
 // to get finals W after training from files
 int to_W(int layer, int next_layer, double W[layer][next_layer], char *f)
 {
@@ -467,7 +476,7 @@ int main(int argc, char *argv[])
 		double hiddenLayerW[nb_inputs][nb_hiddenNeurons]; 
 		double outputLayerW[nb_hiddenNeurons][nb_outputs];
 		
-    		int t1 = to_W(nb_inputs,nb_hiddenNeurons,
+    	int t1 = to_W(nb_inputs,nb_hiddenNeurons,
 			hiddenLayerW,"training-result/hiddenLayer.W");
 		int t2 = to_B(nb_hiddenNeurons,
 			hiddenLayerB,"training-result/hiddenLayer.B");
