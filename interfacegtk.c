@@ -1,7 +1,12 @@
 #include <gtk/gtk.h>
+#include "image_processing/include/image_rotation.h"
+#include "image_processing//include/line_detection.h"
+#include "image_processing/include/image_split.h"
+#include "image_processing/include/image_processing.h"
 
 typedef struct appinfo {
     GtkImage *image;
+    GtkFileChooserButton * file_chooser;
     int CurrEvent;
     GtkButton *Nextbutton;
     GtkLevelBar *ProgressBar;
@@ -49,13 +54,21 @@ void next_event(GtkButton *Nextbutton, gpointer user_data) {
     info->CurrEvent = info->CurrEvent + 1;
     printf("currevent : %i\n", info->CurrEvent);
     gtk_button_set_label(Nextbutton, "Next Step");
+
     double BarValue = gtk_level_bar_get_value(info->ProgressBar);
-    gtk_level_bar_set_value(info->ProgressBar,BarValue+10);
+    gtk_level_bar_set_value(info->ProgressBar,BarValue+14.28571429);
     GtkLabel *ProcessLabel = info->ProcessLabel;
+
+    GFile *file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER  (info->file_chooser));
+    const char *filename = g_file_get_path(file);
+    Image image = getImageFromPng(filename);
     switch (info->CurrEvent) {
         case 0:
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
             gtk_label_set_label(ProcessLabel, "Applying Greyscale filter...");
+            imageGrayscale(&image);
+            saveImageToBmp(&image, "greyscale");
+            set_image("greyscale.bmp",info->image);
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
             break;
         case 1:
@@ -143,6 +156,7 @@ int main(int argc, char *argv[]) {
     infos.ProcessLabel = ProcessLabel;
     infos.Skipbutton = Skipbutton;
     infos.Resetbutton = Resetbutton;
+    infos.file_chooser = file_chooser;
 
     // Connects signal handlers.
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
