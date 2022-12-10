@@ -7,6 +7,11 @@
 
 int main(int argc, char** argv)
 {
+
+    Image img = buildSudoku("grid_00.result");
+    saveImageToBmp(&img, "result");
+
+    return 0;
     // Checks the number of arguments.
     if (argc < 2 || argc > 3)
         errx(EXIT_FAILURE, "Usage: image-file (+ rotation)");
