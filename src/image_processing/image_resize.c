@@ -2,7 +2,7 @@
 // Created by Quentin Gillet on 07/12/2022.
 //
 
-#include "../include/image_resize.h"
+#include "image_processing/image_resize.h"
 
 Image imageResize(Image *image, unsigned int width, unsigned int height)
 {

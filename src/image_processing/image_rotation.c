@@ -1,4 +1,4 @@
-#include "image_rotation.h"
+#include "image_processing/image_rotation.h"
 
 
 void getMaxSize(Image* image, int angleDegree, int *maxTop, int *maxLeft, int *minTop, int *minLeft)

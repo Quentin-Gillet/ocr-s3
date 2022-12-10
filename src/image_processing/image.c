@@ -1,7 +1,7 @@
 //
 // Created by Quentin Gillet on 26/10/2022.
 //
-#include "image.h"
+#include "image_processing/image.h"
 
 /*
  * Get a pixel from x and y

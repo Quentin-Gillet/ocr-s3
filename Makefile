@@ -1,8 +1,41 @@
-interface : interfacegtk.c
-	gcc -I/image_processing/include -I/usr/include/gtk-3.0 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/sysprof-4 -I/usr/include/harfbuzz -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/fribidi -I/usr/include/cairo -I/usr/include/lzo -I/usr/include/pixman-1 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/gio-unix-2.0 -I/usr/include/cloudproviders -I/usr/include/atk-1.0 -I/usr/include/at-spi2-atk/2.0 -I/usr/include/at-spi-2.0 -I/usr/include/dbus-1.0 -I/usr/lib/dbus-1.0/include -pthread -Wall -O3    interfacegtk.c  -lgtk-3 -lgdk-3 -lz -lpangocairo-1.0 -lpango-1.0 -lharfbuzz -latk-1.0 -lcairo-gobject -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0  -o interface
+# Makefile
 
-clean :
-	rm -rf *.o
-	rm interface
+CC = gcc -Iinclude/
 
-all : interface
+CPPFLAGS = `pkg-config --cflags sdl2 gtk+-3.0`
+CFLAGS = -Wall -Wextra -g -fsanitize=address
+LDFLAGS = 
+LDLIBS = -lm `pkg-config --libs sdl2 SDL2_image gtk+-3.0`
+LIBS = -lpthread -ldl
+
+BUILD := build
+SOURCE_DIR := src
+
+SRC = $(shell find $(SOURCE_DIR) -name "*.c")
+OBJ = $(SRC:%.c=$(BUILD)/%.o)
+DEP = $(SRC:%.c=$(BUILD)/%.d)
+
+all: init main clear
+
+clear:
+	find . -type d -empty -delete
+
+init:
+	$(shell mkdir -p $(BUILD))
+	$(shell mkdir -p $(SRC:%.c=$(BUILD)/%))
+
+main: $(OBJ)
+	gcc -o $@ $(CFLAGS) $^ $(LDLFLAGS) $(LDLIBS)
+
+$(BUILD)/%.o : %.c
+	$(CC) $(CFLAGS) -c $< -o $@ $(LDLFLAGS) $(CPPFLAGS)
+
+.PHONY: clean
+
+clean:
+	rm -rf $(BUILD)
+	${RM} ${OBJ} ${DEP} main
+	rm -rf images/*.bmp
+	clear
+
+# END

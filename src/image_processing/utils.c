@@ -1,7 +1,7 @@
 //
 // Created by quentin on 06/10/22.
 //
-#include "../include/utils.h"
+#include "image_processing/utils.h"
 
 float clampFloat(float value, float min, float max)
 {

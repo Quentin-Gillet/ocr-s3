@@ -1,18 +1,21 @@
-#include "../include/image_processing.h"
-#include "../include/image_loading.h"
-#include "../include/image_rotation.h"
-#include "../include/line_detection.h"
-#include "../include/image_split.h"
-#include "../include/sudoku_builder.h"
+#include "image_processing/image_processing.h"
+#include "image_processing/image_loading.h"
+#include "image_processing/image_rotation.h"
+#include "image_processing/line_detection.h"
+#include "image_processing/image_split.h"
+#include "image_processing/sudoku_builder.h"
+#include "interface/interfacegtk.h"
 
 int main(int argc, char** argv)
 {
     // Checks the number of arguments.
-    if (argc < 2 || argc > 3)
-        errx(EXIT_FAILURE, "Usage: image-file (+ rotation)");
+    if(argc == 1)
+    {
+        start_gui();
+        return EXIT_SUCCESS;
+    }
 
     Image image = getImageFromPng(argv[1]);
-
     if (argc == 3)
     {
         Image img = imageRotate(&image, atoi(argv[2]));

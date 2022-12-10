@@ -2,7 +2,7 @@
 // Created by Quentin Gillet on 09/12/2022.
 //
 
-#include "../include/sudoku_builder.h"
+#include "image_processing/sudoku_builder.h"
 
 void getSudokuGrid(char* s, const char *fileName)
 {

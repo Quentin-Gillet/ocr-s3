@@ -1,54 +1,39 @@
-#include <gtk/gtk.h>
-#include "image_processing/include/image_rotation.h"
-#include "image_processing//include/line_detection.h"
-#include "image_processing/include/image_split.h"
-#include "image_processing/include/image_processing.h"
+#include "interface/interfacegtk.h"
 
-typedef struct appinfo {
-    GtkImage *image;
-    GtkFileChooserButton * file_chooser;
-    int CurrEvent;
-    GtkButton *Nextbutton;
-    GtkLevelBar *ProgressBar;
-    GtkButton *Skipbutton;
-    GtkButton *Resetbutton;
-    GtkLabel *ProcessLabel;
-} AppInfo;
 
-void set_image(const char * filename, GtkImage * image)
+void set_image(const char *filename, GtkImage *image)
 {
     const GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(filename, NULL);
     GdkPixbuf *ResizedPixbuf = gdk_pixbuf_scale_simple(pixbuf, 1000, 850, GDK_INTERP_BILINEAR);
-    gtk_image_set_from_pixbuf(image, ResizedPixbuf); // filename est un const char*
+    gtk_image_set_from_pixbuf(image, ResizedPixbuf); // filename is a const char*
 }
 
 void create_image(GtkFileChooserButton *file_chooser_button, gpointer user_data)
 {
     AppInfo *info = user_data;
 
-    GFile *file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER  (file_chooser_button));
+    GFile *file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(file_chooser_button));
     const char *filename = g_file_get_path(file);
     printf("filename : %s\n", filename);
-    set_image(filename,info->image);
+    set_image(filename, info->image);
     gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
 
     /*
     const GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(filename, NULL);
     GdkPixbuf *ResizedPixbuf = gdk_pixbuf_scale_simple(pixbuf, 1000, 850, GDK_INTERP_BILINEAR);
-    gtk_image_set_from_pixbuf(info->image, ResizedPixbuf); // filename est un const char*
+    gtk_image_set_from_pixbuf(info->image, ResizedPixbuf); // filename is a const char*
     gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
      */
 }
 
-void reset(GtkButton * Resetbutton, gpointer user_data)
+void reset(GtkButton *Resetbutton, gpointer user_data)
 {
-	AppInfo *info = user_data;
-
+    AppInfo *info = user_data;
     gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
-
 }
 
-void next_event(GtkButton *Nextbutton, gpointer user_data) {
+void next_event(GtkButton *Nextbutton, gpointer user_data)
+{
     AppInfo *info = user_data;
 
     info->CurrEvent = info->CurrEvent + 1;
@@ -56,10 +41,10 @@ void next_event(GtkButton *Nextbutton, gpointer user_data) {
     gtk_button_set_label(Nextbutton, "Next Step");
 
     double BarValue = gtk_level_bar_get_value(info->ProgressBar);
-    gtk_level_bar_set_value(info->ProgressBar,BarValue+14.28571429);
+    gtk_level_bar_set_value(info->ProgressBar, BarValue + 14.28571429);
     GtkLabel *ProcessLabel = info->ProcessLabel;
 
-    GFile *file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER  (info->file_chooser));
+    GFile *file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(info->file_chooser));
     const char *filename = g_file_get_path(file);
     Image image = getImageFromPng(filename);
     switch (info->CurrEvent) {
@@ -68,7 +53,7 @@ void next_event(GtkButton *Nextbutton, gpointer user_data) {
             gtk_label_set_label(ProcessLabel, "Applying Greyscale filter...");
             imageGrayscale(&image);
             saveImageToBmp(&image, "greyscale");
-            set_image("greyscale.bmp",info->image);
+            set_image("greyscale.bmp", info->image);
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
             break;
         case 1:
@@ -107,16 +92,17 @@ void next_event(GtkButton *Nextbutton, gpointer user_data) {
 
 }
 
-void skip(GtkButton * Skipbutton, gpointer user_data)
+void skip(GtkButton *Skipbutton, gpointer user_data)
 {
-	 AppInfo *info = user_data;
-     
-	 gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
-	 gtk_widget_set_sensitive(GTK_WIDGET(info->Resetbutton), FALSE);
+    AppInfo *info = user_data;
+
+    gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
+    gtk_widget_set_sensitive(GTK_WIDGET(info->Resetbutton), FALSE);
 }
 
 // Main function.
-int main(int argc, char *argv[]) {
+int start_gui()
+{
     // Initializes GTK.
     gtk_init(NULL, NULL);
     AppInfo infos;
@@ -125,17 +111,18 @@ int main(int argc, char *argv[]) {
     // (Exits if an error occurs.)
     GtkBuilder *builder = gtk_builder_new();
     GError *error = NULL;
-    if (gtk_builder_add_from_file(builder, "interface1.glade", &error) == 0) {
+    if (gtk_builder_add_from_file(builder, "src/interface/interface.glade", &error) == 0) {
         g_printerr("Error loading file: %s\n", error->message);
         g_clear_error(&error);
         return 1;
     }
 
-    GtkCssProvider * cssProvider = gtk_css_provider_new();
-    gtk_css_provider_load_from_path(cssProvider, "./style.css", NULL);
+    GtkCssProvider *cssProvider = gtk_css_provider_new();
+    gtk_css_provider_load_from_path(cssProvider, "src/interface/style.css", NULL);
 
-    GdkScreen * screen = gdk_screen_get_default();
-    gtk_style_context_add_provider_for_screen(screen, GTK_STYLE_PROVIDER(cssProvider),GTK_STYLE_PROVIDER_PRIORITY_USER);
+    GdkScreen *screen = gdk_screen_get_default();
+    gtk_style_context_add_provider_for_screen(screen, GTK_STYLE_PROVIDER(cssProvider),
+                                              GTK_STYLE_PROVIDER_PRIORITY_USER);
 
 
     // Gets the widgets.
@@ -146,8 +133,8 @@ int main(int argc, char *argv[]) {
     GtkButton *Nextbutton = GTK_BUTTON(gtk_builder_get_object(builder, "NextButton"));
     GtkLevelBar *ProgressBar = GTK_LEVEL_BAR(gtk_builder_get_object(builder, "ProgressBar"));
     GtkLabel *ProcessLabel = GTK_LABEL(gtk_builder_get_object(builder, "ProcessLabel"));
-    GtkButton * Skipbutton = GTK_BUTTON(gtk_builder_get_object(builder, "SkipButton"));
-    GtkButton * Resetbutton = GTK_BUTTON(gtk_builder_get_object(builder, "ResetButton"));
+    GtkButton *Skipbutton = GTK_BUTTON(gtk_builder_get_object(builder, "SkipButton"));
+    GtkButton *Resetbutton = GTK_BUTTON(gtk_builder_get_object(builder, "ResetButton"));
 
     infos.image = image;
     infos.CurrEvent = -1;

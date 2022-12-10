@@ -2,7 +2,7 @@
 // Created by quentin on 06/10/22.
 //
 
-#include "../include/image_loading.h"
+#include "image_processing/image_loading.h"
 
 // Loads an image in a surface.
 // The format of the surface is SDL_PIXELFORMAT_RGB888.

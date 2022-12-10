@@ -1,4 +1,4 @@
-#include "../include/linked_list.h"
+#include "image_processing/linked_list.h"
 #include <stdlib.h>
 
 void list_init(struct list *list)

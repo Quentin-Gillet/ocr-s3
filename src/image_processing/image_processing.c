@@ -1,4 +1,4 @@
-#include "../include/image_processing.h"
+#include "image_processing/image_processing.h"
 
 // Converts a image into grayscale image.
 void imageGrayscale(Image* image)

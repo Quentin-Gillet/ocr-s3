@@ -1,4 +1,4 @@
-#include "../include/line_detection.h"
+#include "image_processing/line_detection.h"
 
 struct Line* getImageLines(Image *image, int threshold, int *lineLength)
 {
