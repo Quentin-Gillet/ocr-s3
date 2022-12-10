@@ -20,12 +20,13 @@ void set_image(const char * filename, GtkImage * image)
 void create_image(GtkFileChooserButton *file_chooser_button, gpointer user_data)
 {
     AppInfo *info = user_data;
+
     GFile *file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER  (file_chooser_button));
     const char *filename = g_file_get_path(file);
     printf("filename : %s\n", filename);
     set_image(filename,info->image);
     gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
-    
+
     /*
     const GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(filename, NULL);
     GdkPixbuf *ResizedPixbuf = gdk_pixbuf_scale_simple(pixbuf, 1000, 850, GDK_INTERP_BILINEAR);
@@ -37,12 +38,14 @@ void create_image(GtkFileChooserButton *file_chooser_button, gpointer user_data)
 void reset(GtkButton * Resetbutton, gpointer user_data)
 {
 	AppInfo *info = user_data;
+
     gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
 
 }
 
 void next_event(GtkButton *Nextbutton, gpointer user_data) {
     AppInfo *info = user_data;
+
     info->CurrEvent = info->CurrEvent + 1;
     printf("currevent : %i\n", info->CurrEvent);
     gtk_button_set_label(Nextbutton, "Next Step");
@@ -94,6 +97,7 @@ void next_event(GtkButton *Nextbutton, gpointer user_data) {
 void skip(GtkButton * Skipbutton, gpointer user_data)
 {
 	 AppInfo *info = user_data;
+     
 	 gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
 	 gtk_widget_set_sensitive(GTK_WIDGET(info->Resetbutton), FALSE);
 }
