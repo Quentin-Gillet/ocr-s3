@@ -5,6 +5,49 @@
 #include <sys/types.h>
 #include "../include/save.h"
 
+// to get finals W after training from files
+void to_W(int layer, int next_layer, double **W, char* f)
+{
+
+	FILE* file = fopen(f, "r");
+
+	if (file == NULL)
+	{
+		errx(1,"FILE DOES NOT EXIST\"training is needed");
+	}
+
+	for (int i = 0; i < layer; i++)
+	{
+		for (int j = 0; j < next_layer; j++)
+		{
+			fscanf(file, "%lf", &W[i][j]);
+		}
+	}
+
+	fclose(file);
+
+}
+
+// to get finals Biais after training from files
+void to_B(int layer, double *B, char* f)
+{
+
+	FILE* file = fopen(f, "r");
+
+	if (file == NULL)
+	{
+		errx(1,"FILE DOES NOT EXIST\"training is needed");
+	}
+
+	for (int i = 0; i < layer; i++)
+	{
+		fscanf(file, "%lf", &B[i]);
+	}
+
+	fclose(file);
+
+}
+
 //W1[nb_inputs][nb_hiddenNeurons], B1[nb_hiddenNeurons]
 //W2[nb_hiddenNeurons][nb_hiddenNeurons2], B2[nb_hiddenNerons]
 //W3[nb_hiddenNeurons2][nb_outputs], B3[nb_outputs]
@@ -17,13 +60,13 @@ void save(int nb_inputs, int nb_hiddenNeurons, int nb_hiddenNeurons2, int nb_out
 	//fprintf(file_1,"W hidden layer:\n");	
 	FILE * file_1;
 	file_1 = fopen("training-result/hiddenLayer1.W","w");
-	for(int i = 0; i < nb_hiddenNeurons; i++)
+	for(int i = 0; i < nb_inputs; i++)
 	{	
-	    for (int j = 0; j < nb_inputs; j++) 
+	    for (int j = 0; j < nb_hiddenNeurons; j++) 
 		{
 	    	fprintf(file_1, "%lg ", W1[i][j]);
 	   	}
-		if (i != nb_hiddenNeurons -1)
+		if (i != nb_inputs -1)
 	    	fprintf(file_1, "\n");
 	}
 	//fprintf(file_return,"\n");
@@ -40,15 +83,15 @@ void save(int nb_inputs, int nb_hiddenNeurons, int nb_hiddenNeurons2, int nb_out
 	//fprintf(file_return,"W output layer:\n ");
 	FILE * file_3;
 	file_3 = fopen("training-result/hiddenLayer2.W","w");
-	for(int i = 0; i < nb_hiddenNeurons2; i++)
+	for(int i = 0; i < nb_hiddenNeurons; i++)
 	{
-	    	for (int j = 0; j < nb_hiddenNeurons; j++) 
+		for (int j = 0; j < nb_hiddenNeurons2; j++) 
 		{
-	    		fprintf(file_3, "%lg ", W2[i][j]);
-		
-	    	}
-		if (i != nb_hiddenNeurons2 -1)
-	    		fprintf(file_3, "\n");
+			fprintf(file_3, "%lg ", W2[i][j]);
+	
+		}
+		if (i != nb_hiddenNeurons -1)
+	    	fprintf(file_3, "\n");
 	}
 	//fprintf(file_return,"\n");
 
@@ -71,7 +114,7 @@ void save(int nb_inputs, int nb_hiddenNeurons, int nb_hiddenNeurons2, int nb_out
 	    		fprintf(file_5, "%lg ", W3[i][j]);
 		
 	    	}
-		if (i != nb_hiddenNeurons -1)
+		if (i != nb_hiddenNeurons2 -1)
 	    		fprintf(file_5, "\n");
 	}
 	//fprintf(file_return,"\n");

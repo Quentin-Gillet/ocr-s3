@@ -9,16 +9,18 @@
 #include "../include/train.h"
 #include "../include/image_processing.h"
 #include "../include/image.h"
+#include "../include/utils.h"
 
-char **initMatrixChar(unsigned int x, unsigned int y)
+// -------------------------- TOOLS --------------------------
+char **initMatrixChar(unsigned int y, unsigned int x)
 {
     char **matrice = NULL;
-    matrice = calloc(y + 1, sizeof(char *));
+    matrice = calloc(y + 1, sizeof(char*));
     if (matrice == NULL)
     {
         return NULL;
     }
-    for (size_t j = 0; j < y; j++)
+    for (int j = 0; j < y; j++)
     {
         matrice[j] = calloc(x + 1, sizeof(char));
         if (matrice[j] == NULL)
@@ -39,17 +41,17 @@ void freeMatrixChar(char **matrice, size_t height)
     free(matrice);
 }
 
-double **initMatrixDouble(unsigned int x, unsigned int y)
+double **initMatrixDouble(unsigned int y, unsigned int x)
 {
     double **matrice = NULL;
-    matrice = calloc(y + 1, sizeof(unsigned int *));
+    matrice = calloc(y+1, sizeof(double*));
     if (matrice == NULL)
     {
         return NULL;
     }
-    for (size_t j = 0; j < y; j++)
+    for (int j = 0; j < y; j++)
     {
-        matrice[j] = calloc(x + 1, sizeof(unsigned int));
+        matrice[j] = calloc(x+1, sizeof(double));
         if (matrice[j] == NULL)
         {
             //err(1, "Memory error");
@@ -58,7 +60,6 @@ double **initMatrixDouble(unsigned int x, unsigned int y)
     }
     return matrice;
 }
-
 void freeMatrixDouble(double **matrice, size_t height)
 {
     for (size_t y = 0; y < height; y++)
@@ -66,6 +67,49 @@ void freeMatrixDouble(double **matrice, size_t height)
         free(matrice[y]);
     }
     free(matrice);
+}
+
+void print_layer(double *layer, int nb_neurons)
+{
+	for (int i = 0; i < nb_neurons; i++)
+	{
+		printf("%f ",layer[i]);
+	}
+	printf("\n");
+}
+
+void print_image(double* image)
+{
+	for(int i = 0; i < 28; i++)
+	{
+		for(int j = 0; j < 28; j++)
+		{
+			printf("%d", (int)image[28 * j + i]);
+		}
+		printf("\n");
+	}
+}
+
+void image_to_input(ImageMajorOrder image, double *input)
+{
+	for (int i = 0; i < NB_INPUTS; i++)
+	{
+		double pix = (double)image.pixels[i].pixelAverage;
+		input[i] = pix == 0 ? 1 : 0; 
+	}
+}
+
+int return_output(double* output)
+{
+	int max = 0;
+	for (int i = 0; i < NB_OUTPUTS; i++)
+	{
+		if (output[i] > output[max])
+		{
+			max = i;
+		}
+	}
+	return max;
 }
 
 // couche = zi | ai
@@ -125,43 +169,48 @@ void LoadCSV(char* filename, char** images, int* numbers)
 
 }
 
-void zero_input(double *input)
-{
-	for (int i = 0; i < 784; i++)
-	{
-		input[i] = 0;
-	}
-}
-
 void compute_expected(double *expected, int number)
 {
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < NB_OUTPUTS; i++)
 	{
 		expected[i] = 0;
 	}
 	expected[number] = 1;
 }
 
+
 // ACTIVATION FUNCTION : SIGMOID
 double sigmoid(double z) 
 {
-    return 1 / (1+ (exp(-z)));
+	return 1 / (1 + (exp(-z)));
+	//return fmax(0, z);
+}
+
+double softmax(double z, double sum) 
+{
+    return exp(z) / sum;
 }
 
 // DERIVATIVE FUNCTION OF THE SIGMOID FUNCTION
-double dSigmoid(double z)
+double dSigmoid(double a)
 {
-    return z * (1-z);
+    return a * (1-a);
+	//return (a > 0) ? 1 : 0;
+}
+
+double dSoftmax(double a)
+{
+    return a * (1-a);
 }
 
 // TO SHUFFLE THE ORDER OF INPUTS
-void shuffleDataSet(int *dataset, size_t len)
+void shuffleDataSet(int *dataset, int len)
 {
 	if (len > 1)
 	{
-		for (size_t i = 0; i < len - 1; i++)
+		for (int i = 0; i < len-1; i++)
 		{
-			size_t j = i + rand() / (RAND_MAX / (len - i) + 1);
+			int j = i + rand() / (RAND_MAX / (len - i) + 1);
 			// swap
 			int tmp = dataset[j];
 			dataset[j] = dataset[i];
@@ -170,12 +219,20 @@ void shuffleDataSet(int *dataset, size_t len)
 	}
 }
 
+void compute_steps(int steps[], int nb_steps)
+{
+	for (int i = 0; i < nb_steps; i++)
+	{
+		steps[i] = i;
+	}
+}
+
 
 // -------------- FORWARD PROPAGATION -------------
 
 double randomWB()
 {
-    double n = (((double)rand()) / ((double)RAND_MAX));
+    double n = (1*((double)rand()) / ((double)RAND_MAX)-0.5f);
     return n;
 }
 
@@ -199,7 +256,7 @@ void computeB(int next_layer, double *B)
 {
     for (int i = 0; i < next_layer; i++) 
     {
-	B[i] = randomWB();
+		B[i] = randomWB();
 	//printf("%f\n",B[i]);
     }
 }
@@ -220,41 +277,36 @@ void computeZ(int layer, int next_layer, double *X, double **W, double *B, doubl
 		    S += W[j][i] * X[j];
 	    	
 	    }
-
-	Z[i] = S;
+		Z[i] = S;
     }
 	
 }
 
 // compute the A array: apply the activation function foreach element in Z
 // Z[layer], A[layer]
-void computeA(int layer, double *Z, double *A)
+void computeA_Output(int layer, double *Z, double *A)
 {
+	double sum = 0;
     for(int i = 0; i < layer; i++)
     {
-	    A[i] = sigmoid(Z[i]);
+		sum += exp(Z[i]);
 
 	}	
-}
-
-// do the same job as computeZ + computeA
-//X[layer], W[layer][next_layer], B[next_layer], A[next_layer]
-void computeActivation(int layer, int next_layer, double *X,
-	double **W, double *B, double *A)
-{
-	for(int j = 0; j < next_layer; j++)
-	{
-	    	double act = B[j];
-			    	
-		for(int k = 0; k < layer; k++)  	
-		{
-		    	act += X[k] * W[k][j];
-	
-		}
-		A[j] = sigmoid(act);
+	for(int i = 0; i < layer; i++)
+    {
+	    A[i] = softmax(Z[i],sum);
 	}
-
 }
+
+void computeA_Layer(int layer, double *Z, double *A)
+{
+	for(int i = 0; i < layer; i++)
+    {
+	    A[i] = sigmoid(Z[i]);
+		//printf("%f --> %f\n",Z[i],sigmoid(Z[i]));
+	}
+}
+
 
 // apply changes to Weight an Bias on the back layer by the Error on the layer
 //W[back_layer][layer], B[back_layer], Error[layer], X[back_layer]
@@ -276,13 +328,39 @@ void modifWeightBiais(int layer, int back_layer, double **W,
 //training function
 void train(int print)
 {
+	size_t nb_images = 5001;
+	int nb_epochs = 10000;
 
-	double input[NB_INPUTS];
-	// loadInputs(inputs)
+	char** images = initMatrixChar(nb_images,1024);
+	int numbers[nb_images];
+	LoadCSV("images_link.csv", images, numbers);
 
+	double** inputs = initMatrixDouble(nb_images, NB_INPUTS);
+	const char * path = "images/";
+	printf("---------------------------------\n");
+	for(int i = 0; i < nb_images; i++)
+	{
+		char * name = images[i];
+		char * input_image = concat(path,name);
+		ImageMajorOrder im = prepareImageFileForNeuralNetwork(input_image);
+		double input[NB_INPUTS];
+		image_to_input(im, input);
+
+		for(int j = 0; j < NB_INPUTS; j++)
+		{
+			inputs[i][j] = input[j];
+		}
+		
+		printf("pre-processing : image %d/%ld\r",i,nb_images-1);
+		fflush(stdout);
+	}
+	printf("\n");
+	
     double hiddenLayer1[NB_HIDDEN_N_L1];
     double hiddenLayer2[NB_HIDDEN_N_L1];
-	double output[NB_OUTPUTS];					
+	double output[NB_OUTPUTS];	
+
+	double expected_output[NB_OUTPUTS];				
 
 	double Z_hidden_1[NB_HIDDEN_N_L1];
 	double Z_hidden_2[NB_HIDDEN_N_L2];
@@ -297,119 +375,113 @@ void train(int print)
 	//double W_hidden_2[NB_HIDDEN_N_L1][NB_HIDDEN_N_L2];
 	double** W_hidden_2 = initMatrixDouble(NB_HIDDEN_N_L1,NB_HIDDEN_N_L2);
 	//double W_output[NB_HIDDEN_N_L2][NB_OUTPUTS];	
-	double** W_output = initMatrixDouble(NB_HIDDEN_N_L2,NB_OUTPUTS);
+	double** W_output = initMatrixDouble(NB_HIDDEN_N_L1,NB_OUTPUTS);
 
-	const double learning_rate = 0.16f;		// learning coef
+	double learning_rate = 0.004f;		// learning coef
 
 	computeB(NB_HIDDEN_N_L1, B_hidden_1);
 	computeB(NB_HIDDEN_N_L2, B_hidden_2);
 	computeB(NB_OUTPUTS, B_output);
-
+	
 	computeW(NB_INPUTS,NB_HIDDEN_N_L1,W_hidden_1);
 	computeW(NB_HIDDEN_N_L1,NB_HIDDEN_N_L2,W_hidden_2);
 	computeW(NB_HIDDEN_N_L2,NB_OUTPUTS,W_output);
 
+	printf("OK\n");
+
+	printf("training :\n");
 	// traning of the neural network for 10000 epochs
-	//int steps[] = {0,1,2,3};
+	int steps[nb_images];
+	compute_steps(steps,nb_images);
 
-	for (int epoch = 0; epoch <= 10000; epoch++)
+	for (int epoch = 0; epoch <= nb_epochs; epoch++)
 	{
-
+		
 		//load les pixels d'une image dans inputs
-		//load expected_output
-		int expected_output;
+	    	    
+		shuffleDataSet(steps, nb_images);
 
-	    printf("epoch %d/10000 \r",epoch);
-		fflush(stdout);
-	    if (print == 1)
-		{
-			printf("\n");
-	    	printf("epoch: %d	---------------------------------------------------\n", epoch);
-		}
-	    
-		//shuffleDataSet(steps, 4);
-
-		for(int x = 0; x < 4; x++)
+		int i;
+		for(int x = 0; x < nb_images; x++)
 		{
 		    // FORWARD PROPAGATION
-		    //int i = steps[x];
-						
-			computeZ(NB_INPUTS, NB_HIDDEN_N_L1, input, W_hidden_1, B_hidden_1, Z_hidden_1);
-			computeA(NB_HIDDEN_N_L1, Z_hidden_1, hiddenLayer1);
+		    i = steps[x];
+			printf("epoch %d/%d - image %d/%ld - index %d\r",epoch,nb_epochs,x,nb_images-1,i);
+			fflush(stdout);
+	
+			compute_expected(expected_output,numbers[i]);
 
+			computeZ(NB_INPUTS, NB_HIDDEN_N_L1, inputs[i], W_hidden_1, B_hidden_1, Z_hidden_1);
+			computeA_Layer(NB_HIDDEN_N_L1, Z_hidden_1, hiddenLayer1);
+	
 			computeZ(NB_HIDDEN_N_L1, NB_HIDDEN_N_L2, hiddenLayer1, W_hidden_2, B_hidden_2, Z_hidden_2);
-			computeA(NB_HIDDEN_N_L2, Z_hidden_2, hiddenLayer2);
-
+			computeA_Layer(NB_HIDDEN_N_L2, Z_hidden_2, hiddenLayer2);
+	
 			computeZ(NB_HIDDEN_N_L2, NB_OUTPUTS, hiddenLayer2, W_output, B_output, Z_output);
-			computeA(NB_OUTPUTS, Z_output, output);
-
-		
-			/*
-			if (print == 1)
-			{
-				printf("Input: %f  %f  |  Output: %f  |  Expected Output: %f \n",
-					inputs[i][0],inputs[i][1],
-					output[0],expected_output[i]);
-			}
-			*/
-
-
+			computeA_Output(NB_OUTPUTS, Z_output, output);
+						
+			
 			// BACK PROPAGATION
-			//
+
 			// compute the Error on the output layer
 			double err_output[NB_OUTPUTS];
-			
+			double error[NB_OUTPUTS];
 			for (int j = 0; j < NB_OUTPUTS; j++) 
 			{
-				double error = (expected_output - output[j]) ;
-				err_output[j] = error * dSigmoid(output[j]);
+				error[j] = (expected_output[j] - output[j]) ;
+				err_output[j] = error[j] * dSoftmax(output[j]);
 			}
 			
 			// compute the Error on the hidden layer 2
 			double err_hiddenLayer2[NB_HIDDEN_N_L2];
 			for (int j = 0; j < NB_HIDDEN_N_L2; j++) 
 			{
-				double error = 0.0f;
+				err_hiddenLayer2[j] = 0.0f;
 				for (int k = 0; k < NB_OUTPUTS; k++) 
 				{
-					error += err_output[k] * W_output[j][k];
-
+					err_hiddenLayer2[j] += err_output[k] * W_output[j][k];
 				}
-				err_hiddenLayer2[j] = error * dSigmoid(hiddenLayer2[j]);
+				err_hiddenLayer2[j] *= dSigmoid(hiddenLayer2[j]);
 			}
-
+			
 			// compute the Error on the hidden layer 1
 			double err_hiddenLayer1[NB_HIDDEN_N_L1];
 			for (int j = 0; j < NB_HIDDEN_N_L1; j++)
 			{
-				double error = 0.0f;
+				err_hiddenLayer1[j] = 0.0f;
 				for (int k = 0; k < NB_HIDDEN_N_L2; k++)
 				{
-					error += err_output[k] * W_hidden_2[j][k];
+					err_hiddenLayer1[j] += err_hiddenLayer2[k] * W_hidden_2[j][k];
 
 				}
-				err_hiddenLayer1[j] = error * dSigmoid(hiddenLayer1[j]);
+				err_hiddenLayer1[j] *= dSigmoid(hiddenLayer1[j]);
 			}
-
 
 			// apply changes
 			modifWeightBiais(NB_OUTPUTS, NB_HIDDEN_N_L2, W_output, B_output,
 				err_output, hiddenLayer2, learning_rate);
 
 			modifWeightBiais(NB_HIDDEN_N_L2, NB_HIDDEN_N_L1, W_hidden_2, B_hidden_2,
-				err_hiddenLayer2, input, learning_rate);
+				err_hiddenLayer2, hiddenLayer1, learning_rate);
 
 			modifWeightBiais(NB_HIDDEN_N_L1, NB_INPUTS, W_hidden_1, B_hidden_1,
-				err_hiddenLayer1, input, learning_rate);
-
+				err_hiddenLayer1, inputs[i], learning_rate);
 
 		}
 	}
 
-	//save(NB_INPUTS, NB_HIDDEN_N_L1, NB_HIDDEN_N_L2, NB_OUTPUTS, W_hidden_1, B_hidden_1, W_hidden_2, B_hidden_2, W_output, B_output);
+	save(NB_INPUTS, NB_HIDDEN_N_L1, NB_HIDDEN_N_L2, NB_OUTPUTS, W_hidden_1, B_hidden_1, W_hidden_2, B_hidden_2, W_output, B_output);
+	
+	printf("\n");
 	freeMatrixDouble(W_hidden_1,NB_INPUTS);
 	freeMatrixDouble(W_hidden_2,NB_HIDDEN_N_L1);
 	freeMatrixDouble(W_output,NB_HIDDEN_N_L2);
+	//freeMatrixDouble(inputs,nb_images);
+	freeMatrixChar(images,nb_images);
+
+	printf("OK\n");
+	printf("---------------------------------\n");
+
 }
 
 

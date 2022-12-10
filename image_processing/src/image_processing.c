@@ -208,7 +208,7 @@ void imageBlackWhite(Image* image)
     {
         for(int y = 0; y < image->height; y++)
         {
-            if(getPixelMedian(&image->pixels[x][y]).pixelAverage >= 220)
+            if(image->pixels[x][y].pixelAverage >= 150)
                 setPixelSameValue(&image->pixels[x][y], 1);
             else
                 setPixelSameValue(&image->pixels[x][y], 0);
@@ -320,16 +320,15 @@ int maxPixelValueFromAdjacentPixels(Image* image, int x, int y, int size)
     return (int)maxPixelValue;
 }
 
-void printImagePixels(ImageMajorOrder image)
-{
-    Pixel *tab = image.pixels;
-    for (size_t i = 0; i < 784; i++)
-    {
-        if (i != 0 && i % 28 == 0)
-            printf("\n");
-        printf("%u ", tab[i].pixelAverage);
-        
-    }
-    printf("\n");
 
+void printImagePixel(ImageMajorOrder* image)
+{
+    for(int x = 0; x < image->width; x++)
+    {
+        for(int y = 0; y < image->height; y++)
+        {
+            printf("%2d", image->pixels[image->height * y + x].pixelAverage);
+        }
+        printf("\n");
+    }
 }

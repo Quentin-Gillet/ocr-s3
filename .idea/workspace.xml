@@ -1,26 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5539ebc4-1cb6-4a74-9a15-8178c8835c2d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/image_processing/.Makefile.swp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/image_processing/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/image_processing/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image_processing/include/image_loading.h" beforeDir="false" afterPath="$PROJECT_DIR$/image_processing/include/image_loading.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image_processing/include/image_processing.h" beforeDir="false" afterPath="$PROJECT_DIR$/image_processing/include/image_processing.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image_processing/include/manual_rotation.h" beforeDir="false" afterPath="$PROJECT_DIR$/image_processing/include/manual_rotation.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image_processing/include/utils.h" beforeDir="false" afterPath="$PROJECT_DIR$/image_processing/include/utils.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image_processing/src/.manual_rotation.c.swp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/image_processing/src/image_loading.c" beforeDir="false" afterPath="$PROJECT_DIR$/image_processing/src/image_loading.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image_processing/src/image_processing.c" beforeDir="false" afterPath="$PROJECT_DIR$/image_processing/src/image_processing.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image_processing/src/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/image_processing/src/main.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image_processing/src/manual_rotation.c" beforeDir="false" afterPath="$PROJECT_DIR$/image_processing/src/manual_rotation.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image_processing/src/utils.c" beforeDir="false" afterPath="$PROJECT_DIR$/image_processing/src/utils.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/neural-network/number-recognition/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/neural-network/number-recognition/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/neural-network/number-recognition/include/train.h" beforeDir="false" afterPath="$PROJECT_DIR$/neural-network/number-recognition/include/train.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/neural-network/number-recognition/src/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/neural-network/number-recognition/src/main.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/neural-network/number-recognition/src/save.c" beforeDir="false" afterPath="$PROJECT_DIR$/neural-network/number-recognition/src/save.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/neural-network/number-recognition/src/train.c" beforeDir="false" afterPath="$PROJECT_DIR$/neural-network/number-recognition/src/train.c" afterDir="false" />
-    </list>
+    <list default="true" id="5539ebc4-1cb6-4a74-9a15-8178c8835c2d" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -40,7 +21,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/dataset" />
     <property name="settings.editor.selected.configurable" value="configurable.group.appearance" />
   </component>
   <component name="RunManager" selected="Python.main">
@@ -112,21 +93,5 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>1</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>8</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

@@ -8,6 +8,9 @@
 #include <sys/types.h>
 #include <string.h>
 
+void to_B(int layer, double *B, char* f);
+void to_W(int layer, int next_layer, double **W, char* f);
+
 //W1[nb_inputs][nb_hiddenNeurons], B1[nb_hiddenNeurons]
 //W2[nb_hiddenNeurons][nb_hiddenNeurons2], B2[nb_hiddenNerons]
 //W3[nb_hiddenNeurons2][nb_outputs], B3[nb_outputs]

@@ -29,6 +29,6 @@ void imagePixelGrouping(Image* image);
 int maxPixelValueFromAdjacentPixels(Image* image, int x, int y, int size);
 
 ImageMajorOrder prepareImageFileForNeuralNetwork(const char* file);
-void printImagePixels(ImageMajorOrder image);
+void printImagePixel(ImageMajorOrder* image);
 
 #endif
