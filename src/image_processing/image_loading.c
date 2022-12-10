@@ -29,23 +29,26 @@ Image getImageFromPng(const char* path)
     return image;
 }
 
-void saveImageToBmp(Image* image, char* name)
+void saveImageToBmp(Image* image, char* name, char* parent)
 {
     SDL_Surface* surface = crateSurfaceFromImage(image);
-    saveSurfaceToBmp(surface, name, "images/", ".bmp");
+    char path[100];
+    if(strcmp("", parent))
+    {
+        snprintf(path, 100, "images/%s/", parent);
+    }
+    saveSurfaceToBmp(surface, name, !strcmp("", parent) ? "images/" : path, ".bmp");
 }
 
 void saveSurfaceToBmp(SDL_Surface* surface, char* name, char* parent, char* format)
 {
-    char* imageFile = concat(parent, name);
-    char* fileName = concat(imageFile, format);
+    char fileName[100];
+    snprintf(fileName, 100, "%s%s%s", parent, name, format);
 
     mkdir(parent, 0777);
 
     if(SDL_SaveBMP(surface, fileName) != 0)
         errx(EXIT_FAILURE, "saveImageToBmp: %s", SDL_GetError());
-    free(fileName);
-    free(imageFile);
     SDL_FreeSurface(surface);
 }
 

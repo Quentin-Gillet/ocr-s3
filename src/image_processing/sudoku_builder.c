@@ -37,7 +37,6 @@ void copyToImage(SDL_Rect rect, Image* source, Image* toCopy)
     {
         for(int j = rect.y; j < rect.y + rect.h; j++)
         {
-            printf("%i %i\n", i, j);
             source->pixels[i][j] = copyPixel(&toCopy->pixels[x][y]);
             y++;
         }
@@ -45,12 +44,6 @@ void copyToImage(SDL_Rect rect, Image* source, Image* toCopy)
         x++;
     }
 }
-
-
-/*Image img = buildSudoku("grid_00.result");
-saveImageToPdf(&img, "result");
-
-return 0;*/
 
 Image buildSudoku(const char* resultFilePath)
 {
@@ -65,22 +58,25 @@ Image buildSudoku(const char* resultFilePath)
         char numberChar[2];
         snprintf(numberChar, 2, "%i", i);
         numbers[i] = getImageFromPng(concat("sudoku_builder/", concat(numberChar, ".png")));
+        numbers[i] = imageResize(&numbers[i], 75, 75);
     }
     //30 x + 15 y
-    int x = 0, y = 0; // 30 , 25
+    int x = 20, y = 20; // 30 , 25
     int numberIndex = 0;
+    Image imgNumber;
     for(int i = 0; i < 9; i++)
     {
         for(int j = 0; j < 9; j++)
         {
-            SDL_Rect rect = {x, y, 100, 100};
-            int index = (int)sudokuGrid[numberIndex] - 48;
-            copyToImage(rect, &imageGrid, &numbers[index]);
-            y = clampInt(y + 110, 0, imageGrid.height);
+            int index = (int)sudokuGrid[numberIndex] - '0';
+            imgNumber = numbers[index];
+            SDL_Rect rect = {x, y, imgNumber.width, imgNumber.height};
+            copyToImage(rect, &imageGrid, &imgNumber);
+            x = clampInt(x + imgNumber.width + 57, 0, imageGrid.width - imgNumber.width);
             numberIndex++;
         }
-        y = 0;
-        x = clampInt(x + 130, 0, imageGrid.width);
+        x = 20;
+        y = clampInt(y + imgNumber.height + 37, 0, imageGrid.height - imgNumber.height);
     }
 
     free(sudokuGrid);
