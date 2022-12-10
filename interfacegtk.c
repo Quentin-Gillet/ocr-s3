@@ -44,12 +44,17 @@ void reset(GtkButton * Resetbutton, gpointer user_data)
 {
 	AppInfo *info = user_data;
 
-    gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
+    gtk_widget_set_sensitive(GTK_WIDGET(info->Resetbutton), FALSE);
+    gtk_widget_set_sensitive(GTK_WIDGET(info->Skipbutton), FALSE);
+
 
 }
 
 void next_event(GtkButton *Nextbutton, gpointer user_data) {
     AppInfo *info = user_data;
+
+    gtk_widget_set_sensitive(GTK_WIDGET(info->Skipbutton), TRUE);
+    gtk_widget_set_sensitive(GTK_WIDGET(info->Resetbutton), TRUE);
 
     info->CurrEvent = info->CurrEvent + 1;
     printf("currevent : %i\n", info->CurrEvent);
@@ -62,44 +67,82 @@ void next_event(GtkButton *Nextbutton, gpointer user_data) {
     GFile *file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER  (info->file_chooser));
     const char *filename = g_file_get_path(file);
     Image image = getImageFromPng(filename);
+
     switch (info->CurrEvent) {
         case 0:
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
             gtk_label_set_label(ProcessLabel, "Applying Greyscale filter...");
+
             imageGrayscale(&image);
             saveImageToBmp(&image, "greyscale");
             set_image("greyscale.bmp",info->image);
+
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
             break;
         case 1:
 
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
             gtk_label_set_label(ProcessLabel, "Applying Contrast filter...");
+
+            imageContrastFilter(&image);
+            saveImageToBmp(&image, "contrast");
+            set_image("contrast.bmp",info->image);
+
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
             break;
         case 2:
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
             gtk_label_set_label(ProcessLabel, "Applying Mean filter...");
+
+            imageBinarization(&image);
+            saveImageToBmp(&image, "mean");
+            Image image_cells = copyImage(&image);
+            Image cpImage = copyImage(&image);
+            set_image("mean.bmp",info->image);
+
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
             break;
         case 3:
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
-            gtk_label_set_label(ProcessLabel, "Applying Blur filter...");
+            gtk_label_set_label(ProcessLabel, "Applying Inverted filter...");
+
+            imageInvert(&image);
+            saveImageToBmp(&image, "inverted");
+            set_image("inverted.bmp",info->image);
+
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
             break;
         case 4:
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
-            gtk_label_set_label(ProcessLabel, "Applying Inverted filter...");
+            gtk_label_set_label(ProcessLabel, "Applying Sobel filter...");
+
+            imageSobelFilter(&image);
+            saveImageToBmp(&image, "sobel");
+            set_image("sobel.bmp",info->image);
+
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
             break;
         case 5:
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
             gtk_label_set_label(ProcessLabel, "Applying Sobel filter...");
+
+            imageMedianBlur(&image);
+            saveImageToBmp(&image, "blur");
+            set_image("blur.bmp",info->image);
+
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
             break;
         case 6:
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
             gtk_label_set_label(ProcessLabel, "Applying Hough Line...");
+
+            int linesLength = 0;
+            Line* lines = getImageLines(&image, 450, &linesLength);
+
+            drawLineOnImage(&image, lines, linesLength);
+            saveImageToBmp(&image, "hough");
+            set_image("hough.bmp",info->image);
+
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
             break;
 
