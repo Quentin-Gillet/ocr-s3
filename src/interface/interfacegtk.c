@@ -32,6 +32,16 @@ void reset(GtkButton *Resetbutton, gpointer user_data)
 
     gtk_widget_set_sensitive(GTK_WIDGET(info->Resetbutton), FALSE);
     gtk_widget_set_sensitive(GTK_WIDGET(info->Skipbutton), FALSE);
+    GFile *file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(info->file_chooser));
+    const char *filename = g_file_get_path(file);
+    set_image(filename, info->image);
+    info->CurrEvent = -1;
+    gtk_level_bar_set_value(info->ProgressBar,0);
+    GtkLabel *ProcessLabel = info->ProcessLabel;
+    gtk_label_set_label(ProcessLabel, "");
+
+    gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
+    gtk_widget_set_sensitive(GTK_WIDGET(info->Skipbutton), TRUE);
 
 }
 
@@ -187,7 +197,6 @@ void skip(GtkButton *Skipbutton, gpointer user_data)
 
     imageMedianBlur(&image);
     saveImageToBmp(&image, "blur", "");
-    set_image("images/blur.bmp",info->image);
 
 
     int linesLength = 0;
