@@ -1,5 +1,4 @@
 #include "../include/image_split.h"
-#include "../include/linked_list.h"
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
 #define MAX(X, Y) (((X) < (Y)) ? (Y) : (X))
 
@@ -155,9 +154,9 @@ int IsSquare(struct Square square)
     int len2 = (int)LineLength(square.xb, square.yb, square.xc, square.yc);
     int len3 = (int)LineLength(square.xc, square.yc, square.xd, square.yd);
     int len4 = (int)LineLength(square.xd, square.yd, square.xa, square.ya);
-    return  approx(len1, len2, 10) &&
-            approx(len2, len3, 10) &&
-            approx(len3, len4, 10);
+    return  approx(len1, len2, 1000) &&
+            approx(len2, len3, 1000) &&
+            approx(len3, len4, 1000);
 }
 
 //Initialisation new square
@@ -194,13 +193,39 @@ struct Square null_Square()
 
 int compare_intersections(Intersection inter1, Intersection inter2, Intersection inter3, Intersection inter4)
 {
-    int test1 = inter1.x != inter2.x && inter1.x != inter3.x && inter1.x != inter4.x;
-    test1 = test1 && inter1.y != inter2.y && inter1.y != inter3.y && inter1.y != inter4.y;
-    int test2 = inter2.x != inter3.x && inter2.x != inter4.x;
-    test2 = test2 && inter2.y != inter3.y && inter2.y != inter4.y;
-    int test3 = inter3.x != inter4.x;
-    test3 = test3 && inter3.y != inter4.y;
-    return test1 && test2 && test3;
+    if(inter1.x == inter2.x)
+    {
+        if(inter1.y == inter2.y)
+            return 0;
+    }
+    if(inter1.x == inter3.x)
+    {
+        if(inter1.y == inter3.y)
+            return 0;
+    }
+    if(inter1.x == inter4.x)
+    {
+        if(inter1.y == inter4.y)
+            return 0;
+    }
+    if(inter2.x == inter3.x)
+    {
+        if(inter2.y == inter3.y)
+        {
+            return 0;
+        }
+    }
+    if(inter2.x == inter4.x)
+    {
+        if(inter2.y == inter4.y)
+            return 0;
+    }
+    if(inter3.x == inter4.x)
+    {
+        if(inter3.y == inter4.y)
+            return 0;
+    }
+    return 1;
 }
 
 //Get all squares of the grid
@@ -214,23 +239,23 @@ void get_all_squares(struct Line *lines, int NBLine, struct list *squares)
 
     for(int h = 0; h < NBLine; h++)
     {
-        for(int i = 0; i < NBLine; i++)
+        for(int i = 1; i < NBLine; i++)
         {
             if (h == i)
                 continue;
             inter1 = line_intersection(lines[h], lines[i]);
             if(inter1.x != -1 && inter1.y != -1)
             {
-                for(int j = 0; j < NBLine; j++)
+                for(int j = 2; j < NBLine; j++)
                 {
-                    if (i == j)
+                    if (h == j && i == j)
                         continue;
                     inter2 = line_intersection(lines[i], lines[j]);
                     if(inter2.x != -1 && inter2.y != -1)
                     {
-                        for(int k = 0; k < NBLine; k++)
+                        for(int k = 3; k < NBLine; k++)
                         {
-                            if (j == k)
+                            if (h == k && i == k && j == k)
                                 continue;
                             inter3 = line_intersection(lines[j], lines[k]);
                             if(inter3.x != -1 && inter3.y != -1)
@@ -262,6 +287,8 @@ struct Line* print_squares(struct Line* lines, int NBLine)
     struct list *squares = malloc(sizeof(struct list));
     list_init(squares);
     get_all_squares(lines, NBLine, squares);
+    printf("%u", squares->length);
+
     struct Line *final = calloc(squares->length * 4, sizeof(struct Line));
     struct list *p = squares->next;
     for(int i = 0; p; p = p->next, i += 4)
@@ -316,15 +343,8 @@ struct Line* get_Bigger_Squares(struct Line* lines, int NBLine)
     free_list(squares);
 
     struct Line *final;
-    if(IsSquare(biggerSquare))
-    {
-        final = calloc(4, sizeof(struct Line));
-    }
+    final = calloc(4, sizeof(struct Line));
 
-    else
-    {
-        final = calloc(4, sizeof(struct Line));
-    }
 
     struct Line line1 = {
             .x1 = biggerSquare.xa,
@@ -483,7 +503,9 @@ Image* split(struct Line *lines, Image *image, Image *cells)
             cell.w = xPlus - 20;
             cell.h = yPlus - 20;
 
-            cells[count++] = cropImage(image, &cell);
+            Image newImage = cropImage(image, &cell);
+
+            cells[count++] = imageResize(&newImage, 28, 28);
         }
     }
     return cells;

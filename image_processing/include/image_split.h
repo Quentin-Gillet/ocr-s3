@@ -8,25 +8,14 @@
 #include "utils.h"
 #include "image.h"
 #include "line_detection.h"
-#include "manual_rotation.h"
+#include "linked_list.h"
+#include "image_rotation.h"
 
 typedef struct Intersection{
     int x;
     int y;
     struct Line line;
 } Intersection;
-
-typedef struct Square{
-    int xa;
-    int xb;
-    int xc;
-    int xd;
-    int ya;
-    int yb;
-    int yc;
-    int yd;
-    double perimeter;
-} Square;
 
 int approx(int a, int b, int Threshold);
 Line* reduce_lines(Line* lines, int nbLines, int* newLinesCount);

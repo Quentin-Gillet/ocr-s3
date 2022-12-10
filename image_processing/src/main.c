@@ -3,7 +3,7 @@
 #include "../include/image_rotation.h"
 #include "../include/line_detection.h"
 #include "../include/image_split.h"
-#include "sudoku_builder.h"
+#include "../include/sudoku_builder.h"
 
 int main(int argc, char** argv)
 {
@@ -28,9 +28,10 @@ int main(int argc, char** argv)
 
     imageBinarization(&image);
     saveImageToBmp(&image, "mean");
+    Image image_cells = copyImage(&image);
+    Image cpImage = copyImage(&image);
 
     imageInvert(&image);
-    Image image_cells = copyImage(&image);
     saveImageToBmp(&image, "inverted");
 
     imageSobelFilter(&image);
@@ -45,6 +46,25 @@ int main(int argc, char** argv)
     drawLineOnImage(&image, lines, linesLength);
     saveImageToBmp(&image, "hough");
 
+    //test detection carré
+    Line* newlines2 = get_Bigger_Squares(lines, linesLength);
+    //Line* newlines2 = print_squares(lines, linesLength);
+    drawLineOnImage(&cpImage, newlines2, 4);
+    saveImageToBmp(&cpImage, "Big_Rectangle");
+
+    //test découpage
+    Image *images = calloc(81, sizeof(Image));
+    images = split(newlines2, &image_cells, images);
+    for(int i = 0; i < 81; i++)
+    {
+        char name[3];
+        snprintf(name, 3, "%i", i);
+        saveImageToBmp(&images[i], name);
+    }
+
+    freeImage(&image_cells);
+    free(images);
+    free(newlines2);
     free(lines);
     freeImage(&image);
 
