@@ -126,7 +126,7 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
             break;
 
-        /*case 5:
+        case 5:
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
             gtk_label_set_label(ProcessLabel, "Applying Blur filter...");
 
@@ -136,8 +136,8 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
 
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
             break;
-        */
-        case 5:
+
+        case 6:
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
             gtk_label_set_label(ProcessLabel, "Applying Hough Line...");
 
@@ -171,41 +171,58 @@ void skip(GtkButton *Skipbutton, gpointer user_data)
     const char *filename = g_file_get_basename(file);
     Image image = getImageFromPng(filename);
 
+    double BarValue = gtk_level_bar_get_value(info->ProgressBar);
+    GtkLabel *ProcessLabel = info->ProcessLabel;
+
+    gtk_label_set_label(ProcessLabel, "Applying Greyscale filter...");
     imageGrayscale(&image);
     saveImageToBmp(&image, "greyscale", "");
     set_image("images/greyscale.bmp",info->image);
+    gtk_level_bar_set_value(info->ProgressBar, BarValue + 14.28571429);
 
+    gtk_label_set_label(ProcessLabel, "Applying Contrast filter...");
     imageContrastFilter(&image);
     saveImageToBmp(&image, "contrast", "");
     set_image("images/contrast.bmp",info->image);
+    gtk_level_bar_set_value(info->ProgressBar, BarValue + 14.28571429);
 
-
+    gtk_label_set_label(ProcessLabel, "Applying Mean filter...");
     imageBinarization(&image);
     saveImageToBmp(&image, "mean", "");
     Image image_cells = copyImage(&image);
     Image cpImage = copyImage(&image);
     set_image("images/mean.bmp",info->image);
+    gtk_level_bar_set_value(info->ProgressBar, BarValue + 14.28571429);
 
+    gtk_label_set_label(ProcessLabel, "Applying Inverted filter...");
     imageInvert(&image);
     saveImageToBmp(&image, "inverted", "");
     set_image("images/inverted.bmp",info->image);
+    gtk_level_bar_set_value(info->ProgressBar, BarValue + 14.28571429);
 
-
+    gtk_label_set_label(ProcessLabel, "Applying Sobel filter...");
     imageSobelFilter(&image);
     saveImageToBmp(&image, "sobel", "");
     set_image("images/sobel.bmp",info->image);
+    gtk_level_bar_set_value(info->ProgressBar, BarValue + 14.28571429);
 
-
+    gtk_label_set_label(ProcessLabel, "Applying Blur filter...");
     imageMedianBlur(&image);
     saveImageToBmp(&image, "blur", "");
+    gtk_level_bar_set_value(info->ProgressBar, BarValue + 14.28571429);
 
-
+    gtk_label_set_label(ProcessLabel, "Applying Hough Line...");
     int linesLength = 0;
     Line* lines = getImageLines(&image, 450, &linesLength);
 
     drawLineOnImage(&image, lines, linesLength);
     saveImageToBmp(&image, "hough", "");
     set_image("images/hough.bmp",info->image);
+    gtk_level_bar_set_value(info->ProgressBar, BarValue + 14.28571429);
+
+    gtk_widget_set_sensitive(GTK_WIDGET(info->Resetbutton), TRUE);
+    gtk_widget_set_sensitive(GTK_WIDGET(Skipbutton), FALSE);
+
 
 }
 
