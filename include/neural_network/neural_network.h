@@ -10,5 +10,9 @@
 #include "../image_processing/image.h"
 #include "../image_processing/image_processing.h"
 #include "../image_processing/image_loading.h"
+#include "../solver/solver.h"
+#include "../image_processing/sudoku_builder.h"
+
+int Recognition_Solve();
 
 #endif //OCR_NEURAL_NETWORK_H

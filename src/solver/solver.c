@@ -88,6 +88,36 @@ int sudoku_solver(int pos, int empty, char s[])
     return 0;
 }
 
+void neural_network_to_sudoku(char s[])
+{
+    FILE *file_return;
+    file_return = fopen("sudoku", "w");
+
+    if (file_return == NULL)
+        exit(EXIT_FAILURE);
+
+    int i = 0;
+    while (i < 81) 
+    {
+        if (i != 0) {
+            if (i % 27 == 0)
+                fprintf(file_return, "\n\n");
+            else if (i % 9 == 0)
+                fprintf(file_return, "\n");
+            else if (i % 3 == 0)
+                fprintf(file_return, " ");
+            fprintf(file_return, "%c", s[i]);
+            i++;
+        } else {
+            fprintf(file_return, "%c", s[i]);
+            i++;
+        }
+    }
+    
+    fclose(file_return);
+    //exit(EXIT_SUCCESS);
+}
+
 // RETURN THE SOLVED SUDOKU IN A FILE .result
 void return_sudoku(char *argv, char s[])
 {
@@ -114,7 +144,7 @@ void return_sudoku(char *argv, char s[])
         }
     }
     fclose(file_return);
-    exit(EXIT_SUCCESS);
+    //exit(EXIT_SUCCESS);
 }
 
 // for check_error
@@ -192,20 +222,23 @@ int check_error(char *argv, char s[])
 
 int resolve(char* file)
 {
-    char s[81];
+    char *s = malloc(sizeof(char) * 82);
     toTab(s, file);
     if (check_error(file, s) == 1)
         return 1;
-    else {
+    
+    else 
+    {
         int a = sudoku_solver(0, is_empty(0, s), s);
         if (a == -1) {
             printf("INCORRECT SUDOKU !\n");
+            free(s);
             return 1;
         } else {
             return_sudoku(file, s);
+            free(s);
             return 0;
         }
     }
-
 }
 
