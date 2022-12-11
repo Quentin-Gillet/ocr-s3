@@ -220,6 +220,15 @@ void skip(GtkButton *Skipbutton, gpointer user_data)
     set_image("images/hough.bmp",info->image);
     gtk_level_bar_set_value(info->ProgressBar, BarValue + 14.28571429);
 
+    //test detection carré
+    Line* newlines2 = get_Bigger_Squares(lines, linesLength);
+    //Line* newlines2 = print_squares(lines, linesLength);
+    drawLineOnImage(&cpImage, newlines2, 4);
+    saveImageToBmp(&cpImage, "biggest-rectangle", "");
+    set_image("images/biggest-rectangle.bmp",info->image);
+
+
+
     gtk_widget_set_sensitive(GTK_WIDGET(info->Resetbutton), TRUE);
     gtk_widget_set_sensitive(GTK_WIDGET(Skipbutton), FALSE);
 
