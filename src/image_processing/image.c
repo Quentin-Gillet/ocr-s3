@@ -237,6 +237,7 @@ void freeImage(Image* image)
     free(image->pixels);
 }
 
+
 /*
  * Set all color of a pixel into the same value
  */

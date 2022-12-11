@@ -22,6 +22,7 @@ Line* reduce_lines(Line* lines, int nbLines, int* newLinesCount);
 struct Line* print_squares(struct Line* lines, int NBLine, int width, int height);
 Image* split(struct Line *lines, Image *image, Image *cells);
 struct Line* get_Bigger_Squares(struct Line* lines, int NBLine, int width, int height);
+Image auto_rotation(Image* image, struct Line *lines);
 
 /*
 a _______ b
