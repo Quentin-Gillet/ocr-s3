@@ -97,8 +97,8 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
 
             imageBinarization(&info->rawImage);
             saveImageToBmp(&info->rawImage, "mean","");
-            Image image_cells = copyImage(&info->rawImage);
-            Image cpImage = copyImage(&info->rawImage);
+            info->Image_Cells = copyImage(&info->rawImage);
+            info->CpImage = copyImage(&info->rawImage);
             set_image("images/mean.bmp",info->image);
 
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
@@ -141,14 +141,28 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
             gtk_label_set_label(ProcessLabel, "Applying Hough Line...");
 
-            int linesLength = 0;
-            Line* lines = getImageLines(&info->rawImage, 450, &linesLength);
+            info->lines = getImageLines(&info->rawImage, 450, &info->linesLength);
 
-            drawLineOnImage(&info->rawImage, lines, linesLength);
+            drawLineOnImage(&info->rawImage, info->lines, info->linesLength);
             saveImageToBmp(&info->rawImage, "hough","");
             set_image("images/hough.bmp",info->image);
 
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
+            break;
+
+        case 7:
+            gtk_label_set_label(ProcessLabel, "Searching Biggest Square...");
+
+            //test detection carré
+            Line* newlines2 = get_Bigger_Squares(info->lines, info->linesLength);
+            //Line* newlines2 = print_squares(lines, linesLength);
+            drawLineOnImage(&info->CpImage, newlines2, 4);
+            saveImageToBmp(&info->CpImage, "biggest-rectangle", "");
+            set_image("images/biggest-rectangle.bmp",info->image);
+            break;
+
+        case 8:
+
             break;
 
         default:
@@ -213,21 +227,20 @@ void skip(GtkButton *Skipbutton, gpointer user_data)
 
     gtk_label_set_label(ProcessLabel, "Applying Hough Line...");
     int linesLength = 0;
-    Line* lines = getImageLines(&image, 450, &linesLength);
+    Line * lines = getImageLines(&image, 450, &linesLength);
 
     drawLineOnImage(&image, lines, linesLength);
     saveImageToBmp(&image, "hough", "");
     set_image("images/hough.bmp",info->image);
-    gtk_level_bar_set_value(info->ProgressBar, BarValue + 14.28571429);
+    gtk_level_bar_set_value(info->ProgressBar, BarValue + 100);
 
+    gtk_label_set_label(ProcessLabel, "Searching Biggest Square...");
     //test detection carré
-    Line* newlines2 = get_Bigger_Squares(lines, linesLength);
+    Line* newlines2 = get_Bigger_Squares(lines,linesLength);
     //Line* newlines2 = print_squares(lines, linesLength);
     drawLineOnImage(&cpImage, newlines2, 4);
     saveImageToBmp(&cpImage, "biggest-rectangle", "");
     set_image("images/biggest-rectangle.bmp",info->image);
-
-
 
     gtk_widget_set_sensitive(GTK_WIDGET(info->Resetbutton), TRUE);
     gtk_widget_set_sensitive(GTK_WIDGET(Skipbutton), FALSE);
@@ -279,6 +292,7 @@ int start_gui()
     infos.Skipbutton = Skipbutton;
     infos.Resetbutton = Resetbutton;
     infos.file_chooser = file_chooser;
+    infos.linesLength = 0;
 
     // Connects signal handlers.
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);

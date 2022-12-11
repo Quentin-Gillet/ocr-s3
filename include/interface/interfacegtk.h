@@ -21,6 +21,10 @@ typedef struct AppInfo {
     GtkButton *Resetbutton;
     GtkLabel *ProcessLabel;
     Image rawImage;
+    Image CpImage;
+    Image Image_Cells;
+    Line * lines;
+    int linesLength;
 } AppInfo;
 
 
