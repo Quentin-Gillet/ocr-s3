@@ -51,8 +51,8 @@ int main(int argc, char** argv)
     saveImageToBmp(&image, "hough", "");
 
     //test detection carré
-    Line* newlines2 = get_Bigger_Squares(lines, linesLength);
-    //Line* newlines2 = print_squares(lines, linesLength);
+    Line* newlines2 = get_Bigger_Squares(lines, linesLength, image.width, image.height);
+    //Line* newlines2 = print_squares(lines, linesLength, image.width, image.height);
     drawLineOnImage(&cpImage, newlines2, 4);
     saveImageToBmp(&cpImage, "biggest-rectangle", "");
 
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
     }
 
     freeImage(&image_cells);
-    free(images);
+    //free(images);
     free(newlines2);
     free(lines);
     freeImage(&image);
