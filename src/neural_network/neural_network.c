@@ -119,21 +119,15 @@ int Recognition_Solve()
     }
     //printf("ok\n");
     neural_network_to_sudoku(sudoku);
-
-    printf("Sudoku solved in sudoku.result\n");
-    resolve("sudoku");
+    buildSudoku("sudoku");
     
     //double winrate = (double) count / (double) nb_images;
     //printf("winrate : %f\n", winrate * 100);
 
     freeMatrixDouble(W_hidden_1, NB_INPUTS);
-    printf("ok\n");
     freeMatrixDouble(W_hidden_2, NB_HIDDEN_N_L1);
-    printf("ok\n");
     freeMatrixDouble(W_output, NB_HIDDEN_N_L2);
-    printf("ok\n");
     freeMatrixDouble(inputs,nb_images);
-    printf("ok\n");
 
     return 0;
 }
