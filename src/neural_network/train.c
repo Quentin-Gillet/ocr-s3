@@ -9,7 +9,7 @@ char **initMatrixChar(unsigned int y, unsigned int x)
     {
         return NULL;
     }
-    for (int j = 0; j < y; j++)
+    for (unsigned int j = 0; j < y; j++)
     {
         matrice[j] = calloc(x + 1, sizeof(char));
         if (matrice[j] == NULL)
@@ -38,7 +38,7 @@ double **initMatrixDouble(unsigned int y, unsigned int x)
     {
         return NULL;
     }
-    for (int j = 0; j < y; j++)
+    for (unsigned int j = 0; j < y; j++)
     {
         matrice[j] = calloc(x+1, sizeof(double));
         if (matrice[j] == NULL)
@@ -314,18 +314,20 @@ void modifWeightBiais(int layer, int back_layer, double **W,
 }
 
 
+// !!! --- WARNING --- !!!
+// USELESS FUNCTION WITHOUT images/ folder & images_link.csv
 //training function
-void train(int print)
+void train()
 {
-	size_t nb_images = 5001;
-	int nb_epochs = 10000;
+	int nb_images = 40;
+	int nb_epochs = 3000;
 
 	char** images = initMatrixChar(nb_images,1024);
 	int numbers[nb_images];
-	LoadCSV("images_link.csv", images, numbers);
+	LoadCSV("images_train_2_link.csv", images, numbers);
 
 	double** inputs = initMatrixDouble(nb_images, NB_INPUTS);
-	const char * path = "images/";
+	const char * path = "images_train_2/";
 	printf("---------------------------------\n");
 	for(int i = 0; i < nb_images; i++)
 	{
@@ -340,7 +342,7 @@ void train(int print)
 			inputs[i][j] = input[j];
 		}
 		
-		printf("pre-processing : image %d/%ld\r",i,nb_images-1);
+		printf("pre-processing : image %d/%d\r",i+1,nb_images);
 		fflush(stdout);
 	}
 	printf("\n");
@@ -366,7 +368,7 @@ void train(int print)
 	//double W_output[NB_HIDDEN_N_L2][NB_OUTPUTS];	
 	double** W_output = initMatrixDouble(NB_HIDDEN_N_L1,NB_OUTPUTS);
 
-	double learning_rate = 0.004f;		// learning coef
+	double learning_rate = 0.008f;		// learning coef
 
 	computeB(NB_HIDDEN_N_L1, B_hidden_1);
 	computeB(NB_HIDDEN_N_L2, B_hidden_2);
@@ -386,6 +388,10 @@ void train(int print)
 	for (int epoch = 0; epoch <= nb_epochs; epoch++)
 	{
 		
+		if (epoch % 100 == 0)
+		{
+			learning_rate *= 0.9;
+		}
 		//load les pixels d'une image dans inputs
 	    	    
 		shuffleDataSet(steps, nb_images);
@@ -393,10 +399,13 @@ void train(int print)
 		int i;
 		for(int x = 0; x < nb_images; x++)
 		{
+
 		    // FORWARD PROPAGATION
 		    i = steps[x];
-			printf("epoch %d/%d - image %d/%ld - index %d\r",epoch,nb_epochs,x,nb_images-1,i);
+			printf("epoch %d/%d - image %d/%d\r",epoch,nb_epochs,x+1,nb_images);
 			fflush(stdout);
+
+			//print_image(inputs[i]);
 	
 			compute_expected(expected_output,numbers[i]);
 

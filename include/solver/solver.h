@@ -9,6 +9,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+void neural_network_to_sudoku(char s[]);
+void return_sudoku(char *argv, char s[]);
+
 int resolve(char* file);
 
 #endif //OCR_SOLVER_H

@@ -498,10 +498,10 @@ Image* split(struct Line *lines, Image *image, Image *cells)
     {
         for(int y = startY + 10; j < 9; j++, y += yPlus)
         {
-            cell.x = x;
-            cell.y = y;
-            cell.w = xPlus - 20;
-            cell.h = yPlus - 20;
+            cell.x = y;
+            cell.y = x;
+            cell.w = yPlus - 20;
+            cell.h = xPlus - 20;
 
             Image newImage = cropImage(image, &cell);
 

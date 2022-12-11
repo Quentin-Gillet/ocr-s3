@@ -4,11 +4,12 @@
 #include "image_processing/line_detection.h"
 #include "image_processing/image_split.h"
 #include "image_processing/sudoku_builder.h"
+#include "neural_network/neural_network.h"
 #include "interface/interfacegtk.h"
 
 int main(int argc, char** argv)
 {
-
+    
     // Checks the number of arguments.
     if(argc == 1)
     {
@@ -65,7 +66,10 @@ int main(int argc, char** argv)
         snprintf(name, 3, "%i", i);
         saveImageToBmp(&images[i], name, "numbers");
     }
-
+    
+    //number recognition + solve sudoku
+    Recognition_Solve();
+    
     freeImage(&image_cells);
     free(images);
     free(newlines2);

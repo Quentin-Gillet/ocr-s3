@@ -62,6 +62,6 @@ void modifWeightBiais(int layer, int back_layer, double** W, double* B, double* 
 
 // ----------------------- TRAINING ------------------------------------
 
-void train(int print);
+void train();
 
 #endif // 

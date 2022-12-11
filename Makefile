@@ -3,7 +3,7 @@
 CC = gcc -Iinclude/
 
 CPPFLAGS = `pkg-config --cflags sdl2 gtk+-3.0`
-CFLAGS = -Wall -Wextra -g -fsanitize=address
+CFLAGS = -Wall -Wextra -Ofast -fsanitize=address
 LDFLAGS = 
 LDLIBS = -lm `pkg-config --libs sdl2 SDL2_image gtk+-3.0`
 LIBS = -lpthread -ldl
