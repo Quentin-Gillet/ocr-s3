@@ -17,6 +17,7 @@ void create_image(GtkFileChooserButton *file_chooser_button, gpointer user_data)
     printf("filename : %s\n", filename);
     set_image(filename, info->image);
     gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
+    info->rawImage = getImageFromPng(filename);
 
     /*
     const GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(filename, NULL);
@@ -42,6 +43,7 @@ void reset(GtkButton *Resetbutton, gpointer user_data)
 
     gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
     gtk_widget_set_sensitive(GTK_WIDGET(info->Skipbutton), TRUE);
+    info->rawImage = getImageFromPng(filename);
 
 }
 
@@ -62,7 +64,6 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
 
     GFile *file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(info->file_chooser));
     const char *filename = g_file_get_basename(file);
-    Image image = getImageFromPng(filename);
 
     switch (info->CurrEvent) {
 
@@ -71,8 +72,8 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
 
             gtk_label_set_label(ProcessLabel, "Applying Greyscale filter...");
 
-            imageGrayscale(&image);
-            saveImageToBmp(&image, "greyscale","");
+            imageGrayscale(&info->rawImage);
+            saveImageToBmp(&info->rawImage, "greyscale","");
             set_image("images/greyscale.bmp",info->image);
 
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
@@ -83,8 +84,8 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
             gtk_label_set_label(ProcessLabel, "Applying Contrast filter...");
 
-            imageContrastFilter(&image);
-            saveImageToBmp(&image, "contrast","");
+            imageContrastFilter(&info->rawImage);
+            saveImageToBmp(&info->rawImage, "contrast","");
             set_image("images/contrast.bmp",info->image);
 
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
@@ -94,10 +95,10 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
             gtk_label_set_label(ProcessLabel, "Applying Mean filter...");
 
-            imageBinarization(&image);
-            saveImageToBmp(&image, "mean","");
-            Image image_cells = copyImage(&image);
-            Image cpImage = copyImage(&image);
+            imageBinarization(&info->rawImage);
+            saveImageToBmp(&info->rawImage, "mean","");
+            Image image_cells = copyImage(&info->rawImage);
+            Image cpImage = copyImage(&info->rawImage);
             set_image("images/mean.bmp",info->image);
 
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
@@ -107,8 +108,8 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
             gtk_label_set_label(ProcessLabel, "Applying Inverted filter...");
 
-            imageInvert(&image);
-            saveImageToBmp(&image, "inverted","");
+            imageInvert(&info->rawImage);
+            saveImageToBmp(&info->rawImage, "inverted","");
             set_image("images/inverted.bmp",info->image);
 
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
@@ -118,8 +119,8 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
             gtk_label_set_label(ProcessLabel, "Applying Sobel filter...");
 
-            imageSobelFilter(&image);
-            saveImageToBmp(&image, "sobel","");
+            imageSobelFilter(&info->rawImage);
+            saveImageToBmp(&info->rawImage, "sobel","");
             set_image("images/sobel.bmp",info->image);
 
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
@@ -129,8 +130,8 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
             gtk_label_set_label(ProcessLabel, "Applying Blur filter...");
 
-            imageMedianBlur(&image);
-            saveImageToBmp(&image, "blur","");
+            imageMedianBlur(&info->rawImage);
+            saveImageToBmp(&info->rawImage, "blur","");
             set_image("images/blur.bmp",info->image);
 
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
@@ -141,18 +142,18 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
             gtk_label_set_label(ProcessLabel, "Applying Hough Line...");
 
             int linesLength = 0;
-            Line* lines = getImageLines(&image, 450, &linesLength);
+            Line* lines = getImageLines(&info->rawImage, 450, &linesLength);
 
-            drawLineOnImage(&image, lines, linesLength);
-            saveImageToBmp(&image, "hough","");
+            drawLineOnImage(&info->rawImage, lines, linesLength);
+            saveImageToBmp(&info->rawImage, "hough","");
             set_image("images/hough.bmp",info->image);
 
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
             break;
 
         default:
-            freeImage(&image_cells);
-            free(lines);
+            //freeImage(image_cells);
+            //free(lines);
             break;
 
     }

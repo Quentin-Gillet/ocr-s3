@@ -1,0 +1,7 @@
+Pour lancer le processus vous devez cliquer sur le séléctionneur de dossier puis cliquer sur le bouton "Start Process" ensuite plusieurs options s'offre à vous :
+
+- Le bouton "Next Step" vous fera avancer dans le processus étape par étape
+
+- Le bouton "Skip All" fera tout le processus d'un coup et vous affichera directement le sudoku résolu
+
+- Le bouton reset vous permet de revenir au tout début du processus

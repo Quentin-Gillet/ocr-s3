@@ -20,6 +20,7 @@ typedef struct AppInfo {
     GtkButton *Skipbutton;
     GtkButton *Resetbutton;
     GtkLabel *ProcessLabel;
+    Image rawImage;
 } AppInfo;
 
 
