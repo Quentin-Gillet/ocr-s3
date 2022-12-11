@@ -16,32 +16,27 @@ int find_angle(struct Line line)
     return radToDeg(acos(len1 / len2));
 }
 
-void auto_rotation(Image* image, struct Intersection* intersection)
+Image auto_rotation(Image* image, struct Line *lines)
 {
-    struct Line line1 = {
-            intersection[0].x,
-            intersection[0].y,
-            intersection[1].x,
-            intersection[1].y,
-            find_angle(line1)
-    };
-    struct Line line2 = {
-            intersection[1].x,
-            intersection[1].y,
-            intersection[2].x,
-            intersection[2].y,
-            find_angle(line2)
-    };
-    if(approx(line1.theta, line2.theta, 20))
-    {
-        line2.x1 = intersection[2].x;
-        line2.y1 = intersection[2].y;
-        line2.x2 = intersection[3].x;
-        line2.y2 = intersection[3].y;
-        line2.theta = find_angle(line2);
-    }
-    int rotationAngle = 90 - MAX(line1.theta, line2.theta);
-    imageRotate(image, rotationAngle);
+    int theta1 = find_angle(*lines);
+    lines++;
+    int theta2 = find_angle(*lines);
+    lines++;
+    int theta3 = find_angle(*lines);
+    lines++;
+    int theta4 = find_angle(*lines);
+
+    if(theta1 > 45)
+        theta1 = 90 - theta1;
+    if(theta2 > 45)
+        theta2 = 90 - theta2;
+    if(theta3 > 45)
+        theta3 = 90 - theta3;
+    if(theta4 > 45)
+        theta4 = 90 - theta4;
+
+    int angle = (-1) * (theta1 + theta2 + theta3 + theta4) / 4;
+    return imageRotate(image, angle);
 }
 
 //-----------------AutoRotation-----------//
@@ -93,10 +88,12 @@ double LineLength(int x1, int x2, int y1, int y2)
 }
 
 //Perimeter of a square
-double SquareArea(struct Intersection inter1, struct Intersection inter2, struct Intersection inter3)
+double SquareArea(struct Intersection inter1, struct Intersection inter2, struct Intersection inter3, struct Intersection inter4)
 {
-     return LineLength(inter1.x, inter2.x, inter1.y, inter2.y) *
-            LineLength(inter2.x, inter3.x, inter2.y, inter3.y);
+     return LineLength(inter1.x, inter2.x, inter1.y, inter2.y) +
+            LineLength(inter2.x, inter3.x, inter2.y, inter3.y) +
+            LineLength(inter3.x, inter4.x, inter3.y, inter4.y) +
+            LineLength(inter4.x, inter1.x, inter4.y, inter1.y);
 }
 
 //If the biggerSquare is a real square
@@ -106,8 +103,6 @@ int IsSquare(struct Square square)
     int len2 = (int)LineLength(square.xb, square.yb, square.xc, square.yc);
     int len3 = (int)LineLength(square.xc, square.yc, square.xd, square.yd);
     int len4 = (int)LineLength(square.xd, square.yd, square.xa, square.ya);
-    int len5 = (int)LineLength(square.xa, square.ya, square.xc, square.yc);
-    int len6 = (int)LineLength(square.xb, square.yb, square.xd, square.yd);
     int max = len1;
     if (len2 > max)
         max = len2;
@@ -126,10 +121,10 @@ int IsSquare(struct Square square)
 
     unsigned int val = max - min;
 
-    if (val > 40)
+    if (val > 100)
         return 0;
 
-    return approx(len5, len6, 1000);
+    return 1;
 }
 
 //if two lines have a no commun point
@@ -183,14 +178,14 @@ int square_init(struct Intersection inter1, struct Intersection inter2,
             find_angle(line2)
     };
 
-    if(line2.theta > 30 || !compareLines(line1, line2))
+    if(line2.theta > 45 || !compareLines(line1, line2))
     {
         line2.x1 = inter2.x;
         line2.x2 = inter3.x;
         line2.y1 = inter2.y;
         line2.y2 = inter3.y;
         line2.theta = find_angle(line2);
-        if(line2.theta > 30 || !compareLines(line1, line2))
+        if(line2.theta > 45 || !compareLines(line1, line2))
         {
             line2.x1 = inter3.x;
             line2.x2 = inter4.x;
@@ -198,7 +193,7 @@ int square_init(struct Intersection inter1, struct Intersection inter2,
             line2.y2 = inter4.y;
             line2.theta = find_angle(line2);
         }
-        if(line2.theta > 30 || !compareLines(line1, line2))
+        if(line2.theta > 45 || !compareLines(line1, line2))
         {
             line2.x1 = inter4.x;
             line2.x2 = inter1.x;
@@ -208,7 +203,7 @@ int square_init(struct Intersection inter1, struct Intersection inter2,
         }
     }
 
-    if(line2.theta > 30 || !compareLines(line1, line2))
+    if(line2.theta > 45 || !compareLines(line1, line2))
         return 0;
 
     if(line1.x1 < line1.x2)
@@ -240,7 +235,7 @@ int square_init(struct Intersection inter1, struct Intersection inter2,
         square->xd = line2.x1;
         square->yd = line2.y1;
     }
-    square->perimeter = SquareArea(inter1, inter2, inter3);
+    square->perimeter = SquareArea(inter1, inter2, inter3, inter4);
     return 1;
 }
 
@@ -272,14 +267,14 @@ void get_all_squares(struct Line *lines, int NBLine, struct list *squares, int w
 
     for(int h = 0; h < NBLine; h++)
     {
-        for(int i = 0; i < NBLine; i++)
+        for(int i = 1; i < NBLine; i++)
         {
             if (h == i)
                 continue;
             inter1 = line_intersection(lines[h], lines[i], width, height);
             if(inter1.x != -1 && inter1.y != -1)
             {
-                for(int j = 0; j < NBLine; j++)
+                for(int j = 2; j < NBLine; j++)
                 {
                     if (h == j && i == j)
                         continue;
@@ -288,7 +283,7 @@ void get_all_squares(struct Line *lines, int NBLine, struct list *squares, int w
                         continue;
                     if(inter2.x != -1 && inter2.y != -1)
                     {
-                        for(int k = 0; k < NBLine; k++)
+                        for(int k = 3; k < NBLine; k++)
                         {
                             if (h == k && i == k && j == k)
                                 continue;
@@ -310,7 +305,9 @@ void get_all_squares(struct Line *lines, int NBLine, struct list *squares, int w
                                     continue;
                                 if(inter4.x != -1 && inter4.y != -1)
                                 {
-                                    if(!square_init(inter1, inter2, inter3, inter4, &square) && !IsSquare(square))
+                                    if(!square_init(inter1, inter2, inter3, inter4, &square))
+                                        continue;
+                                    if(!IsSquare(square))
                                         continue;
                                     list_push_front(squares, square);
                                 }

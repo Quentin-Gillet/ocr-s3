@@ -1,10 +1,10 @@
-#include "image_processing/image_processing.h"
-#include "image_processing/image_loading.h"
-#include "image_processing/image_rotation.h"
-#include "image_processing/line_detection.h"
-#include "image_processing/image_split.h"
-#include "image_processing/sudoku_builder.h"
-#include "interface/interfacegtk.h"
+#include "../include/image_processing/image_processing.h"
+#include "../include/image_processing/image_loading.h"
+#include "../include/image_processing/image_rotation.h"
+#include "../include/image_processing/line_detection.h"
+#include "../include/image_processing/image_split.h"
+#include "../include/image_processing/sudoku_builder.h"
+#include "../include/interface/interfacegtk.h"
 
 int main(int argc, char** argv)
 {
@@ -45,32 +45,36 @@ int main(int argc, char** argv)
     saveImageToBmp(&image, "blur", "");
 
     int linesLength = 0;
-    Line* lines = getImageLines(&image, 450, &linesLength);
+    Line* lines = getImageLines(&image, 300, &linesLength);
 
     drawLineOnImage(&image, lines, linesLength);
     saveImageToBmp(&image, "hough", "");
 
     //test detection carré
-    Line* newlines2 = get_Bigger_Squares(lines, linesLength, image.width, image.height);
-    //Line* newlines2 = print_squares(lines, linesLength, image.width, image.height);
-    drawLineOnImage(&cpImage, newlines2, 4);
+    Line* newlines = get_Bigger_Squares(lines, linesLength, image.width, image.height);
+    //Line* newlines = print_squares(lines, linesLength, image.width, image.height);
+    drawLineOnImage(&cpImage, newlines,  4);
     saveImageToBmp(&cpImage, "biggest-rectangle", "");
+
+    //image = auto_rotation(&image, newlines);
+    //saveImageToBmp(&image, "auto-rotated-image", "");
 
     //test découpage
     Image *images = calloc(81, sizeof(Image));
-    images = split(newlines2, &image_cells, images);
+    images = split(newlines, &image_cells, images);
     for(int i = 0; i < 81; i++)
     {
         char name[3];
         snprintf(name, 3, "%i", i);
         saveImageToBmp(&images[i], name, "numbers");
+        freeImage(&images[i]);
     }
 
+    freeImage(&cpImage);
     freeImage(&image_cells);
-    //free(images);
-    free(newlines2);
+    free(images);
+    free(newlines);
     free(lines);
-    freeImage(&image);
 
     return EXIT_SUCCESS;
 }

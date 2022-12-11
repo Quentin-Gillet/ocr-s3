@@ -11,7 +11,7 @@ LIBS = -lpthread -ldl
 BUILD := build
 SOURCE_DIR := src
 
-SRC = $(shell find $(SOURCE_DIR) -name "*.c")
+SRC = $(shell find $(SOURCE_DIR) -name "*.c" ! -name "ann_xor.c")
 OBJ = $(SRC:%.c=$(BUILD)/%.o)
 DEP = $(SRC:%.c=$(BUILD)/%.d)
 
