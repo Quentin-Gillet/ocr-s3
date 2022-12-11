@@ -3,7 +3,7 @@
 // SUDOKU SOLVER MADE INLINE
 // ARRAY OF 1 DIMENSION
 
-int test_line(int n, int line, char s[])
+int test_line(int n, int line, char s[81])
 {
     int pos = line * 9;
     int a = pos + 9;
@@ -16,7 +16,7 @@ int test_line(int n, int line, char s[])
     return 1;
 }
 
-int test_column(int n, int column, char s[])
+int test_column(int n, int column, char s[81])
 {
     int pos = column;
     int a = 81;
@@ -29,7 +29,7 @@ int test_column(int n, int column, char s[])
     return 1;
 }
 
-int test_box(int n, int line, int column, char s[])
+int test_box(int n, int line, int column, char s[81])
 {
     line = line - (line % 3);
     column = column - (column % 3);
@@ -52,7 +52,7 @@ int test_box(int n, int line, int column, char s[])
     return 1;
 }
 
-int is_empty(int pos, char s[])
+int is_empty(int pos, char s[81])
 {
     if (s[pos] == '.')
         return 1;
@@ -60,7 +60,7 @@ int is_empty(int pos, char s[])
 }
 
 // FILL THE SUDOKU - BACKTRACKING ALGO
-int sudoku_solver(int pos, int empty, char s[])
+int sudoku_solver(int pos, int empty, char s[81])
 {
     if (pos == 81) {
         return 0;
@@ -88,11 +88,11 @@ int sudoku_solver(int pos, int empty, char s[])
     return 0;
 }
 
-void neural_network_to_sudoku(char s[])
+void neural_network_to_sudoku(char s[81])
 {
     FILE *file_return;
     file_return = fopen("sudoku", "w");
-
+    
     if (file_return == NULL)
         exit(EXIT_FAILURE);
 
@@ -113,19 +113,19 @@ void neural_network_to_sudoku(char s[])
             i++;
         }
     }
-    
     fclose(file_return);
+
     //exit(EXIT_SUCCESS);
 }
 
 // RETURN THE SOLVED SUDOKU IN A FILE .result
-void return_sudoku(char *argv, char s[])
+void return_sudoku(char *argv, char s[81])
 {
     FILE *file_return;
     file_return = fopen(strcat(argv, ".result"), "w");
-
+    /*
     if (file_return == NULL)
-        exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);*/
 
     int i = 0;
     while (s[i] != 0) {
@@ -168,7 +168,7 @@ int test_len(char *argv) {
 }
 
 // transform the input file into an 1D array
-void toTab(char s[], char *argv)
+void toTab(char s[81], char *argv)
 {
     FILE *file;
     file = fopen(argv, "r");
@@ -180,7 +180,8 @@ void toTab(char s[], char *argv)
         if (c == '.') {
             s[i] = c;
             i++;
-        } else if ((c == ' ') || (c == '\n'))
+        } 
+        else if ((c == ' ') || (c == '\n'))
             continue;
         else {
             s[i] = c;
@@ -190,7 +191,7 @@ void toTab(char s[], char *argv)
     fclose(file);
 }
 
-int check_error(char *argv, char s[])
+int check_error(char *argv, char s[81])
 {
     FILE *fptr;
     fptr = fopen(argv, "r");
@@ -198,7 +199,7 @@ int check_error(char *argv, char s[])
         printf("ERROR OPENING FILE !\n");
         return 1;
     }
-
+    /*
     int l = test_len(argv);
     if (l != 82) {
         printf("INCORRECT FILE !\n");
@@ -206,11 +207,12 @@ int check_error(char *argv, char s[])
 
     }
     s[l - 1] = 0;
-
+    */
     fclose(fptr);
 
     int i = 0;
-    while (s[i] != 0) {
+    while (s[i] != 0) 
+    {
         if (s[i] != '.' && (s[i] < '0' || s[i] > '9')) {
             printf("INCORRECT SUDOKU !\n");
             return 1;
@@ -224,17 +226,23 @@ int resolve(char* file)
 {
     char *s = malloc(sizeof(char) * 82);
     toTab(s, file);
+
     if (check_error(file, s) == 1)
+    {
+        free(s);
         return 1;
+    }
     
     else 
     {
         int a = sudoku_solver(0, is_empty(0, s), s);
-        if (a == -1) {
+        if (a == -1) 
+        {
             printf("INCORRECT SUDOKU !\n");
             free(s);
             return 1;
-        } else {
+        } else 
+        {
             return_sudoku(file, s);
             free(s);
             return 0;

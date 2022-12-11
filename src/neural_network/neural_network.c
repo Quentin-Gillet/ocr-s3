@@ -89,7 +89,6 @@ int Recognition_Solve()
     to_W(NB_HIDDEN_N_L2, NB_OUTPUTS, W_output, "training-result-01/outputLayer.W");
     to_B(NB_OUTPUTS, B_output, "training-result-01/outputLayer.B");
 
-    int count = 0;
     for (int i = 0; i < nb_images; i++) 
     {
         //printf("\n");

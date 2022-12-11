@@ -9,8 +9,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-void neural_network_to_sudoku(char s[]);
-void return_sudoku(char *argv, char s[]);
+void neural_network_to_sudoku(char s[81]);
+void return_sudoku(char *argv, char s[81]);
 
 int resolve(char* file);
 
