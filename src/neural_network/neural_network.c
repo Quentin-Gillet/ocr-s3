@@ -119,7 +119,8 @@ int Recognition_Solve()
     }
     //printf("ok\n");
     neural_network_to_sudoku(sudoku);
-    buildSudoku("sudoku");
+    resolve("sudokuPresentation");
+    buildSudoku("sudokuPresentation.result");
     
     //double winrate = (double) count / (double) nb_images;
     //printf("winrate : %f\n", winrate * 100);

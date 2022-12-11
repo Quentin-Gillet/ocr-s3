@@ -44,7 +44,7 @@ void copyToImage(SDL_Rect rect, Image* source, Image* toCopy)
         x++;
     }
 }
-
+//build the bmp with the text sudoku
 Image buildSudoku(const char* resultFilePath)
 {
     char* sudokuGrid = calloc(82, sizeof (char));
@@ -68,6 +68,7 @@ Image buildSudoku(const char* resultFilePath)
     {
         for(int j = 0; j < 9; j++)
         {
+
             int index = (int)sudokuGrid[numberIndex] - '0';
             imgNumber = numbers[index];
             SDL_Rect rect = {x, y, imgNumber.width, imgNumber.height};

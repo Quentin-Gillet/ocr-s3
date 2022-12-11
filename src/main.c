@@ -52,7 +52,7 @@ int main(int argc, char** argv)
     saveImageToBmp(&image, "hough", "");
 
     //test detection carré
-    Line* newlines2 = get_Bigger_Squares(lines, linesLength);
+    Line* newlines2 = get_Bigger_Squares(lines, linesLength,cpImage.width,cpImage.height);
     //Line* newlines2 = print_squares(lines, linesLength);
     drawLineOnImage(&cpImage, newlines2, 4);
     saveImageToBmp(&cpImage, "biggest-rectangle", "");

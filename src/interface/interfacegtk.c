@@ -141,7 +141,7 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
             gtk_label_set_label(ProcessLabel, "Applying Hough Line...");
 
-            info->lines = getImageLines(&info->rawImage, 450, &info->linesLength);
+            info->lines = getImageLines(&info->rawImage, 300, &info->linesLength);
 
             drawLineOnImage(&info->rawImage, info->lines, info->linesLength);
             saveImageToBmp(&info->rawImage, "hough","");
@@ -154,7 +154,7 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
             gtk_label_set_label(ProcessLabel, "Searching Biggest Square...");
 
             //test detection carré
-            Line* newlines2 = get_Bigger_Squares(info->lines, info->linesLength);
+            Line* newlines2 = get_Bigger_Squares(info->lines, info->linesLength,info->CpImage.width,info->CpImage.height);
             //Line* newlines2 = print_squares(lines, linesLength);
             drawLineOnImage(&info->CpImage, newlines2, 4);
             saveImageToBmp(&info->CpImage, "biggest-rectangle", "");
@@ -227,7 +227,7 @@ void skip(GtkButton *Skipbutton, gpointer user_data)
 
     gtk_label_set_label(ProcessLabel, "Applying Hough Line...");
     int linesLength = 0;
-    Line * lines = getImageLines(&image, 450, &linesLength);
+    Line * lines = getImageLines(&image, 300, &linesLength);
 
     drawLineOnImage(&image, lines, linesLength);
     saveImageToBmp(&image, "hough", "");
@@ -236,11 +236,13 @@ void skip(GtkButton *Skipbutton, gpointer user_data)
 
     gtk_label_set_label(ProcessLabel, "Searching Biggest Square...");
     //test detection carré
-    Line* newlines2 = get_Bigger_Squares(lines,linesLength);
+    Line* newlines2 = get_Bigger_Squares(lines,linesLength,info->CpImage.width,info->CpImage.height);
     //Line* newlines2 = print_squares(lines, linesLength);
     drawLineOnImage(&cpImage, newlines2, 4);
     saveImageToBmp(&cpImage, "biggest-rectangle", "");
     set_image("images/biggest-rectangle.bmp",info->image);
+
+
 
     gtk_widget_set_sensitive(GTK_WIDGET(info->Resetbutton), TRUE);
     gtk_widget_set_sensitive(GTK_WIDGET(Skipbutton), FALSE);
