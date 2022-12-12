@@ -160,6 +160,11 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
             drawLineOnImage(&info->cpImage, newlines2, 4);
             saveImageToBmp(&info->cpImage, "biggest-rectangle", "");
             set_image("images/biggest-rectangle.bmp", info->image);
+
+            free(info->lines);
+            freeImage(&info->cpImage);
+            freeImage(&info->imageCells);
+            freeImage(&info->rawImage);
             break;
 
         case 8:
@@ -177,13 +182,6 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
 
 void quitApp(gpointer user_data)
 {
-    AppInfo *info = user_data;
-
-    freeImage(&info->rawImage);
-    freeImage(&info->cpImage);
-    freeImage(&info->imageCells);
-    if(info->lines != NULL)
-        free(info->lines);
     gtk_main_quit();
 }
 
