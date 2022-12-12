@@ -66,11 +66,17 @@ int main(int argc, char** argv)
         snprintf(name, 3, "%i", i);
         saveImageToBmp(&images[i], name, "numbers");
     }
+
+    for(int i = 0; i < 81; i++)
+    {
+        freeImage(&images[i]);
+    }
     
     //number recognition + solve sudoku
     Recognition_Solve();
     
     freeImage(&image_cells);
+    freeImage(&cpImage);
     free(images);
     free(newlines2);
     free(lines);

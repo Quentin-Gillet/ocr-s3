@@ -1,4 +1,5 @@
 #include "image_processing/image_split.h"
+
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
 #define MAX(X, Y) (((X) < (Y)) ? (Y) : (X))
 
@@ -16,7 +17,7 @@ int find_angle(struct Line line)
     return radToDeg(acos(len1 / len2));
 }
 
-Image auto_rotation(Image* image, struct Line *lines)
+Image auto_rotation(Image *image, struct Line *lines)
 {
     int theta1 = find_angle(*lines);
     lines++;
@@ -26,13 +27,13 @@ Image auto_rotation(Image* image, struct Line *lines)
     lines++;
     int theta4 = find_angle(*lines);
 
-    if(theta1 > 45)
+    if (theta1 > 45)
         theta1 = 90 - theta1;
-    if(theta2 > 45)
+    if (theta2 > 45)
         theta2 = 90 - theta2;
-    if(theta3 > 45)
+    if (theta3 > 45)
         theta3 = 90 - theta3;
-    if(theta4 > 45)
+    if (theta4 > 45)
         theta4 = 90 - theta4;
 
     int angle = (-1) * (theta1 + theta2 + theta3 + theta4) / 4;
@@ -43,26 +44,26 @@ Image auto_rotation(Image* image, struct Line *lines)
 
 int approx(int a, int b, int Threshold)
 {
-    return (abs(a-b) <= Threshold) ? 1 : 0;
+    return (abs(a - b) <= Threshold) ? 1 : 0;
 }
 
 // Get the intersection between two lines
 // x = -1,y = -1 --> means there is no intersection between the 2 lines
 struct Intersection line_intersection(struct Line line1, struct Line line2, int width, int height)
 {
-    double fact1 = (double)(line1.x2 - line1.x1);
-    if(!fact1)
+    double fact1 = (double) (line1.x2 - line1.x1);
+    if (!fact1)
         fact1++;
-    double fact2 = (double)(line2.x2 - line2.x1);
-    if(!fact2)
+    double fact2 = (double) (line2.x2 - line2.x1);
+    if (!fact2)
         fact2++;
     struct Intersection intersection;
-    double a1 = ((double)line1.y2 - (double)line1.y1) / fact1;
-    double a2 = ((double)line2.y2 - (double)line2.y1) / fact2;
-    double b1 = (double)line1.y1 - a1 * line1.x1;
-    double b2 = (double)line2.y1 - a2 * line2.x1;
+    double a1 = ((double) line1.y2 - (double) line1.y1) / fact1;
+    double a2 = ((double) line2.y2 - (double) line2.y1) / fact2;
+    double b1 = (double) line1.y1 - a1 * line1.x1;
+    double b2 = (double) line2.y1 - a2 * line2.x1;
 
-    if((int)a1 - (int)a2 != 0)
+    if ((int) a1 - (int) a2 != 0)
     {
         int x = (b1 - b2) / (a2 - a1);
         int y = a1 * (b2 - b1) / (a1 - a2) + b1;
@@ -88,21 +89,22 @@ double LineLength(int x1, int x2, int y1, int y2)
 }
 
 //Perimeter of a square
-double SquareArea(struct Intersection inter1, struct Intersection inter2, struct Intersection inter3, struct Intersection inter4)
+double SquareArea(struct Intersection inter1, struct Intersection inter2, struct Intersection inter3,
+                  struct Intersection inter4)
 {
-     return LineLength(inter1.x, inter2.x, inter1.y, inter2.y) +
-            LineLength(inter2.x, inter3.x, inter2.y, inter3.y) +
-            LineLength(inter3.x, inter4.x, inter3.y, inter4.y) +
-            LineLength(inter4.x, inter1.x, inter4.y, inter1.y);
+    return LineLength(inter1.x, inter2.x, inter1.y, inter2.y) +
+           LineLength(inter2.x, inter3.x, inter2.y, inter3.y) +
+           LineLength(inter3.x, inter4.x, inter3.y, inter4.y) +
+           LineLength(inter4.x, inter1.x, inter4.y, inter1.y);
 }
 
 //If the biggerSquare is a real square
 int IsSquare(struct Square square)
 {
-    int len1 = (int)LineLength(square.xa, square.ya, square.xb, square.yb);
-    int len2 = (int)LineLength(square.xb, square.yb, square.xc, square.yc);
-    int len3 = (int)LineLength(square.xc, square.yc, square.xd, square.yd);
-    int len4 = (int)LineLength(square.xd, square.yd, square.xa, square.ya);
+    int len1 = (int) LineLength(square.xa, square.ya, square.xb, square.yb);
+    int len2 = (int) LineLength(square.xb, square.yb, square.xc, square.yc);
+    int len3 = (int) LineLength(square.xc, square.yc, square.xd, square.yd);
+    int len4 = (int) LineLength(square.xd, square.yd, square.xa, square.ya);
     int max = len1;
     if (len2 > max)
         max = len2;
@@ -130,20 +132,20 @@ int IsSquare(struct Square square)
 //if two lines have a no commun point
 int compareLines(struct Line line1, struct Line line2)
 {
-    if(line1.x1 == line2.x1 && line1.y1 == line2.y1)
+    if (line1.x1 == line2.x1 && line1.y1 == line2.y1)
         return 0;
-    if(line1.x2 == line2.x2 && line1.y2 == line2.y2)
+    if (line1.x2 == line2.x2 && line1.y2 == line2.y2)
         return 0;
-    if(line1.x2 == line2.x1 && line1.y2 == line2.y1)
+    if (line1.x2 == line2.x1 && line1.y2 == line2.y1)
         return 0;
-    if(line1.x1 == line2.x2 && line1.y1 == line2.y2)
+    if (line1.x1 == line2.x2 && line1.y1 == line2.y2)
         return 0;
     return 1;
 }
 
 //Initialisation new square
 int square_init(struct Intersection inter1, struct Intersection inter2,
-                          struct Intersection inter3, struct Intersection inter4, struct Square *square)
+                struct Intersection inter3, struct Intersection inter4, struct Square *square)
 {
     struct Line line1 = {
             inter1.x,
@@ -160,7 +162,7 @@ int square_init(struct Intersection inter1, struct Intersection inter2,
         line1.y1 = inter2.y;
         line1.y2 = inter3.y;
         line1.theta = find_angle(line1);
-        if(line1.theta > 30)
+        if (line1.theta > 30)
         {
             line1.x1 = inter3.x;
             line1.x2 = inter4.x;
@@ -178,14 +180,14 @@ int square_init(struct Intersection inter1, struct Intersection inter2,
             find_angle(line2)
     };
 
-    if(line2.theta > 45 || !compareLines(line1, line2))
+    if (line2.theta > 45 || !compareLines(line1, line2))
     {
         line2.x1 = inter2.x;
         line2.x2 = inter3.x;
         line2.y1 = inter2.y;
         line2.y2 = inter3.y;
         line2.theta = find_angle(line2);
-        if(line2.theta > 45 || !compareLines(line1, line2))
+        if (line2.theta > 45 || !compareLines(line1, line2))
         {
             line2.x1 = inter3.x;
             line2.x2 = inter4.x;
@@ -193,7 +195,7 @@ int square_init(struct Intersection inter1, struct Intersection inter2,
             line2.y2 = inter4.y;
             line2.theta = find_angle(line2);
         }
-        if(line2.theta > 45 || !compareLines(line1, line2))
+        if (line2.theta > 45 || !compareLines(line1, line2))
         {
             line2.x1 = inter4.x;
             line2.x2 = inter1.x;
@@ -203,17 +205,16 @@ int square_init(struct Intersection inter1, struct Intersection inter2,
         }
     }
 
-    if(line2.theta > 45 || !compareLines(line1, line2))
+    if (line2.theta > 45 || !compareLines(line1, line2))
         return 0;
 
-    if(line1.x1 < line1.x2)
+    if (line1.x1 < line1.x2)
     {
         square->xa = line1.x1;
         square->ya = line1.y1;
         square->xb = line1.x2;
         square->yb = line1.y2;
-    }
-    else
+    } else
     {
         square->xa = line1.x2;
         square->ya = line1.y2;
@@ -221,14 +222,13 @@ int square_init(struct Intersection inter1, struct Intersection inter2,
         square->yb = line1.y1;
     }
 
-    if(line2.x1 > line2.x2)
+    if (line2.x1 > line2.x2)
     {
         square->xc = line2.x1;
         square->yc = line2.y1;
         square->xd = line2.x2;
         square->yd = line2.y2;
-    }
-    else
+    } else
     {
         square->xc = line2.x2;
         square->yc = line2.y2;
@@ -265,49 +265,49 @@ void get_all_squares(struct Line *lines, int NBLine, struct list *squares, int w
     struct Intersection inter3;
     struct Intersection inter4;
 
-    for(int h = 0; h < NBLine; h++)
+    for (int h = 0; h < NBLine; h++)
     {
-        for(int i = 1; i < NBLine; i++)
+        for (int i = 1; i < NBLine; i++)
         {
             if (h == i)
                 continue;
             inter1 = line_intersection(lines[h], lines[i], width, height);
-            if(inter1.x != -1 && inter1.y != -1)
+            if (inter1.x != -1 && inter1.y != -1)
             {
-                for(int j = 2; j < NBLine; j++)
+                for (int j = 2; j < NBLine; j++)
                 {
                     if (h == j && i == j)
                         continue;
                     inter2 = line_intersection(lines[i], lines[j], width, height);
-                    if(inter1.x == inter2.x && inter1.y == inter2.y)
+                    if (inter1.x == inter2.x && inter1.y == inter2.y)
                         continue;
-                    if(inter2.x != -1 && inter2.y != -1)
+                    if (inter2.x != -1 && inter2.y != -1)
                     {
-                        for(int k = 3; k < NBLine; k++)
+                        for (int k = 3; k < NBLine; k++)
                         {
                             if (h == k && i == k && j == k)
                                 continue;
                             inter3 = line_intersection(lines[j], lines[k], width, height);
-                            if(inter1.x == inter3.x && inter1.y == inter3.y)
+                            if (inter1.x == inter3.x && inter1.y == inter3.y)
                                 continue;
-                            if(inter2.x == inter3.x && inter2.y == inter3.y)
+                            if (inter2.x == inter3.x && inter2.y == inter3.y)
                                 continue;
-                            if(inter3.x != -1 && inter3.y != -1)
+                            if (inter3.x != -1 && inter3.y != -1)
                             {
-                                if(k == h)
+                                if (k == h)
                                     continue;
                                 inter4 = line_intersection(lines[k], lines[h], width, height);
-                                if(inter1.x == inter4.x && inter1.y == inter4.y)
+                                if (inter1.x == inter4.x && inter1.y == inter4.y)
                                     continue;
-                                if(inter2.x == inter4.x && inter2.y == inter4.y)
+                                if (inter2.x == inter4.x && inter2.y == inter4.y)
                                     continue;
-                                if(inter3.x == inter4.x && inter3.y == inter4.y)
+                                if (inter3.x == inter4.x && inter3.y == inter4.y)
                                     continue;
-                                if(inter4.x != -1 && inter4.y != -1)
+                                if (inter4.x != -1 && inter4.y != -1)
                                 {
-                                    if(!square_init(inter1, inter2, inter3, inter4, &square))
+                                    if (!square_init(inter1, inter2, inter3, inter4, &square))
                                         continue;
-                                    if(!IsSquare(square))
+                                    if (!IsSquare(square))
                                         continue;
                                     list_push_front(squares, square);
                                 }
@@ -320,7 +320,7 @@ void get_all_squares(struct Line *lines, int NBLine, struct list *squares, int w
     }
 }
 
-struct Line* print_squares(struct Line* lines, int NBLine, int width, int height)
+struct Line *print_squares(struct Line *lines, int NBLine, int width, int height)
 {
     struct list *squares = malloc(sizeof(struct list));
     list_init(squares);
@@ -328,7 +328,7 @@ struct Line* print_squares(struct Line* lines, int NBLine, int width, int height
 
     struct Line *final = calloc(squares->length * 4, sizeof(struct Line));
     struct list *p = squares->next;
-    for(int i = 0; p; p = p->next, i += 4)
+    for (int i = 0; p; p = p->next, i += 4)
     {
         struct Line line1 = {
                 .x1 = p->data.xa,
@@ -364,15 +364,15 @@ struct Line* print_squares(struct Line* lines, int NBLine, int width, int height
 }
 
 //Get the bigger square of the grid
-struct Line* get_Bigger_Squares(struct Line* lines, int NBLine, int width, int height)
+struct Line *get_Bigger_Squares(struct Line *lines, int NBLine, int width, int height)
 {
     struct list *squares = malloc(sizeof(struct list));
     list_init(squares);
     get_all_squares(lines, NBLine, squares, width, height);
     struct Square biggerSquare = null_Square();
-    for(struct list *p = squares->next; p; p = p->next)
+    for (struct list *p = squares->next; p; p = p->next)
     {
-        if(p->data.perimeter > biggerSquare.perimeter)
+        if (p->data.perimeter > biggerSquare.perimeter)
         {
             biggerSquare = p->data;
         }
@@ -414,27 +414,15 @@ struct Line* get_Bigger_Squares(struct Line* lines, int NBLine, int width, int h
     return final;
 }
 
-
-
-
 //-----------------FindCell-----------//
-
 
 Image cropImage(Image *image, SDL_Rect *rect)
 {
-    Image res = {
-            rect->w,
-            rect->h,
-            malloc((rect->w + 1) * sizeof(Pixel *))
-    };
-    for(int i = 0; i < rect->w; i++)
-    {
-        res.pixels[i] = (Pixel *)malloc((rect->h + 1) * sizeof(Pixel));
-    }
+    Image res = createImage((int)rect->w, (int)rect->h);
 
-    for(int x = rect->x; x < rect->x + rect->w; x++)
+    for (int x = rect->x; x < rect->x + rect->w; x++)
     {
-        for(int y = rect->y; y < rect->y + rect->h; y++)
+        for (int y = rect->y; y < rect->y + rect->h; y++)
         {
             res.pixels[x - rect->x][y - rect->y].r = image->pixels[x][y].r;
             res.pixels[x - rect->x][y - rect->y].g = image->pixels[x][y].g;
@@ -445,18 +433,18 @@ Image cropImage(Image *image, SDL_Rect *rect)
 }
 
 //split (marche seulement si l'image est droite)
-Image* split(struct Line *lines, Image *image, Image *cells)
+Image *split(struct Line *lines, Image *image, Image *cells)
 {
     //recherche le point le plus en haut à gauche
     int startX = lines->x1;
-    for(int i = 0; i < 4; i++)
+    for (int i = 0; i < 4; i++)
     {
         startX = MIN(startX, (lines + i)->x1);
         startX = MIN(startX, (lines + i)->x2);
     }
 
     int startY = lines->y1;
-    for(int i = 0; i < 4; i++)
+    for (int i = 0; i < 4; i++)
     {
         startY = MIN(startY, (lines + i)->x1);
         startY = MIN(startY, (lines + i)->x2);
@@ -464,11 +452,11 @@ Image* split(struct Line *lines, Image *image, Image *cells)
 
     //recherche un côté horizontal
     struct Line lineX = *lines;
-    if(find_angle(lineX) >= 50)
+    if (find_angle(lineX) >= 50)
     {
         lineX = *(lines + 1);
 
-        if(find_angle(lineX) >= 50)
+        if (find_angle(lineX) >= 50)
         {
             lineX = *(lines + 2);
         }
@@ -477,26 +465,26 @@ Image* split(struct Line *lines, Image *image, Image *cells)
     //recherche un côté vertical
     struct Line lineY = *lines;
 
-    if(find_angle(lineY) <= 50)
+    if (find_angle(lineY) <= 50)
     {
         lineY = *(lines + 1);
 
-        if(find_angle(lineY) <= 50)
+        if (find_angle(lineY) <= 50)
         {
             lineY = *(lines + 2);
         }
     }
 
-    int xPlus = (int)LineLength(lineX.x1, lineX.x2, lineX.y1, lineX.y2) / 9;
-    int yPlus = (int)LineLength(lineY.x1, lineY.x2, lineY.y1, lineY.y2) / 9;
+    int xPlus = (int) LineLength(lineX.x1, lineX.x2, lineX.y1, lineX.y2) / 9;
+    int yPlus = (int) LineLength(lineY.x1, lineY.x2, lineY.y1, lineY.y2) / 9;
     int i = 0;
     int j = 0;
     int count = 0;
     SDL_Rect cell;
 
-    for(int x = startX + 10; i < 9; i++, j = 0, x += xPlus)
+    for (int x = startX + 10; i < 9; i++, j = 0, x += xPlus)
     {
-        for(int y = startY + 10; j < 9; j++, y += yPlus)
+        for (int y = startY + 10; j < 9; j++, y += yPlus)
         {
             cell.x = y;
             cell.y = x;
@@ -504,8 +492,8 @@ Image* split(struct Line *lines, Image *image, Image *cells)
             cell.h = xPlus - 20;
 
             Image newImage = cropImage(image, &cell);
-
             cells[count++] = imageResize(&newImage, 28, 28);
+            freeImage(&newImage);
         }
     }
     return cells;

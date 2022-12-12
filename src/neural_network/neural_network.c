@@ -58,6 +58,7 @@ int Recognition_Solve()
         printf("pre-processing : image %d/%d\r", i+1, nb_images);
         fflush(stdout);
         free(im.pixels);
+        free(input_image);
     }
     printf("\n");
 
