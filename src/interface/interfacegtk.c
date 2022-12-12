@@ -294,7 +294,7 @@ int start_gui()
     GtkButton *Skipbutton = GTK_BUTTON(gtk_builder_get_object(builder, "SkipButton"));
     GtkButton *Resetbutton = GTK_BUTTON(gtk_builder_get_object(builder, "ResetButton"));
 
-    //Initializing 
+    //Initializing
     infos.image = image;
     infos.CurrEvent = -1;
     infos.Nextbutton = Nextbutton;
