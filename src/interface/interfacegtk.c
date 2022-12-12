@@ -58,7 +58,7 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
     gtk_button_set_label(Nextbutton, "Next Step");
 
     double BarValue = gtk_level_bar_get_value(info->ProgressBar);
-    gtk_level_bar_set_value(info->ProgressBar, BarValue + 14.28571429);
+    gtk_level_bar_set_value(info->ProgressBar, BarValue + 11.11111111);
     GtkLabel *ProcessLabel = info->ProcessLabel;
 
     GFile *file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(info->file_chooser));
@@ -168,7 +168,9 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
             break;
 
         case 8:
-
+            gtk_label_set_label(ProcessLabel, "Generating solution...");
+            Recognition_Solve();
+            set_image("images/sudokuPresentation.result.bmp",info->image);
             break;
 
         default:
@@ -203,37 +205,32 @@ void skip(GtkButton *Skipbutton, gpointer user_data)
     imageGrayscale(&image);
     saveImageToBmp(&image, "greyscale", "");
     set_image("images/greyscale.bmp", info->image);
-    gtk_level_bar_set_value(info->ProgressBar, BarValue + 14.28571429);
 
     gtk_label_set_label(ProcessLabel, "Applying Contrast filter...");
     imageContrastFilter(&image);
     saveImageToBmp(&image, "contrast", "");
     set_image("images/contrast.bmp", info->image);
-    gtk_level_bar_set_value(info->ProgressBar, BarValue + 14.28571429);
 
     gtk_label_set_label(ProcessLabel, "Applying Mean filter...");
     imageBinarization(&image);
     saveImageToBmp(&image, "mean", "");
     Image cpImage = copyImage(&image);
     set_image("images/mean.bmp", info->image);
-    gtk_level_bar_set_value(info->ProgressBar, BarValue + 14.28571429);
 
     gtk_label_set_label(ProcessLabel, "Applying Inverted filter...");
     imageInvert(&image);
     saveImageToBmp(&image, "inverted", "");
     set_image("images/inverted.bmp", info->image);
-    gtk_level_bar_set_value(info->ProgressBar, BarValue + 14.28571429);
+
 
     gtk_label_set_label(ProcessLabel, "Applying Sobel filter...");
     imageSobelFilter(&image);
     saveImageToBmp(&image, "sobel", "");
     set_image("images/sobel.bmp", info->image);
-    gtk_level_bar_set_value(info->ProgressBar, BarValue + 14.28571429);
 
     gtk_label_set_label(ProcessLabel, "Applying Blur filter...");
     imageMedianBlur(&image);
     saveImageToBmp(&image, "blur", "");
-    gtk_level_bar_set_value(info->ProgressBar, BarValue + 14.28571429);
 
     gtk_label_set_label(ProcessLabel, "Applying Hough Line...");
     int linesLength = 0;
@@ -241,8 +238,7 @@ void skip(GtkButton *Skipbutton, gpointer user_data)
 
     drawLineOnImage(&image, lines, linesLength);
     saveImageToBmp(&image, "hough", "");
-    set_image("images/hough.bmp", info->image);
-    gtk_level_bar_set_value(info->ProgressBar, BarValue + 100);
+    set_image("images/hough.bmp", info->image);;
 
     gtk_label_set_label(ProcessLabel, "Searching Biggest Square...");
     //test detection carré
@@ -251,6 +247,11 @@ void skip(GtkButton *Skipbutton, gpointer user_data)
     drawLineOnImage(&cpImage, newlines2, 4);
     saveImageToBmp(&cpImage, "biggest-rectangle", "");
     set_image("images/biggest-rectangle.bmp", info->image);
+
+    gtk_label_set_label(ProcessLabel, "Generating solution...");
+    Recognition_Solve();
+    set_image("images/sudokuPresentation.result.bmp",info->image);
+    gtk_level_bar_set_value(info->ProgressBar, BarValue + 100);
 
     gtk_widget_set_sensitive(GTK_WIDGET(info->Resetbutton), TRUE);
     gtk_widget_set_sensitive(GTK_WIDGET(Skipbutton), FALSE);
@@ -281,16 +282,9 @@ int start_gui()
         return 1;
     }
 
-    GtkCssProvider *cssProvider = gtk_css_provider_new();
-    gtk_css_provider_load_from_path(cssProvider, "src/interface/style.css", NULL);
-
-    GdkScreen *screen = gdk_screen_get_default();
-    gtk_style_context_add_provider_for_screen(screen, GTK_STYLE_PROVIDER(cssProvider),
-                                              GTK_STYLE_PROVIDER_PRIORITY_USER);
-
 
     // Gets the widgets.
-    // = prend les élements de glade
+    // = take all the "elements from Glade"
     GtkWindow *window = GTK_WINDOW(gtk_builder_get_object(builder, "window"));
     GtkFileChooserButton *file_chooser = GTK_FILE_CHOOSER_BUTTON(gtk_builder_get_object(builder, "file_chooser"));
     GtkImage *image = GTK_IMAGE(gtk_builder_get_object(builder, "ImageToPrint"));
@@ -300,6 +294,7 @@ int start_gui()
     GtkButton *Skipbutton = GTK_BUTTON(gtk_builder_get_object(builder, "SkipButton"));
     GtkButton *Resetbutton = GTK_BUTTON(gtk_builder_get_object(builder, "ResetButton"));
 
+    //Initializing 
     infos.image = image;
     infos.CurrEvent = -1;
     infos.Nextbutton = Nextbutton;
