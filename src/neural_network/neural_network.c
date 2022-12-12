@@ -22,33 +22,28 @@ char* int_to_stringfile(int number)
 
 int Recognition_Solve()
 {
-    //train();
-    //int nb_images = 2500;
-    
     int nb_images = 81;
     char sudoku[nb_images];
 
-    /*
-    char **images = initMatrixChar(nb_images, 1024);
-    int numbers[nb_images];
-    LoadCSV("images_test_link.csv", images, numbers);
-    */
+    // matrice de 81 lignes et 784 colonnes.
+    double **inputs = initMatrixDouble(nb_images, NB_INPUTS); 
 
-    double **inputs = initMatrixDouble(nb_images, NB_INPUTS);
-
+    // chemin vers les images découpées.
     const char *path = "images/numbers/";
-    //const char *path = "images_test/";
-
+    
+    // Pre-processing des images.
     printf("---------------------------------\n");
     for (int i = 0; i < nb_images; i++) 
     {
+        // récuperation du nom de l'image. i.bmp
         char *name = int_to_stringfile(i);
-        //char *name = images[i];
         char *input_image = concat(path, name);
         free(name);
+          
         ImageMajorOrder im = prepareImageFileForNeuralNetwork(input_image);
         
         double input[NB_INPUTS];
+        // convertir l'image en un tableau de double 0 ou 1.
         image_to_input(im, input);
 
         for (int j = 0; j < NB_INPUTS; j++) 
@@ -57,11 +52,13 @@ int Recognition_Solve()
         }
         printf("pre-processing : image %d/%d\r", i+1, nb_images);
         fflush(stdout);
+
         free(im.pixels);
         free(input_image);
     }
     printf("\n");
 
+    // Initialisation du réseau de neurones.
     double hiddenLayer1[NB_HIDDEN_N_L1];
     double hiddenLayer2[NB_HIDDEN_N_L1];
     double output[NB_OUTPUTS];
@@ -70,6 +67,7 @@ int Recognition_Solve()
     double Z_hidden_2[NB_HIDDEN_N_L2];
     double Z_output[NB_OUTPUTS];
 
+    // initialisation des poids et des biais.
     double B_hidden_1[NB_HIDDEN_N_L1];
     double B_hidden_2[NB_HIDDEN_N_L2];
     double B_output[NB_OUTPUTS];
@@ -81,6 +79,7 @@ int Recognition_Solve()
     //double W_output[NB_HIDDEN_N_L2][NB_OUTPUTS];
     double **W_output = initMatrixDouble(NB_HIDDEN_N_L2, NB_OUTPUTS);
 
+    // chargement des poids et des biais à partir de l'entrainement.
     to_W(NB_INPUTS, NB_HIDDEN_N_L1, W_hidden_1, "training-result-01/hiddenLayer1.W");
     to_B(NB_HIDDEN_N_L1, B_hidden_1, "training-result-01/hiddenLayer1.B");
 
@@ -90,11 +89,9 @@ int Recognition_Solve()
     to_W(NB_HIDDEN_N_L2, NB_OUTPUTS, W_output, "training-result-01/outputLayer.W");
     to_B(NB_OUTPUTS, B_output, "training-result-01/outputLayer.B");
 
+    // calcul de la sortie du réseau de neurones en fonction de l'image d'enrtrée.
     for (int i = 0; i < nb_images; i++) 
     {
-        //printf("\n");
-        //print_image(inputs[i]);
-
         computeZ(NB_INPUTS, NB_HIDDEN_N_L1, inputs[i], W_hidden_1, B_hidden_1, Z_hidden_1);
         computeA_Layer(NB_HIDDEN_N_L1, Z_hidden_1, hiddenLayer1);
 
@@ -104,30 +101,18 @@ int Recognition_Solve()
         computeZ(NB_HIDDEN_N_L2, NB_OUTPUTS, hiddenLayer2, W_output, B_output, Z_output);
         computeA_Output(NB_OUTPUTS, Z_output, output);
 
-        /*
-        if (return_output(output) == numbers[i])
-        {
-            printf("image %d/%d : %d -- OK\n",i,nb_images-1,return_output(output));
-            count++;
-        }
-        else
-        {
-            printf("image %d/%d : %d (expected %d)\n",i,nb_images-1,return_output(output),numbers[i]);
-        }
-        */
         sudoku[i] = int_to_char(return_output(output));
     }
-    //printf("ok\n");
+    // transformation du tableau de char en fichier texte contenant le sudoku.
     neural_network_to_sudoku(sudoku);
-    int resolved = resolve("sudoku");
+
+    // résolution du sudoku.
+    int resolved = resolve("sudokuPresentation");
     if(!resolved)
     {
-        Image resultImage = buildSudoku("sudoku.result");
-        saveImageToBmp(&resultImage, "sudoku.result", "");
+        Image resultImage = buildSudoku("sudokuPresentation.result");
+        saveImageToBmp(&resultImage, "sudokuPresentation.result", "");
     }
-    
-    //double winrate = (double) count / (double) nb_images;
-    //printf("winrate : %f\n", winrate * 100);
 
     freeMatrixDouble(W_hidden_1, NB_INPUTS);
     freeMatrixDouble(W_hidden_2, NB_HIDDEN_N_L1);

@@ -292,7 +292,6 @@ void computeA_Layer(int layer, double *Z, double *A)
 	for(int i = 0; i < layer; i++)
     {
 	    A[i] = sigmoid(Z[i]);
-		//printf("%f --> %f\n",Z[i],sigmoid(Z[i]));
 	}
 }
 
@@ -315,7 +314,7 @@ void modifWeightBiais(int layer, int back_layer, double **W,
 
 
 // !!! --- WARNING --- !!!
-// USELESS FUNCTION WITHOUT images/ folder & images_link.csv
+// USELESS FUNCTION WITHOUT images_train/ folder & images_link.csv
 //training function
 void train()
 {
@@ -404,8 +403,6 @@ void train()
 		    i = steps[x];
 			printf("epoch %d/%d - image %d/%d\r",epoch,nb_epochs,x+1,nb_images);
 			fflush(stdout);
-
-			//print_image(inputs[i]);
 	
 			compute_expected(expected_output,numbers[i]);
 
