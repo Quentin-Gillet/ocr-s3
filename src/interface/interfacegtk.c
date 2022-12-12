@@ -1,5 +1,4 @@
 #include "interface/interfacegtk.h"
-#include <string.h>
 
 void set_image(const char *filename, GtkImage *image)
 {
@@ -29,7 +28,7 @@ void create_image(GtkFileChooserButton *file_chooser_button, gpointer user_data)
 
 void reset(GtkButton *Resetbutton, gpointer user_data)
 {
-	AppInfo *info = user_data;
+    AppInfo *info = user_data;
 
     gtk_widget_set_sensitive(GTK_WIDGET(info->Resetbutton), FALSE);
     gtk_widget_set_sensitive(GTK_WIDGET(info->Skipbutton), FALSE);
@@ -37,7 +36,7 @@ void reset(GtkButton *Resetbutton, gpointer user_data)
     const char *filename = g_file_get_path(file);
     set_image(filename, info->image);
     info->CurrEvent = -1;
-    gtk_level_bar_set_value(info->ProgressBar,0);
+    gtk_level_bar_set_value(info->ProgressBar, 0);
     GtkLabel *ProcessLabel = info->ProcessLabel;
     gtk_label_set_label(ProcessLabel, "");
 
@@ -65,7 +64,8 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
     GFile *file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(info->file_chooser));
     const char *filename = g_file_get_basename(file);
 
-    switch (info->CurrEvent) {
+    switch (info->CurrEvent)
+    {
 
         case 0:
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
@@ -73,8 +73,8 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
             gtk_label_set_label(ProcessLabel, "Applying Greyscale filter...");
 
             imageGrayscale(&info->rawImage);
-            saveImageToBmp(&info->rawImage, "greyscale","");
-            set_image("images/greyscale.bmp",info->image);
+            saveImageToBmp(&info->rawImage, "greyscale", "");
+            set_image("images/greyscale.bmp", info->image);
 
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
             break;
@@ -85,8 +85,8 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
             gtk_label_set_label(ProcessLabel, "Applying Contrast filter...");
 
             imageContrastFilter(&info->rawImage);
-            saveImageToBmp(&info->rawImage, "contrast","");
-            set_image("images/contrast.bmp",info->image);
+            saveImageToBmp(&info->rawImage, "contrast", "");
+            set_image("images/contrast.bmp", info->image);
 
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
             break;
@@ -96,10 +96,10 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
             gtk_label_set_label(ProcessLabel, "Applying Mean filter...");
 
             imageBinarization(&info->rawImage);
-            saveImageToBmp(&info->rawImage, "mean","");
-            info->Image_Cells = copyImage(&info->rawImage);
-            info->CpImage = copyImage(&info->rawImage);
-            set_image("images/mean.bmp",info->image);
+            saveImageToBmp(&info->rawImage, "mean", "");
+            info->imageCells = copyImage(&info->rawImage);
+            info->cpImage = copyImage(&info->rawImage);
+            set_image("images/mean.bmp", info->image);
 
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
             break;
@@ -109,8 +109,8 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
             gtk_label_set_label(ProcessLabel, "Applying Inverted filter...");
 
             imageInvert(&info->rawImage);
-            saveImageToBmp(&info->rawImage, "inverted","");
-            set_image("images/inverted.bmp",info->image);
+            saveImageToBmp(&info->rawImage, "inverted", "");
+            set_image("images/inverted.bmp", info->image);
 
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
             break;
@@ -120,8 +120,8 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
             gtk_label_set_label(ProcessLabel, "Applying Sobel filter...");
 
             imageSobelFilter(&info->rawImage);
-            saveImageToBmp(&info->rawImage, "sobel","");
-            set_image("images/sobel.bmp",info->image);
+            saveImageToBmp(&info->rawImage, "sobel", "");
+            set_image("images/sobel.bmp", info->image);
 
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
             break;
@@ -131,8 +131,8 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
             gtk_label_set_label(ProcessLabel, "Applying Blur filter...");
 
             imageMedianBlur(&info->rawImage);
-            saveImageToBmp(&info->rawImage, "blur","");
-            set_image("images/blur.bmp",info->image);
+            saveImageToBmp(&info->rawImage, "blur", "");
+            set_image("images/blur.bmp", info->image);
 
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
             break;
@@ -141,11 +141,11 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
             gtk_label_set_label(ProcessLabel, "Applying Hough Line...");
 
-            info->lines = getImageLines(&info->rawImage, 300, &info->linesLength);
+            info->lines = getImageLines(&info->rawImage, 450, &info->linesLength);
 
             drawLineOnImage(&info->rawImage, info->lines, info->linesLength);
-            saveImageToBmp(&info->rawImage, "hough","");
-            set_image("images/hough.bmp",info->image);
+            saveImageToBmp(&info->rawImage, "hough", "");
+            set_image("images/hough.bmp", info->image);
 
             gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), TRUE);
             break;
@@ -154,11 +154,12 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
             gtk_label_set_label(ProcessLabel, "Searching Biggest Square...");
 
             //test detection carré
-            Line* newlines2 = get_Bigger_Squares(info->lines, info->linesLength,info->CpImage.width,info->CpImage.height);
+            Line *newlines2 = get_Bigger_Squares(info->lines, info->linesLength, info->cpImage.width,
+                                                 info->cpImage.height);
             //Line* newlines2 = print_squares(lines, linesLength);
-            drawLineOnImage(&info->CpImage, newlines2, 4);
-            saveImageToBmp(&info->CpImage, "biggest-rectangle", "");
-            set_image("images/biggest-rectangle.bmp",info->image);
+            drawLineOnImage(&info->cpImage, newlines2, 4);
+            saveImageToBmp(&info->cpImage, "biggest-rectangle", "");
+            set_image("images/biggest-rectangle.bmp", info->image);
             break;
 
         case 8:
@@ -172,6 +173,17 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
 
     }
 
+}
+
+void quitApp(gpointer user_data)
+{
+    AppInfo *info = user_data;
+
+    freeImage(&info->rawImage);
+    freeImage(&info->cpImage);
+    freeImage(&info->imageCells);
+    free(info->lines);
+    gtk_main_quit();
 }
 
 void skip(GtkButton *Skipbutton, gpointer user_data)
@@ -191,33 +203,32 @@ void skip(GtkButton *Skipbutton, gpointer user_data)
     gtk_label_set_label(ProcessLabel, "Applying Greyscale filter...");
     imageGrayscale(&image);
     saveImageToBmp(&image, "greyscale", "");
-    set_image("images/greyscale.bmp",info->image);
+    set_image("images/greyscale.bmp", info->image);
     gtk_level_bar_set_value(info->ProgressBar, BarValue + 14.28571429);
 
     gtk_label_set_label(ProcessLabel, "Applying Contrast filter...");
     imageContrastFilter(&image);
     saveImageToBmp(&image, "contrast", "");
-    set_image("images/contrast.bmp",info->image);
+    set_image("images/contrast.bmp", info->image);
     gtk_level_bar_set_value(info->ProgressBar, BarValue + 14.28571429);
 
     gtk_label_set_label(ProcessLabel, "Applying Mean filter...");
     imageBinarization(&image);
     saveImageToBmp(&image, "mean", "");
-    Image image_cells = copyImage(&image);
     Image cpImage = copyImage(&image);
-    set_image("images/mean.bmp",info->image);
+    set_image("images/mean.bmp", info->image);
     gtk_level_bar_set_value(info->ProgressBar, BarValue + 14.28571429);
 
     gtk_label_set_label(ProcessLabel, "Applying Inverted filter...");
     imageInvert(&image);
     saveImageToBmp(&image, "inverted", "");
-    set_image("images/inverted.bmp",info->image);
+    set_image("images/inverted.bmp", info->image);
     gtk_level_bar_set_value(info->ProgressBar, BarValue + 14.28571429);
 
     gtk_label_set_label(ProcessLabel, "Applying Sobel filter...");
     imageSobelFilter(&image);
     saveImageToBmp(&image, "sobel", "");
-    set_image("images/sobel.bmp",info->image);
+    set_image("images/sobel.bmp", info->image);
     gtk_level_bar_set_value(info->ProgressBar, BarValue + 14.28571429);
 
     gtk_label_set_label(ProcessLabel, "Applying Blur filter...");
@@ -227,27 +238,29 @@ void skip(GtkButton *Skipbutton, gpointer user_data)
 
     gtk_label_set_label(ProcessLabel, "Applying Hough Line...");
     int linesLength = 0;
-    Line * lines = getImageLines(&image, 300, &linesLength);
+    Line *lines = getImageLines(&image, 450, &linesLength);
 
     drawLineOnImage(&image, lines, linesLength);
     saveImageToBmp(&image, "hough", "");
-    set_image("images/hough.bmp",info->image);
+    set_image("images/hough.bmp", info->image);
     gtk_level_bar_set_value(info->ProgressBar, BarValue + 100);
 
     gtk_label_set_label(ProcessLabel, "Searching Biggest Square...");
     //test detection carré
-    Line* newlines2 = get_Bigger_Squares(lines,linesLength,info->CpImage.width,info->CpImage.height);
+    Line *newlines2 = get_Bigger_Squares(lines, linesLength, info->cpImage.width, info->cpImage.height);
     //Line* newlines2 = print_squares(lines, linesLength);
     drawLineOnImage(&cpImage, newlines2, 4);
     saveImageToBmp(&cpImage, "biggest-rectangle", "");
-    set_image("images/biggest-rectangle.bmp",info->image);
-
-
+    set_image("images/biggest-rectangle.bmp", info->image);
 
     gtk_widget_set_sensitive(GTK_WIDGET(info->Resetbutton), TRUE);
     gtk_widget_set_sensitive(GTK_WIDGET(Skipbutton), FALSE);
 
-
+    //Free all the memory
+    freeImage(&image);
+    freeImage(&cpImage);
+    free(lines);
+    free(newlines2);
 }
 
 // Main function.
@@ -261,7 +274,8 @@ int start_gui()
     // (Exits if an error occurs.)
     GtkBuilder *builder = gtk_builder_new();
     GError *error = NULL;
-    if (gtk_builder_add_from_file(builder, "src/interface/interface.glade", &error) == 0) {
+    if (gtk_builder_add_from_file(builder, "src/interface/interface.glade", &error) == 0)
+    {
         g_printerr("Error loading file: %s\n", error->message);
         g_clear_error(&error);
         return 1;
@@ -297,7 +311,7 @@ int start_gui()
     infos.linesLength = 0;
 
     // Connects signal handlers.
-    g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(window, "destroy", G_CALLBACK(quitApp), &infos);
     g_signal_connect(file_chooser, "file-set", G_CALLBACK(create_image), &infos);
     g_signal_connect(Nextbutton, "clicked", G_CALLBACK(next_event), &infos);
     g_signal_connect(Skipbutton, "clicked", G_CALLBACK(skip), &infos);
