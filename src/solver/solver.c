@@ -122,13 +122,16 @@ void neural_network_to_sudoku(char s[81])
 void return_sudoku(char *argv, char s[81])
 {
     FILE *file_return;
-    file_return = fopen(strcat(argv, ".result"), "w");
-    /*
+    int len = strlen(argv) + 8;
+    char* fileName = calloc(len, sizeof(char));
+    snprintf(fileName, len, "%s.result", argv);
+    file_return = fopen(fileName, "w");
+    free(fileName);
     if (file_return == NULL)
-        exit(EXIT_FAILURE);*/
+        exit(EXIT_FAILURE);
 
     int i = 0;
-    while (s[i] != 0) {
+    while (i < 81) {
         if (i != 0) {
             if (i % 27 == 0)
                 fprintf(file_return, "\n\n");
@@ -211,7 +214,7 @@ int check_error(char *argv, char s[81])
     fclose(fptr);
 
     int i = 0;
-    while (s[i] != 0) 
+    while (i < 81)
     {
         if (s[i] != '.' && (s[i] < '0' || s[i] > '9')) {
             printf("INCORRECT SUDOKU !\n");
@@ -232,7 +235,6 @@ int resolve(char* file)
         free(s);
         return 1;
     }
-    
     else 
     {
         int a = sudoku_solver(0, is_empty(0, s), s);

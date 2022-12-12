@@ -52,8 +52,4 @@ void saveSurfaceToBmp(SDL_Surface* surface, char* name, char* parent, char* form
     SDL_FreeSurface(surface);
 }
 
-void saveImageToPdf(Image* image, char* name)
-{
-    SDL_Surface* surface = crateSurfaceFromImage(image);
-    saveSurfaceToBmp(surface, name, "", ".pdf");
-}
+
