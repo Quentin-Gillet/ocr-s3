@@ -230,11 +230,17 @@ SDL_Surface* crateSurfaceFromImage(Image* image)
  */
 void freeImage(Image* image)
 {
-    for(int x = 0; x < image->width; x++)
+   if(image != NULL && image->pixels != NULL)
     {
-        free(image->pixels[x]);
+         for(int x = 0; x < image->width; x++)
+         {
+              if(image->pixels[x])
+              {
+                free(image->pixels[x]);
+              }
+         }
+         free(image->pixels);
     }
-    free(image->pixels);
 }
 
 
