@@ -5,6 +5,8 @@ void set_image(const char *filename, GtkImage *image)
     const GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(filename, NULL);
     GdkPixbuf *ResizedPixbuf = gdk_pixbuf_scale_simple(pixbuf, 1000, 850, GDK_INTERP_BILINEAR);
     gtk_image_set_from_pixbuf(image, ResizedPixbuf); // filename is a const char*
+    if (pixbuf != NULL)
+        g_object_unref(pixbuf);
 }
 
 void create_image(GtkFileChooserButton *file_chooser_button, gpointer user_data)
@@ -50,8 +52,18 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
 {
     AppInfo *info = user_data;
 
+    GtkLabel *ProcessLabel = info->ProcessLabel;
+
+    GFile *file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(info->file_chooser));
+    if (file == NULL)
+    {
+        gtk_label_set_label(ProcessLabel, "Please input an image in the file chooser");
+        return;
+    }
+
     gtk_widget_set_sensitive(GTK_WIDGET(info->Skipbutton), TRUE);
     gtk_widget_set_sensitive(GTK_WIDGET(info->Resetbutton), TRUE);
+    gtk_widget_set_sensitive(GTK_WIDGET(info->Skipbutton), FALSE);
 
     info->CurrEvent = info->CurrEvent + 1;
     printf("currevent : %i\n", info->CurrEvent);
@@ -59,10 +71,6 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
 
     double BarValue = gtk_level_bar_get_value(info->ProgressBar);
     gtk_level_bar_set_value(info->ProgressBar, BarValue + 11.11111111);
-    GtkLabel *ProcessLabel = info->ProcessLabel;
-
-    GFile *file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(info->file_chooser));
-    const char *filename = g_file_get_basename(file);
 
     switch (info->CurrEvent)
     {
@@ -170,74 +178,79 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
         case 8:
             gtk_label_set_label(ProcessLabel, "Generating solution...");
             Recognition_Solve();
-            set_image("images/sudokuPresentation.result.bmp",info->image);
+            set_image("images/sudokuPresentation.result.bmp", info->image);
             break;
 
         default:
-            //freeImage(image_cells);
-            //free(lines);
+            gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
+            gtk_label_set_label(ProcessLabel, "End of solver (PUSH RESET TO RESTART)");
             break;
 
     }
 
 }
 
-void quitApp(gpointer user_data)
-{
-    gtk_main_quit();
-}
-
 void skip(GtkButton *Skipbutton, gpointer user_data)
 {
     AppInfo *info = user_data;
 
+    GtkLabel *ProcessLabel = info->ProcessLabel;
+    GFile *file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(info->file_chooser));
+    if (file == NULL)
+    {
+        gtk_label_set_label(ProcessLabel, "Please input an image in the file chooser");
+        return;
+    }
+
+    if(info->CurrEvent != -1)
+    {
+        return;
+    }
+
     gtk_widget_set_sensitive(GTK_WIDGET(info->Nextbutton), FALSE);
     gtk_widget_set_sensitive(GTK_WIDGET(info->Resetbutton), FALSE);
 
-    GFile *file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(info->file_chooser));
-    const char *filename = g_file_get_basename(file);
-    Image image = getImageFromPng(filename);
-
     double BarValue = gtk_level_bar_get_value(info->ProgressBar);
-    GtkLabel *ProcessLabel = info->ProcessLabel;
 
     gtk_label_set_label(ProcessLabel, "Applying Greyscale filter...");
-    imageGrayscale(&image);
-    saveImageToBmp(&image, "greyscale", "");
+    imageGrayscale(&info->rawImage);
+    saveImageToBmp(&info->rawImage, "greyscale", "");
     set_image("images/greyscale.bmp", info->image);
 
     gtk_label_set_label(ProcessLabel, "Applying Contrast filter...");
-    imageContrastFilter(&image);
-    saveImageToBmp(&image, "contrast", "");
+    imageContrastFilter(&info->rawImage);
+    saveImageToBmp(&info->rawImage, "contrast", "");
     set_image("images/contrast.bmp", info->image);
 
     gtk_label_set_label(ProcessLabel, "Applying Mean filter...");
-    imageBinarization(&image);
-    saveImageToBmp(&image, "mean", "");
-    Image cpImage = copyImage(&image);
+    imageBinarization(&info->rawImage);
+    saveImageToBmp(&info->rawImage, "mean", "");
+    Image cpImage = copyImage(&info->rawImage);
     set_image("images/mean.bmp", info->image);
 
     gtk_label_set_label(ProcessLabel, "Applying Inverted filter...");
-    imageInvert(&image);
-    saveImageToBmp(&image, "inverted", "");
+    imageInvert(&info->rawImage);
+    saveImageToBmp(&info->rawImage, "inverted", "");
     set_image("images/inverted.bmp", info->image);
 
 
     gtk_label_set_label(ProcessLabel, "Applying Sobel filter...");
-    imageSobelFilter(&image);
-    saveImageToBmp(&image, "sobel", "");
+    imageSobelFilter(&info->rawImage);
+    saveImageToBmp(&info->rawImage, "sobel", "");
     set_image("images/sobel.bmp", info->image);
 
     gtk_label_set_label(ProcessLabel, "Applying Blur filter...");
-    imageMedianBlur(&image);
-    saveImageToBmp(&image, "blur", "");
+    imageMedianBlur(&info->rawImage);
+    saveImageToBmp(&info->rawImage, "blur", "");
+
+    gtk_level_bar_set_value(info->ProgressBar, BarValue + 50);
 
     gtk_label_set_label(ProcessLabel, "Applying Hough Line...");
     int linesLength = 0;
-    Line *lines = getImageLines(&image, 450, &linesLength);
+    Line *lines = getImageLines(&info->rawImage, 450, &linesLength);
 
-    drawLineOnImage(&image, lines, linesLength);
-    saveImageToBmp(&image, "hough", "");
+    drawLineOnImage(&info->rawImage, lines, linesLength);
+    saveImageToBmp(&info->rawImage, "hough", "");
     set_image("images/hough.bmp", info->image);;
 
     gtk_label_set_label(ProcessLabel, "Searching Biggest Square...");
@@ -250,18 +263,17 @@ void skip(GtkButton *Skipbutton, gpointer user_data)
 
     gtk_label_set_label(ProcessLabel, "Generating solution...");
     Recognition_Solve();
-    set_image("images/sudokuPresentation.result.bmp",info->image);
+    set_image("images/sudokuPresentation.result.bmp", info->image);
     gtk_level_bar_set_value(info->ProgressBar, BarValue + 100);
 
     gtk_widget_set_sensitive(GTK_WIDGET(info->Resetbutton), TRUE);
     gtk_widget_set_sensitive(GTK_WIDGET(Skipbutton), FALSE);
 
     //Free all the memory
-    freeImage(&image);
+    freeImage(&info->rawImage);
     freeImage(&cpImage);
     free(lines);
     free(newlines2);
-    freeImage(&info->rawImage);
 }
 
 // Main function.
@@ -306,7 +318,7 @@ int start_gui()
     infos.linesLength = 0;
 
     // Connects signal handlers.
-    g_signal_connect(window, "destroy", G_CALLBACK(quitApp), &infos);
+    g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), &infos);
     g_signal_connect(file_chooser, "file-set", G_CALLBACK(create_image), &infos);
     g_signal_connect(Nextbutton, "clicked", G_CALLBACK(next_event), &infos);
     g_signal_connect(Skipbutton, "clicked", G_CALLBACK(skip), &infos);
