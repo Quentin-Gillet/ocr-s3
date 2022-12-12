@@ -260,6 +260,7 @@ void skip(GtkButton *Skipbutton, gpointer user_data)
     freeImage(&cpImage);
     free(lines);
     free(newlines2);
+    freeImage(&info->rawImage);
 }
 
 // Main function.
