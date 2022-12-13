@@ -5,8 +5,6 @@ void set_image(const char *filename, GtkImage *image)
     const GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(filename, NULL);
     GdkPixbuf *ResizedPixbuf = gdk_pixbuf_scale_simple(pixbuf, 1000, 850, GDK_INTERP_BILINEAR);
     gtk_image_set_from_pixbuf(image, ResizedPixbuf); // filename is a const char*
-    if (pixbuf != NULL)
-        g_object_unref(pixbuf);
 }
 
 void create_image(GtkFileChooserButton *file_chooser_button, gpointer user_data)
@@ -168,6 +166,7 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
 
         case 8:
             gtk_label_set_label(ProcessLabel, "Generating solution...");
+            sleep(1000);
             Recognition_Solve();
             set_image("images/sudokuPresentation.result.bmp", info->image);
             break;
@@ -253,6 +252,7 @@ void skip(GtkButton *Skipbutton, gpointer user_data)
     set_image("images/biggest-rectangle.bmp", info->image);
 
     gtk_label_set_label(ProcessLabel, "Generating solution...");
+    sleep(1000);
     Recognition_Solve();
     set_image("images/sudokuPresentation.result.bmp", info->image);
     gtk_level_bar_set_value(info->ProgressBar, BarValue + 100);

@@ -11,6 +11,7 @@
 #include "image_processing/image_split.h"
 #include "image_processing/image_processing.h"
 #include "neural_network/neural_network.h"
+#include <unistd.h>
 
 typedef struct AppInfo {
     GtkImage *image;

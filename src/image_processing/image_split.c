@@ -418,7 +418,7 @@ struct Line *get_Bigger_Squares(struct Line *lines, int NBLine, int width, int h
 
 Image cropImage(Image *image, SDL_Rect *rect)
 {
-    Image res = createImage((int)rect->w, (int)rect->h);
+    Image res = createImage((int) rect->w, (int) rect->h);
 
     for (int x = rect->x; x < rect->x + rect->w; x++)
     {
