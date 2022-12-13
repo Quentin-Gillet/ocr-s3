@@ -166,7 +166,6 @@ void next_event(GtkButton *Nextbutton, gpointer user_data)
 
         case 8:
             gtk_label_set_label(ProcessLabel, "Generating solution...");
-            sleep(1000);
             Recognition_Solve();
             set_image("images/sudokuPresentation.result.bmp", info->image);
             break;
@@ -252,7 +251,6 @@ void skip(GtkButton *Skipbutton, gpointer user_data)
     set_image("images/biggest-rectangle.bmp", info->image);
 
     gtk_label_set_label(ProcessLabel, "Generating solution...");
-    sleep(1000);
     Recognition_Solve();
     set_image("images/sudokuPresentation.result.bmp", info->image);
     gtk_level_bar_set_value(info->ProgressBar, BarValue + 100);
